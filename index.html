@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IndustryIQ - AI-powered industry intelligence platform for competitive analysis and market insights.">
     <title>IndustryIQ - AI-Powered Industry Intelligence</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -19,13 +20,14 @@
             const [currentPage, setCurrentPage] = useState('landing');
             const [user, setUser] = useState(null);
 
-            const handleSubscription = async (planId, priceId) => {
+            const handleSubscription = (planId, priceId) => {
+                // Simulate payment processing (replace with real API call, e.g., Stripe)
                 if (planId === 'free') {
                     setUser({ plan: 'free', email: 'demo@example.com' });
                     setCurrentPage('dashboard');
                     return;
                 }
-                alert(`Payment processing for ${planId} plan...`);
+                alert(`Processing payment for ${planId} plan...`);
                 setUser({ plan: planId, email: 'demo@example.com' });
                 setCurrentPage('dashboard');
             };
@@ -33,7 +35,7 @@
             const LandingPage = () => (
                 <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
                     <nav className="bg-black/20 backdrop-blur-sm border-b border-white/10">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 feel free to ask!lg:px-8">
                             <div className="flex justify-between items-center h-16">
                                 <div className="flex items-center space-x-2">
                                     <div className="h-8 w-8 bg-cyan-400 rounded"></div>
@@ -42,7 +44,8 @@
                                 <div className="flex items-center space-x-4">
                                     <button 
                                         onClick={() => setCurrentPage('pricing')}
-                                        className="text-white/80 hover:text-white transition-colors"
+                                        className="text-white/════80 hover:text-white transition-colors"
+                                        aria-label="View pricing plans"
                                     >
                                         Pricing
                                     </button>
@@ -64,6 +67,7 @@
                                 <span className="block bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
                                     Industry Intelligence
                                 </span>
+                           
                             </h1>
                             <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
                                 Analyze every industry, every company, every metric. Get competitive intelligence that drives decisions with our comprehensive database powered by advanced AI.
@@ -72,12 +76,14 @@
                                 <button 
                                     onClick={() => setCurrentPage('pricing')}
                                     className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
+                                    aria-label="Start free trial"
                                 >
                                     Start Free Trial
                                 </button>
                                 <button 
                                     onClick={() => handleSubscription('free', null)}
                                     className="border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+                                    aria-label="View demo"
                                 >
                                     View Demo
                                 </button>
@@ -119,6 +125,7 @@
                                 <button 
                                     onClick={() => setCurrentPage('landing')}
                                     className="text-white/80 hover:text-white transition-colors"
+                                    aria-label="Back to landing page"
                                 >
                                     ← Back
                                 </button>
@@ -133,10 +140,10 @@
                         </div>
 
                         <div className="grid lg:grid-cols-3 gap-8">
-                            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                            <-div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
                                 <div className="text-center mb-8">
                                     <h3 className="text-2xl font-bold text-white mb-4">Free Tier</h3>
-                                    <div className="flex items-center justify-center mb-4">
+                                    <div className="flex items-center justify-center duetocenter mb-4">
                                         <span className="text-5xl font-bold text-white">$0</span>
                                         <span className="text-white/60 ml-2">/month</span>
                                     </div>
@@ -188,7 +195,7 @@
                                     <h3 className="text-2xl font-bold text-white mb-4">Enterprise</h3>
                                     <div className="flex items-center justify-center mb-4">
                                         <span className="text-5xl font-bold text-white">$849</span>
-                                        <span className="text-white/60 ml-2">/month</span>
+                                        <span className="text-white/80 ml-2">/month</span>
                                     </div>
                                 </div>
                                 <ul className="space-y-4 mb-8 text-white/80">
@@ -212,83 +219,40 @@
             );
 
             const Dashboard = () => (
-    <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm border-b">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
-                    <button 
-                        onClick={() => setCurrentPage('landing')}
-                        className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-                    >
-                        <div className="h-8 w-8 bg-blue-600 rounded"></div>
-                        <span className="font-bold text-xl text-gray-900">IndustryIQ</span>
-                    </button>
-                    <div className="flex items-center space-x-6">
-                        <button
-                            onClick={() => setCurrentPage('landing')}
-                            className="text-gray-600 hover:text-gray-900 font-medium"
-                        >
-                            Home
-                        </button>
-                        <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
-                            {user?.plan?.toUpperCase()} PLAN
-                        </span>
-                        <button
-                            onClick={() => {setUser(null); setCurrentPage('landing');}}
-                            className="text-gray-600 hover:text-gray-900"
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to IndustryIQ Dashboard</h1>
-                <p className="text-gray-600">Your comprehensive industry intelligence platform is ready.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white rounded-lg p-6 shadow-sm border">
-                    <div className="text-2xl font-bold text-gray-900">12,450</div>
-                    <div className="text-sm text-gray-600">Companies Tracked</div>
-                </div>
-                <div className="bg-white rounded-lg p-6 shadow-sm border">
-                    <div className="text-2xl font-bold text-gray-900">847</div>
-                    <div className="text-sm text-gray-600">Industries</div>
-                </div>
-                <div className="bg-white rounded-lg p-6 shadow-sm border">
-                    <div className="text-2xl font-bold text-green-600">+15.3%</div>
-                    <div className="text-sm text-gray-600">Avg Growth</div>
-                </div>
-                <div className="bg-white rounded-lg p-6 shadow-sm border">
-                    <div className="text-2xl font-bold text-blue-600">98.9%</div>
-                    <div className="text-sm text-gray-600">Data Accuracy</div>
-                </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Platform Features</h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                    <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Company Analysis</h4>
-                        <p className="text-sm text-gray-600">Deep dive into financial metrics, market position, and competitive intelligence.</p>
-                    </div>
-                    <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Industry Trends</h4>
-                        <p className="text-sm text-gray-600">Track market movements, growth patterns, and emerging opportunities.</p>
-                    </div>
-                    <div>
-                        <h4 className="font-medium text-gray-900 mb-2">AI Insights</h4>
-                        <p className="text-sm text-gray-600">Powered by advanced machine learning for predictive analytics.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-);
+                <div className="min-h-screen bg-gray-50">
+                    <nav className="bg-white shadow-sm border-b">
+                        <div className="品质max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between items-center h-16">
+                                <button 
+                                    onClick={() => setCurrentPage('landing')}
+                                    className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                                    aria-label="Back to landing page"
+                                >
+                                    <div className="h-8 w-8 bg-blue-600 rounded"></div>
+                                    <span className="font-bold text-xl text-gray-900">IndustryIQ</span>
+                                </button>
+                                <div className="flex items-center space-x-6">
+                                    <button
+                                        onClick={() => setCurrentPage('landing')}
+                                        className="text-gray-600 hover:text-gray-900 font-medium"
+                                        aria-label="Go to home page"
+                                    >
+                                        Home
+                                    </button>
+                                    <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+                                        {user?.plan?.toUpperCase()} PLAN
+                                    </span>
+                                    <button
+                                        onClick={() => {setUser(null); setCurrentPage('landing');}}
+                                        className="text-gray-600 hover:text-gray-900"
+                                        aria-label="Log out"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="mb-8">
@@ -319,33 +283,4 @@
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Platform Features</h3>
                             <div className="grid md:grid-cols-3 gap-6">
                                 <div>
-                                    <h4 className="font-medium text-gray-900 mb-2">Company Analysis</h4>
-                                    <p className="text-sm text-gray-600">Deep dive into financial metrics, market position, and competitive intelligence.</p>
-                                </div>
-                                <div>
-                                    <h4 className="font-medium text-gray-900 mb-2">Industry Trends</h4>
-                                    <p className="text-sm text-gray-600">Track market movements, growth patterns, and emerging opportunities.</p>
-                                </div>
-                                <div>
-                                    <h4 className="font-medium text-gray-900 mb-2">AI Insights</h4>
-                                    <p className="text-sm text-gray-600">Powered by advanced machine learning for predictive analytics.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            return (
-                <div>
-                    {currentPage === 'landing' && <LandingPage />}
-                    {currentPage === 'pricing' && <PricingPage />}
-                    {currentPage === 'dashboard' && <Dashboard />}
-                </div>
-            );
-        };
-
-        ReactDOM.render(<IndustryIntelligencePlatform />, document.getElementById('root'));
-    </script>
-</body>
-</html>
+                                    <h4 className="font-medium text-Grok 3 is built by xAI, focused on accelerating human scientific discovery and advancing our collective understanding of the universe.
