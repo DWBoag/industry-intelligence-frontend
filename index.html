@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndustryIQ - AI-Powered Industry Intelligence</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { Search, TrendingUp, BarChart3, Building2, CreditCard, Check, Star, Globe, DollarSign, Users, Zap, Shield, ArrowRight } = lucideReact;
+
+        // Updated configuration with your live backend
+        const API_BASE_URL = 'https://industry-intelligence-backend-production.up.railway.app/api';
+        const STRIPE_PUBLISHABLE_KEY = 'pk_live_51RzACB6WGogouKuUvhuOZwgVmzRw9JgIGPMxroPXKNQvjzAn5wzh5UULnAH6gsVZInnVfsdz0AHYQsIrPaFLV8cJ00uQOSqEmh'; // Replace with your actual Stripe publishable key
+
+        const IndustryIntelligencePlatform = () => {
+          const [currentPage, setCurrentPage] = useState('landing');
+          const [user, setUser] = useState(null);
+          const [searchQuery, setSearchQuery] = useState('');
+          const [selectedPlan, setSelectedPlan] = useState(null);
+
+          // Mock data for demonstration
+          const [companies, setCompanies] = useState([
+            { id: 1, name: 'Apple Inc.', ticker: 'AAPL', industry: 'Technology', marketCap: 2800000, sentiment: 0.8, growth: 12.5 },
+            { id: 2, name: 'Microsoft Corp.', ticker: 'MSFT', industry: 'Technology', marketCap: 2400000, sentiment: 0.9, growth: 15.2 },
+            { id: 3, name: 'Amazon.com Inc.', ticker: 'AMZN', industry: 'E-commerce', marketCap: 1500000, sentiment: 0.7, growth: 9.8 },
+            { id: 4, name: 'Tesla Inc.', ticker: 'TSLA', industry: 'Automotive', marketCap: 800000, sentiment: 0.6, growth: 22.1 },
+            { id: 5, name: 'Google (Alphabet)', ticker: 'GOOGL', industry: 'Technology', marketCap: 1800000, sentiment: 0.8, growth: 13.4 }
+          ]);
+
+          const pricingPlans = [
+            {
+              id: 'free',
+              name: 'Free Tier',
+              price: 0,
+              period: 'month',
+              stripePriceId: null,
+              features: [
+                'Basic company profiles',
+                'SEC filing data',
+                'Public financial metrics',
+                'Basic industry trends',
+                '10 searches per day',
+                'Community support'
+              ],
+              limitations: [
+                'Limited to public data only',
+                'Basic analytics only',
+                'No real-time updates'
+              ]
+            },
+            {
+              id: 'professional',
+              name: 'Professional',
+              price: 99,
+              period: 'month',
+              stripePriceId: 'price_professional_monthly',
+              popular: true,
+              features: [
+                'Everything in Free',
+                'Premium data sources',
+                'Advanced analytics',
+                'Competitive intelligence',
+                'Industry benchmarking',
+                'Real-time alerts',
+                'API access',
+                'Priority support'
+              ],
+              limitations: []
+            },
+            {
+              id: 'enterprise',
+              name: 'Enterprise',
+              price: 499,
+              period: 'month',
+              stripePriceId: 'price_enterprise_monthly',
+              features: [
+                'Everything in Professional',
+                'Custom data integrations',
+                'White-label solution',
+                'Advanced ML models',
+                'Dedicated account manager',
+                'Custom reporting',
+                'SLA guarantee',
+                'On-premise deployment'
+              ],
+              limitations: []
+            }
+          ];
+
+          const industryData = [
+            { name: 'Technology', companies: 1250, growth: 18.5, avgValuation: 2.1 },
+            { name: 'Healthcare', companies: 890, growth: 12.3, avgValuation: 1.8 },
+            { name: 'Financial Services', companies: 1100, growth: 8.7, avgValuation: 1.5 },
+            { name: 'Energy', companies: 650, growth: 15.2, avgValuation: 1.2 },
+            { name: 'Consumer Goods', companies: 980, growth: 7.9, avgValuation: 1.4 }
+          ];
+
+          // Stripe payment integration
+          const handleSubscription = async (planId, priceId) => {
+            if (planId === 'free') {
+              setUser({ plan: 'free', email: 'demo@example.com' });
+              setCurrentPage('dashboard');
+              return;
+            }
+
+            try {
+              const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  priceId: priceId,
+                  planId: planId,
+                }),
+              });
+
+              const { sessionId } = await response.json();
+              
+              // For demo purposes, simulate successful payment
+              alert(`Payment processing for ${planId} plan... Redirecting to Stripe checkout...`);
+              setUser({ plan: planId, email: 'demo@example.com' });
+              setCurrentPage('dashboard');
+              
+            } catch (error) {
+              console.error('Payment error:', error);
+              alert('Payment failed. Please try again.');
+            }
+          };
+
+          const LandingPage = () => (
+            <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+              {/* Header */}
+              <nav className="bg-black/20 backdrop-blur-sm border-b border-white/10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-between items-center h-16">
+                    <div className="flex items-center space-x-2">
+                      <BarChart3 className="h-8 w-8 text-cyan-400" />
+                      <span className="font-bold text-xl text-white">IndustryIQ</span>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <button 
+                        onClick={() => setCurrentPage('pricing')}
+                        className="text-white/80 hover:text-white transition-colors"
+                      >
+                        Pricing
+                      </button>
+                      <button 
+                        onClick={() => handleSubscription('free', null)}
+                        className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
+                      >
+                        Get Started Free
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </nav>
+
+              {/* Hero Section */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+                <div className="text-center">
+                  <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+                    AI-Powered
+                    <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"> Industry Intelligence</span>
+                  </h1>
+                  <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
+                    Analyze every industry, every company, every metric. Get competitive intelligence that drives decisions with our comprehensive database powered by advanced AI.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button 
+                      onClick={() => setCurrentPage('pricing')}
+                      className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
+                    >
+                      Start Free Trial
+                    </button>
+                    <button 
+                      onClick={() => handleSubscription('free', null)}
+                      className="border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+                    >
+                      View Demo
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Features Grid */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                    <Globe className="h-12 w-12 text-cyan-400 mb-4" />
+                    <h3 className="text-xl font-bold text-white mb-4">Universal Coverage</h3>
+                    <p className="text-white/70">Access data from every industry and market segment worldwide with real-time updates.</p>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                    <Zap className="h-12 w-12 text-purple-400 mb-4" />
+                    <h3 className="text-xl font-bold text-white mb-4">AI-Powered Analysis</h3>
+                    <p className="text-white/70">Advanced machine learning models provide insights that traditional tools miss.</p>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                    <Shield className="h-12 w-12 text-green-400 mb-4" />
+                    <h3 className="text-xl font-bold text-white mb-4">Enterprise Security</h3>
+                    <p className="text-white/70">Bank-level security with compliance certifications for enterprise peace of mind.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Data Sources Section */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold text-white mb-4">Comprehensive Data Sources</h2>
+                  <p className="text-xl text-white/70">From free public data to premium institutional sources</p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-12">
+                  <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 rounded-2xl p-8 border border-green-500/20">
+                    <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm mr-3">FREE</span>
+                      Public Data Sources
+                    </h3>
+                    <ul className="space-y-3 text-white/80">
+                      <li className="flex items-center"><Check className="h-5 w-5 text-green-400 mr-2" />SEC EDGAR Database</li>
+                      <li className="flex items-center"><Check className="h-5 w-5 text-green-400 mr-2" />Federal Economic Data</li>
+                      <li className="flex items-center"><Check className="h-5 w-5 text-green-400 mr-2" />Census Bureau Reports</li>
+                      <li className="flex items-center"><Check className="h-5 w-5 text-green-400 mr-2" />Yahoo Finance API</li>
+                      <li className="flex items-center"><Check className="h-5 w-5 text-green-400 mr-2" />Industry Trade Data</li>
+                    </ul>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple-500/10 to-indigo-600/10 rounded-2xl p-8 border border-purple-500/20">
+                    <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                      <span className="bg-purple-500 text-white px-3 py-1 rounded-full text-sm mr-3">PREMIUM</span>
+                      Institutional Sources
+                    </h3>
+                    <ul className="space-y-3 text-white/80">
+                      <li className="flex items-center"><Check className="h-5 w-5 text-purple-400 mr-2" />Bloomberg Terminal Data</li>
+                      <li className="flex items-center"><Check className="h-5 w-5 text-purple-400 mr-2" />S&P Capital IQ</li>
+                      <li className="flex items-center"><Check className="h-5 w-5 text-purple-400 mr-2" />IBISWorld Reports</li>
+                      <li className="flex items-center"><Check className="h-5 w-5 text-purple-400 mr-2" />Refinitiv Data</li>
+                      <li className="flex items-center"><Check className="h-5 w-5 text-purple-400 mr-2" />Private Market Intelligence</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+
+          const PricingPage = () => (
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900">
+              <nav className="bg-black/20 backdrop-blur-sm border-b border-white/10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-between items-center h-16">
+                    <div className="flex items-center space-x-2">
+                      <BarChart3 className="h-8 w-8 text-cyan-400" />
+                      <span className="font-bold text-xl text-white">IndustryIQ</span>
+                    </div>
+                    <button 
+                      onClick={() => setCurrentPage('landing')}
+                      className="text-white/80 hover:text-white transition-colors"
+                    >
+                      ← Back
+                    </button>
+                  </div>
+                </div>
+              </nav>
+
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div className="text-center mb-16">
+                  <h1 className="text-5xl font-bold text-white mb-6">Choose Your Plan</h1>
+                  <p className="text-xl text-white/70">Start free, scale as you grow</p>
+                </div>
+
+                <div className="grid lg:grid-cols-3 gap-8">
+                  {pricingPlans.map((plan) => (
+                    <div key={plan.id} className={`relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border ${plan.popular ? 'border-cyan-500 scale-105' : 'border-white/10'}`}>
+                      {plan.popular && (
+                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                          <span className="bg-cyan-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                            Most Popular
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className="text-center mb-8">
+                        <h3 className="text-2xl font-bold text-white mb-4">{plan.name}</h3>
+                        <div className="flex items-center justify-center mb-4">
+                          <span className="text-5xl font-bold text-white">${plan.price}</span>
+                          <span className="text-white/60 ml-2">/{plan.period}</span>
+                        </div>
+                      </div>
+
+                      <ul className="space-y-4 mb-8">
+                        {plan.features.map((feature, index) => (
+                          <li key={index} className="flex items-center text-white/80">
+                            <Check className="h-5 w-5 text-green-400 mr-3 flex-shrink-0" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <button
+                        onClick={() => handleSubscription(plan.id, plan.stripePriceId)}
+                        className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
+                          plan.popular 
+                            ? 'bg-cyan-500 hover:bg-cyan-600 text-white' 
+                            : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                        }`}
+                      >
+                        {plan.price === 0 ? 'Get Started Free' : 'Start Free Trial'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+
+          const Dashboard = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [selectedCompany, setSelectedCompany] = useState(null);
+
+            return (
+              <div className="min-h-screen bg-gray-50">
+                {/* Header */}
+                <nav className="bg-white shadow-sm border-b">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                      <div className="flex items-center space-x-2">
+                        <BarChart3 className="h-8 w-8 text-blue-600" />
+                        <span className="font-bold text-xl text-gray-900">IndustryIQ</span>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm text-gray-600">Welcome back!</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+                            {user?.plan?.toUpperCase()} PLAN
+                          </span>
+                          <button
+                            onClick={() => setCurrentPage('landing')}
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </nav>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                  {/* Search Bar */}
+                  <div className="mb-8">
+                    <div className="relative max-w-xl">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                      <input
+                        type="text"
+                        placeholder="Search companies, industries, or metrics..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Tabs */}
+                  <div className="border-b border-gray-200 mb-8">
+                    <nav className="flex space-x-8">
+                      {[
+                        { id: 'overview', name: 'Overview', icon: BarChart3 },
+                        { id: 'companies', name: 'Companies', icon: Building2 },
+                        { id: 'industries', name: 'Industries', icon: TrendingUp },
+                        { id: 'analytics', name: 'Analytics', icon: Zap }
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id)}
+                          className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === tab.id
+                              ? 'border-blue-500 text-blue-600'
+                              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          }`}
+                        >
+                          <tab.icon className="h-5 w-5" />
+                          <span>{tab.name}</span>
+                        </button>
+                      ))}
+                    </nav>
+                  </div>
+
+                  {/* Content */}
+                  {activeTab === 'overview' && (
+                    <div className="grid lg:grid-cols-3 gap-8">
+                      {/* Key Metrics */}
+                      <div className="lg:col-span-2 space-y-6">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="bg-white rounded-lg p-6 shadow-sm border">
+                            <div className="text-2xl font-bold text-gray-900">12,450</div>
+                            <div className="text-sm text-gray-600">Companies Tracked</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-6 shadow-sm border">
+                            <div className="text-2xl font-bold text-gray-900">847</div>
+                            <div className="text-sm text-gray-600">Industries</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-6 shadow-sm border">
+                            <div className="text-2xl font-bold text-green-600">+15.3%</div>
+                            <div className="text-sm text-gray-600">Avg Growth</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-6 shadow-sm border">
+                            <div className="text-2xl font-bold text-blue-600">98.9%</div>
+                            <div className="text-sm text-gray-600">Data Accuracy</div>
+                          </div>
+                        </div>
+
+                        {/* Top Performers */}
+                        <div className="bg-white rounded-lg shadow-sm border">
+                          <div className="p-6 border-b">
+                            <h3 className="text-lg font-semibold text-gray-900">Top Performing Companies</h3>
+                          </div>
+                          <div className="divide-y">
+                            {companies.slice(0, 5).map((company) => (
+                              <div key={company.id} className="p-6 hover:bg-gray-50 cursor-pointer"
+                                   onClick={() => setSelectedCompany(company)}>
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <div className="font-medium text-gray-900">{company.name}</div>
+                                    <div className="text-sm text-gray-600">{company.ticker} • {company.industry}</div>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="font-medium text-gray-900">
+                                      ${(company.marketCap / 1000).toFixed(1)}B
+                                    </div>
+                                    <div className={`text-sm ${company.growth > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                      +{company.growth}%
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Industry Overview */}
+                      <div className="space-y-6">
+                        <div className="bg-white rounded-lg shadow-sm border">
+                          <div className="p-6 border-b">
+                            <h3 className="text-lg font-semibold text-gray-900">Industry Snapshot</h3>
+                          </div>
+                          <div className="p-6 space-y-4">
+                            {industryData.map((industry, index) => (
+                              <div key={index} className="flex justify-between items-center">
+                                <div>
+                                  <div className="font-medium text-gray-900">{industry.name}</div>
+                                  <div className="text-sm text-gray-600">{industry.companies} companies</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-sm font-medium text-green-600">+{industry.growth}%</div>
+                                  <div className="text-sm text-gray-600">${industry.avgValuation}B avg</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                          <h4 className="font-semibold text-blue-900 mb-2">AI Insights</h4>
+                          <p className="text-sm text-blue-800">
+                            Technology sector showing strong momentum with 18.5% growth. 
+                            Consider monitoring emerging AI and cloud infrastructure companies.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'companies' && (
+                    <div className="bg-white rounded-lg shadow-sm border">
+                      <div className="p-6 border-b">
+                        <h3 className="text-lg font-semibold text-gray-900">Company Database</h3>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Industry</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Market Cap</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Growth</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sentiment</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {companies.map((company) => (
+                              <tr key={company.id} className="hover:bg-gray-50">
+                                <td className="px-6 py-4">
+                                  <div>
+                                    <div className="font-medium text-gray-900">{company.name}</div>
+                                    <div className="text-sm text-gray-600">{company.ticker}</div>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-900">{company.industry}</td>
+                                <td className="px-6 py-4 text-sm text-gray-900">
+                                  ${(company.marketCap / 1000).toFixed(1)}B
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className={`text-sm font-medium ${company.growth > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    +{company.growth}%
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center">
+                                    <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                      <div 
+                                        className="bg-blue-500 h-2 rounded-full" 
+                                        style={{width: `${company.sentiment * 100}%`}}
+                                      ></div>
+                                    </div>
+                                    <span className="text-sm text-gray-600">{(company.sentiment * 100).toFixed(0)}%</span>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <button 
+                                    onClick={() => setSelectedCompany(company)}
+                                    className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                                  >
+                                    Analyze
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'industries' && (
+                    <div className="grid lg:grid-cols-2 gap-8">
+                      <div className="bg-white rounded-lg shadow-sm border">
+                        <div className="p-6 border-b">
+                          <h3 className="text-lg font-semibold text-gray-900">Industry Performance</h3>
+                        </div>
+                        <div className="p-6">
+                          {industryData.map((industry, index) => (
+                            <div key={index} className="mb-6 last:mb-0">
+                              <div className="flex justify-between items-center mb-2">
+                                <span className="font-medium text-gray-900">{industry.name}</span>
+                                <span className="text-sm text-green-600 font-medium">+{industry.growth}%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-3">
+                                <div 
+                                  className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full"
+                                  style={{width: `${(industry.growth / 20) * 100}%`}}
+                                ></div>
+                              </div>
+                              <div className="mt-1 text-sm text-gray-600">
+                                {industry.companies} companies • ${industry.avgValuation}B avg valuation
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="bg-white rounded-lg shadow-sm border">
+                        <div className="p-6 border-b">
+                          <h3 className="text-lg font-semibold text-gray-900">Market Trends</h3>
+                        </div>
+                        <div className="p-6 space-y-4">
+                          <div className="border-l-4 border-green-500 pl-4">
+                            <h4 className="font-medium text-gray-900">AI & Machine Learning</h4>
+                            <p className="text-sm text-gray-600">Strong growth in enterprise AI adoption driving valuations up 25%</p>
+                          </div>
+                          <div className="border-l-4 border-blue-500 pl-4">
+                            <h4 className="font-medium text-gray-900">Renewable Energy</h4>
+                            <p className="text-sm text-gray-600">Government incentives boosting clean energy investments</p>
+                          </div>
+                          <div className="border-l-4 border-purple-500 pl-4">
+                            <h4 className="font-medium text-gray-900">Biotechnology</h4>
+                            <p className="text-sm text-gray-600">Breakthrough therapies creating new market opportunities</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'analytics' && (
+                    <div className="space-y-8">
+                      <div className="bg-white rounded-lg shadow-sm border p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">AI-Powered Analytics</h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h4 className="font-medium text-gray-900">Predictive Models</h4>
+                            <div className="space-y-3">
+                              <div className="flex justify-between">
+                                <span className="text-sm text-gray-600">Market Growth Forecast</span>
+                                <span className="text-sm font-medium text-green-600">+12.5%</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-sm text-gray-600">Risk Assessment Score</span>
+                                <span className="text-sm font-medium text-yellow-600">Medium</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-sm text-gray-600">Sentiment Trend</span>
+                                <span className="text-sm font-medium text-green-600">Positive</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-4">
+                            <h4 className="font-medium text-gray-900">Key Insights</h4>
+                            <ul className="space-y-2 text-sm text-gray-600">
+                              <li>• Tech sector consolidation expected in Q2</li>
+                              <li>• Healthcare spending to increase 8% YoY</li>
+                              <li>• Energy sector facing regulatory changes</li>
+                              <li>• Consumer goods showing seasonal patterns</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+
+                      {user?.plan !== 'free' && (
+                        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-6">
+                          <h4 className="font-semibold text-blue-900 mb-2">Premium Analytics Available</h4>
+                          <p className="text-sm text-blue-800 mb-4">
+                            Access advanced ML models, custom benchmarking, and real-time competitive intelligence.
+                          </p>
+                          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                            Explore Advanced Analytics
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Company Detail Modal */}
+                {selectedCompany && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+                      <div className="p-6 border-b">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="text-2xl font-bold text-gray-900">{selectedCompany.name}</h3>
+                            <p className="text-gray-600">{selectedCompany.ticker} • {selectedCompany.industry}</p>
+                          </div>
+                          <button 
+                            onClick={() => setSelectedCompany(null)}
+                            className="text-gray-400 hover:text-gray-600 text-2xl"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-6 space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-gray-50 rounded-lg p-4">
+                            <div className="text-lg font-semibold text-gray-900">
+                              ${(selectedCompany.marketCap / 1000).toFixed(1)}B
+                            </div>
+                            <div className="text-sm text-gray-600">Market Cap</div>
+                          </div>
+                          <div className="bg-gray-50 rounded-lg p-4">
+                            <div className="text-lg font-semibold text-green-600">
+                              +{selectedCompany.growth}%
+                            </div>
+                            <div className="text-sm text-gray-600">YoY Growth</div>
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-3">AI Analysis Summary</h4>
+                          <p className="text-gray-600 text-sm">
+                            {selectedCompany.name} shows strong financial performance with positive market sentiment. 
+                            The company's growth trajectory indicates solid fundamentals and market position. 
+                            Key strengths include market leadership and innovation capabilities.
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-3">Recent Metrics</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Sentiment Score</span>
+                              <span className="font-medium">{(selectedCompany.sentiment * 100).toFixed(0)}%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Industry Ranking</span>
+                              <span className="font-medium">Top 5%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Risk Level</span>
+                              <span className="font-medium text-green-600">Low</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          };
+
+          const renderCurrentPage = () => {
+            switch (currentPage) {
+              case 'landing':
+                return <LandingPage />;
+              case 'pricing':
+                return <PricingPage />;
+              case 'dashboard':
+                return <Dashboard />;
+              default:
+                return <LandingPage />;
+            }
+          };
+
+          return (
+            <div className="font-sans">
+              {renderCurrentPage()}
+            </div>
+          );
+        };
+
+        ReactDOM.render(<IndustryIntelligencePlatform />, document.getElementById('root'));
+    </script>
+</body>
+</html>
