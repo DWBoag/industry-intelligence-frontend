@@ -3,731 +3,574 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IndustryIQ - AI-Powered Industry Intelligence</title>
+    <title>IndustryIQ - Enterprise Intelligence Platform</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        .matrix-bg {
+            background: linear-gradient(45deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+            background-size: 400% 400%;
+            animation: matrix-gradient 15s ease infinite;
+        }
+        @keyframes matrix-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glow-border {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        .data-stream {
+            animation: data-flow 3s linear infinite;
+        }
+        @keyframes data-flow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .pulse-ring {
+            animation: pulse-ring 2s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .security-grid {
+            background-image: radial-gradient(circle at 2px 2px, rgba(59, 130, 246, 0.2) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
+        const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, ScatterChart, Scatter, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, TreeMap, ComposedChart } = Recharts;
 
-        const IndustryIntelligencePlatform = () => {
+        const API_BASE_URL = 'https://industry-intelligence-backend-production.up.railway.app';
+
+        const VaticanIntelligencePlatform = () => {
             const [currentPage, setCurrentPage] = useState('landing');
             const [user, setUser] = useState(null);
-            const [searchQuery, setSearchQuery] = useState('');
-
-            const API_BASE_URL = 'https://industry-intelligence-backend-production.up.railway.app/api';
-            const STRIPE_PUBLISHABLE_KEY = 'pk_test_your_publishable_key_here';
-
-            const pricingPlans = [
-                {
-                    id: 'free',
-                    name: 'Free Tier',
-                    price: 0,
-                    period: 'month',
-                    stripePriceId: null,
-                    features: [
-                        'Basic company profiles',
-                        'SEC filing data',
-                        'Public financial metrics',
-                        'Basic industry trends',
-                        '10 searches per day',
-                        'Community support'
-                    ]
-                },
-                {
-                    id: 'professional',
-                    name: 'Professional',
-                    price: 169,
-                    period: 'month',
-                    stripePriceId: 'price_professional_monthly',
-                    popular: true,
-                    features: [
-                        'Everything in Free',
-                        'Premium data sources',
-                        'Advanced analytics',
-                        'Competitive intelligence',
-                        'Industry benchmarking',
-                        'Real-time alerts',
-                        'API access',
-                        'Priority support'
-                    ]
-                },
-                {
-                    id: 'enterprise',
-                    name: 'Enterprise',
-                    price: 845,
-                    period: 'month',
-                    stripePriceId: 'price_enterprise_monthly',
-                    features: [
-                        'Everything in Professional',
-                        'Custom data integrations',
-                        'White-label solution',
-                        'Advanced ML models',
-                        'Dedicated account manager',
-                        'Custom reporting',
-                        'SLA guarantee',
-                        'On-premise deployment'
-                    ]
-                }
-            ];
+            const [securityLevel, setSecurityLevel] = useState('CLASSIFIED');
 
             const handleSubscription = async (planId, priceId) => {
                 if (planId === 'free') {
-                    setUser({ plan: 'free', email: 'demo@example.com' });
-                    setCurrentPage('dashboard');
+                    setUser({ plan: 'free', email: 'analyst@enterprise.com', clearanceLevel: 'RESTRICTED' });
+                    setCurrentPage('command-center');
                     return;
                 }
-
-                try {
-                    const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            priceId: priceId,
-                            planId: planId,
-                        }),
-                    });
-
-                    if (response.ok) {
-                        const { sessionId } = await response.json();
-                        alert(`Payment processing for ${planId} plan... Redirecting to Stripe checkout...`);
-                    } else {
-                        alert(`Payment processing for ${planId} plan... (Demo mode)`);
-                    }
-                    
-                    setUser({ plan: planId, email: 'demo@example.com' });
-                    setCurrentPage('dashboard');
-                    
-                } catch (error) {
-                    console.error('Payment error:', error);
-                    alert(`Payment processing for ${planId} plan... (Demo mode)`);
-                    setUser({ plan: planId, email: 'demo@example.com' });
-                    setCurrentPage('dashboard');
-                }
+                setUser({ plan: planId, email: 'director@enterprise.com', clearanceLevel: 'TOP SECRET' });
+                setCurrentPage('command-center');
             };
 
-            const LandingPage = () => {
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
-                        <nav className="bg-black/20 backdrop-blur-sm border-b border-white/10">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="flex justify-between items-center h-16">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="h-8 w-8 bg-cyan-400 rounded"></div>
-                                        <span className="font-bold text-xl text-white">IndustryIQ</span>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <button 
-                                            onClick={() => setCurrentPage('pricing')}
-                                            className="text-white/80 hover:text-white transition-colors"
-                                        >
-                                            Pricing
-                                        </button>
-                                        <button 
-                                            onClick={() => handleSubscription('free', null)}
-                                            className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-                                        >
-                                            Get Started Free
-                                        </button>
-                                    </div>
+            const LandingPage = () => (
+                <div className="min-h-screen matrix-bg">
+                    <nav className="bg-black/40 backdrop-blur-md border-b border-blue-500/30">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between items-center h-16">
+                                <div className="flex items-center space-x-3">
+                                    <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg shadow-lg glow-border"></div>
+                                    <span className="font-bold text-2xl bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">IndustryIQ</span>
+                                    <span className="text-xs bg-red-600 text-white px-2 py-1 rounded font-mono">CLASSIFIED</span>
                                 </div>
-                            </div>
-                        </nav>
-
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-                            <div className="text-center">
-                                <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-                                    AI-Powered
-                                    <span className="block bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                                        Industry Intelligence
-                                    </span>
-                                </h1>
-                                <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
-                                    Analyze every industry, every company, every metric. Get competitive intelligence that drives decisions with our comprehensive database powered by advanced AI.
-                                </p>
-                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <div className="flex items-center space-x-4">
                                     <button 
                                         onClick={() => setCurrentPage('pricing')}
-                                        className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
+                                        className="text-blue-300 hover:text-white transition-colors font-mono"
                                     >
-                                        Start Free Trial
+                                        ACCESS LEVELS
                                     </button>
                                     <button 
                                         onClick={() => handleSubscription('free', null)}
-                                        className="border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+                                        className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-mono transition-all glow-border"
                                     >
-                                        View Demo
+                                        REQUEST ACCESS
                                     </button>
                                 </div>
                             </div>
                         </div>
+                    </nav>
 
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                            <div className="grid md:grid-cols-3 gap-8">
-                                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-                                    <div className="h-12 w-12 bg-cyan-400 rounded-lg mb-4"></div>
-                                    <h3 className="text-xl font-bold text-white mb-4">Universal Coverage</h3>
-                                    <p className="text-white/70">Access data from every industry and market segment worldwide with real-time updates.</p>
-                                </div>
-                                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-                                    <div className="h-12 w-12 bg-purple-400 rounded-lg mb-4"></div>
-                                    <h3 className="text-xl font-bold text-white mb-4">AI-Powered Analysis</h3>
-                                    <p className="text-white/70">Advanced machine learning models provide insights that traditional tools miss.</p>
-                                </div>
-                                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-                                    <div className="h-12 w-12 bg-green-400 rounded-lg mb-4"></div>
-                                    <h3 className="text-xl font-bold text-white mb-4">Enterprise Security</h3>
-                                    <p className="text-white/70">Bank-level security with compliance certifications for enterprise peace of mind.</p>
-                                </div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+                        <div className="text-center">
+                            <div className="mb-8">
+                                <span className="text-red-500 font-mono text-sm bg-red-500/10 px-3 py-1 rounded-full border border-red-500/30">
+                                    VATICAN-LEVEL INTELLIGENCE
+                                </span>
                             </div>
-                        </div>
-
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                            <div className="text-center mb-16">
-                                <h2 className="text-4xl font-bold text-white mb-4">Comprehensive Data Sources</h2>
-                                <p className="text-xl text-white/70">From free public data to premium institutional sources</p>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-12">
-                                <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 rounded-2xl p-8 border border-green-500/20">
-                                    <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-                                        <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm mr-3">FREE</span>
-                                        Public Data Sources
-                                    </h3>
-                                    <ul className="space-y-3 text-white/80">
-                                        <li>• SEC EDGAR Database</li>
-                                        <li>• Federal Economic Data</li>
-                                        <li>• Census Bureau Reports</li>
-                                        <li>• Yahoo Finance API</li>
-                                        <li>• Industry Trade Data</li>
-                                    </ul>
-                                </div>
-                                <div className="bg-gradient-to-br from-purple-500/10 to-indigo-600/10 rounded-2xl p-8 border border-purple-500/20">
-                                    <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-                                        <span className="bg-purple-500 text-white px-3 py-1 rounded-full text-sm mr-3">PREMIUM</span>
-                                        Institutional Sources
-                                    </h3>
-                                    <ul className="space-y-3 text-white/80">
-                                        <li>• Bloomberg Terminal Data</li>
-                                        <li>• S&P Capital IQ</li>
-                                        <li>• IBISWorld Reports</li>
-                                        <li>• Refinitiv Data</li>
-                                        <li>• Private Market Intelligence</li>
-                                    </ul>
-                                </div>
+                            <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 font-mono tracking-tight">
+                                ENTERPRISE
+                                <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                    COMMAND CENTER
+                                </span>
+                            </h1>
+                            <p className="text-xl text-blue-200 mb-12 max-w-4xl mx-auto font-mono leading-relaxed">
+                                Institutional-grade intelligence platform. Real-time global market surveillance. 
+                                Predictive analytics. Threat assessment. Multi-dimensional risk analysis.
+                                <span className="block mt-2 text-cyan-300">AUTHORIZED PERSONNEL ONLY</span>
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                                <button 
+                                    onClick={() => setCurrentPage('pricing')}
+                                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-10 py-4 rounded-xl font-mono font-bold text-lg transition-all transform hover:scale-105 glow-border"
+                                >
+                                    REQUEST CLEARANCE
+                                </button>
+                                <button 
+                                    onClick={() => handleSubscription('free', null)}
+                                    className="border-2 border-cyan-400 text-cyan-300 hover:bg-cyan-400 hover:text-black px-10 py-4 rounded-xl font-mono font-bold text-lg transition-all"
+                                >
+                                    DEMO ACCESS
+                                </button>
                             </div>
                         </div>
                     </div>
-                );
-            };
 
-            const PricingPage = () => {
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900">
-                        <nav className="bg-black/20 backdrop-blur-sm border-b border-white/10">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="flex justify-between items-center h-16">
-                                    <button 
-                                        onClick={() => setCurrentPage('landing')}
-                                        className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-                                    >
-                                        <div className="h-8 w-8 bg-cyan-400 rounded"></div>
-                                        <span className="font-bold text-xl text-white">IndustryIQ</span>
-                                    </button>
-                                    <button 
-                                        onClick={() => setCurrentPage('landing')}
-                                        className="text-white/80 hover:text-white transition-colors"
-                                    >
-                                        ← Back
-                                    </button>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                        <div className="grid md:grid-cols-4 gap-8">
+                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-blue-500/30 glow-border">
+                                <div className="h-16 w-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg mb-6 flex items-center justify-center">
+                                    <span className="text-2xl">🎯</span>
                                 </div>
+                                <h3 className="text-xl font-bold text-white mb-4 font-mono">THREAT ANALYSIS</h3>
+                                <p className="text-blue-200 font-mono text-sm leading-relaxed">Real-time competitive intelligence, market disruption detection, geopolitical risk assessment.</p>
                             </div>
-                        </nav>
-
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                            <div className="text-center mb-16">
-                                <h1 className="text-5xl font-bold text-white mb-6">Choose Your Plan</h1>
-                                <p className="text-xl text-white/70">Start free, scale as you grow</p>
+                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-purple-500/30 glow-border">
+                                <div className="h-16 w-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg mb-6 flex items-center justify-center">
+                                    <span className="text-2xl">🧠</span>
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-4 font-mono">PREDICTIVE AI</h3>
+                                <p className="text-blue-200 font-mono text-sm leading-relaxed">Advanced machine learning models, market forecasting, behavioral pattern analysis.</p>
                             </div>
+                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-green-500/30 glow-border">
+                                <div className="h-16 w-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg mb-6 flex items-center justify-center">
+                                    <span className="text-2xl">🛡️</span>
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-4 font-mono">SECURE INTEL</h3>
+                                <p className="text-blue-200 font-mono text-sm leading-relaxed">End-to-end encryption, classified data handling, compartmentalized access control.</p>
+                            </div>
+                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-cyan-500/30 glow-border">
+                                <div className="h-16 w-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg mb-6 flex items-center justify-center">
+                                    <span className="text-2xl">⚡</span>
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-4 font-mono">REAL-TIME OPS</h3>
+                                <p className="text-blue-200 font-mono text-sm leading-relaxed">Live data streams, instant alerts, global market surveillance, crisis response protocols.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
 
-                            <div className="grid lg:grid-cols-3 gap-8">
-                                {pricingPlans.map((plan) => (
-                                    <div key={plan.id} className={`relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border ${plan.popular ? 'border-cyan-500 scale-105' : 'border-white/10'}`}>
-                                        {plan.popular && (
-                                            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                                <span className="bg-cyan-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                                                    Most Popular
-                                                </span>
-                                            </div>
-                                        )}
-                                        
-                                        <div className="text-center mb-8">
-                                            <h3 className="text-2xl font-bold text-white mb-4">{plan.name}</h3>
-                                            <div className="flex items-center justify-center mb-4">
-                                                <span className="text-5xl font-bold text-white">${plan.price}</span>
-                                                <span className="text-white/60 ml-2">/{plan.period}</span>
-                                            </div>
-                                        </div>
+            const PricingPage = () => (
+                <div className="min-h-screen matrix-bg">
+                    <nav className="bg-black/40 backdrop-blur-md border-b border-blue-500/30">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between items-center h-16">
+                                <div className="flex items-center space-x-3">
+                                    <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg glow-border"></div>
+                                    <span className="font-bold text-2xl bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">IndustryIQ</span>
+                                </div>
+                                <button 
+                                    onClick={() => setCurrentPage('landing')}
+                                    className="text-blue-300 hover:text-white transition-colors font-mono"
+                                >
+                                    ← RETURN
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
 
-                                        <ul className="space-y-4 mb-8">
-                                            {plan.features.map((feature, index) => (
-                                                <li key={index} className="flex items-center text-white/80">
-                                                    <div className="h-5 w-5 bg-green-400 rounded mr-3 flex-shrink-0 flex items-center justify-center">
-                                                        <span className="text-white text-xs">✓</span>
-                                                    </div>
-                                                    {feature}
-                                                </li>
-                                            ))}
-                                        </ul>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                        <div className="text-center mb-16">
+                            <h1 className="text-5xl font-bold text-white mb-6 font-mono">CLEARANCE LEVELS</h1>
+                            <p className="text-xl text-blue-200 font-mono">Choose your security clearance and access tier</p>
+                        </div>
 
-                                        <button
-                                            onClick={() => handleSubscription(plan.id, plan.stripePriceId)}
-                                            className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
-                                                plan.popular 
-                                                    ? 'bg-cyan-500 hover:bg-cyan-600 text-white' 
-                                                    : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
-                                            }`}
-                                        >
-                                            {plan.price === 0 ? 'Get Started Free' : 'Start Free Trial'}
-                                        </button>
+                        <div className="grid lg:grid-cols-3 gap-8">
+                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-yellow-500/50">
+                                <div className="text-center mb-8">
+                                    <div className="bg-yellow-600 text-black px-4 py-2 rounded-lg font-mono font-bold mb-4">RESTRICTED</div>
+                                    <h3 className="text-2xl font-bold text-white mb-4 font-mono">ANALYST ACCESS</h3>
+                                    <div className="flex items-center justify-center mb-4">
+                                        <span className="text-5xl font-bold text-white font-mono">$0</span>
+                                        <span className="text-blue-300 ml-2 font-mono">/month</span>
                                     </div>
-                                ))}
+                                </div>
+                                <ul className="space-y-4 mb-8 text-blue-200 font-mono text-sm">
+                                    <li>• Basic threat monitoring</li>
+                                    <li>• 2 industry sectors</li>
+                                    <li>• Standard visualizations</li>
+                                    <li>• 50 queries/day</li>
+                                    <li>• Email intelligence reports</li>
+                                </ul>
+                                <button
+                                    onClick={() => handleSubscription('free', null)}
+                                    className="w-full py-4 rounded-xl font-mono font-bold text-lg bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-300 border border-yellow-500/50 transition-all"
+                                >
+                                    REQUEST ACCESS
+                                </button>
+                            </div>
+
+                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border-2 border-red-500/70 scale-105 relative">
+                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                    <span className="bg-red-600 text-white px-6 py-2 rounded-full font-mono font-bold text-sm">CLASSIFIED</span>
+                                </div>
+                                <div className="text-center mb-8">
+                                    <div className="bg-red-600 text-white px-4 py-2 rounded-lg font-mono font-bold mb-4">SECRET</div>
+                                    <h3 className="text-2xl font-bold text-white mb-4 font-mono">DIRECTOR ACCESS</h3>
+                                    <div className="flex items-center justify-center mb-4">
+                                        <span className="text-5xl font-bold text-white font-mono">$899</span>
+                                        <span className="text-blue-300 ml-2 font-mono">/month</span>
+                                    </div>
+                                </div>
+                                <ul className="space-y-4 mb-8 text-blue-200 font-mono text-sm">
+                                    <li>• Full threat intelligence suite</li>
+                                    <li>• All 12 industry sectors</li>
+                                    <li>• Predictive analytics AI</li>
+                                    <li>• Unlimited queries</li>
+                                    <li>• Real-time threat alerts</li>
+                                    <li>• Executive dashboards</li>
+                                    <li>• API access</li>
+                                </ul>
+                                <button
+                                    onClick={() => handleSubscription('professional', 'price_professional')}
+                                    className="w-full py-4 rounded-xl font-mono font-bold text-lg bg-red-600 hover:bg-red-700 text-white transition-all glow-border"
+                                >
+                                    REQUEST CLEARANCE
+                                </button>
+                            </div>
+
+                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-purple-500/50">
+                                <div className="text-center mb-8">
+                                    <div className="bg-purple-600 text-white px-4 py-2 rounded-lg font-mono font-bold mb-4">TOP SECRET</div>
+                                    <h3 className="text-2xl font-bold text-white mb-4 font-mono">COMMAND ACCESS</h3>
+                                    <div className="flex items-center justify-center mb-4">
+                                        <span className="text-5xl font-bold text-white font-mono">$2,999</span>
+                                        <span className="text-blue-300 ml-2 font-mono">/month</span>
+                                    </div>
+                                </div>
+                                <ul className="space-y-4 mb-8 text-blue-200 font-mono text-sm">
+                                    <li>• Vatican-level intelligence</li>
+                                    <li>• Global surveillance network</li>
+                                    <li>• Custom AI models</li>
+                                    <li>• Dedicated analysts</li>
+                                    <li>• Crisis response team</li>
+                                    <li>• White-label deployment</li>
+                                    <li>• 24/7 secured operations</li>
+                                </ul>
+                                <button
+                                    onClick={() => handleSubscription('enterprise', 'price_enterprise')}
+                                    className="w-full py-4 rounded-xl font-mono font-bold text-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/50 transition-all"
+                                >
+                                    CONTACT COMMAND
+                                </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            );
+
+            const SecurityHeader = ({ user, currentTime }) => (
+                <div className="bg-black/80 backdrop-blur-md border-b border-red-500/30 px-6 py-3">
+                    <div className="flex justify-between items-center text-sm font-mono">
+                        <div className="flex items-center space-x-6">
+                            <span className="text-red-400">CLASSIFICATION: {user?.clearanceLevel || 'UNCLASSIFIED'}</span>
+                            <span className="text-blue-400">USER ID: {user?.email?.split('@')[0]?.toUpperCase()}</span>
+                            <span className="text-green-400">STATUS: ACTIVE</span>
+                        </div>
+                        <div className="flex items-center space-x-6">
+                            <span className="text-cyan-400">SESSION: {currentTime}</span>
+                            <div className="flex items-center space-x-2">
+                                <div className="h-2 w-2 bg-green-400 rounded-full pulse-ring"></div>
+                                <span className="text-green-400">SECURE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const ThreatIntelligencePanel = ({ companies }) => {
+                const threatData = companies.slice(0, 8).map(company => ({
+                    company: company.name?.slice(0, 10) || 'UNKNOWN',
+                    riskLevel: Math.floor(Math.random() * 100),
+                    threatScore: Math.floor(Math.random() * 10),
+                    volatility: Math.random() * 50,
+                    marketCap: (company.market_cap || 1000000000) / 1000000000
+                }));
+
+                return (
+                    <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-red-500/30">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-bold text-red-400 font-mono">THREAT ASSESSMENT</h3>
+                            <div className="flex items-center space-x-2">
+                                <div className="h-2 w-2 bg-red-400 rounded-full animate-pulse"></div>
+                                <span className="text-red-400 font-mono text-sm">LIVE MONITORING</span>
+                            </div>
+                        </div>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <ComposedChart data={threatData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(59, 130, 246, 0.2)" />
+                                <XAxis dataKey="company" tick={{ fontSize: 12, fill: '#93c5fd' }} />
+                                <YAxis yAxisId="left" tick={{ fontSize: 12, fill: '#93c5fd' }} />
+                                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: '#f87171' }} />
+                                <Tooltip 
+                                    contentStyle={{ 
+                                        backgroundColor: 'rgba(0,0,0,0.9)', 
+                                        border: '1px solid #ef4444',
+                                        color: '#fff',
+                                        fontFamily: 'monospace'
+                                    }} 
+                                />
+                                <Bar yAxisId="left" dataKey="riskLevel" fill="#ef4444" name="Risk Level" />
+                                <Line yAxisId="right" type="monotone" dataKey="threatScore" stroke="#fbbf24" strokeWidth={3} name="Threat Score" />
+                            </ComposedChart>
+                        </ResponsiveContainer>
                     </div>
                 );
             };
 
-            const Dashboard = () => {
-                const [activeTab, setActiveTab] = useState('overview');
-                const [selectedCompany, setSelectedCompany] = useState(null);
-                const [companies, setCompanies] = useState([]);
-                const [loading, setLoading] = useState(true);
+            const PredictiveAnalyticsPanel = ({ companies }) => {
+                const forecastData = Array.from({ length: 12 }, (_, i) => ({
+                    month: `M${i + 1}`,
+                    actual: Math.random() * 100 + 50,
+                    predicted: Math.random() * 100 + 60,
+                    confidence: Math.random() * 30 + 70,
+                    scenario1: Math.random() * 100 + 40,
+                    scenario2: Math.random() * 100 + 80,
+                    scenario3: Math.random() * 100 + 30
+                }));
 
-                useEffect(() => {
-                    const fetchCompanies = async () => {
-                        try {
-                            const response = await fetch(`${API_BASE_URL}/companies`);
-                            const data = await response.json();
-                            setCompanies(data);
-                            setLoading(false);
-                        } catch (error) {
-                            console.error('Error fetching companies:', error);
-                            setLoading(false);
-                        }
-                    };
-                    
-                    fetchCompanies();
-                }, []);
+                return (
+                    <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-purple-500/30">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-bold text-purple-400 font-mono">PREDICTIVE MODELS</h3>
+                            <div className="text-purple-400 font-mono text-sm">CONFIDENCE: 94.7%</div>
+                        </div>
+                        <ResponsiveContainer width="100%" height={350}>
+                            <LineChart data={forecastData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(168, 85, 247, 0.2)" />
+                                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#c4b5fd' }} />
+                                <YAxis tick={{ fontSize: 12, fill: '#c4b5fd' }} />
+                                <Tooltip 
+                                    contentStyle={{ 
+                                        backgroundColor: 'rgba(0,0,0,0.9)', 
+                                        border: '1px solid #a855f7',
+                                        color: '#fff',
+                                        fontFamily: 'monospace'
+                                    }} 
+                                />
+                                <Line type="monotone" dataKey="actual" stroke="#06b6d4" strokeWidth={2} name="Historical" />
+                                <Line type="monotone" dataKey="predicted" stroke="#a855f7" strokeWidth={3} name="Prediction" />
+                                <Line type="monotone" dataKey="scenario1" stroke="#f59e0b" strokeWidth={1} strokeDasharray="5 5" name="Best Case" />
+                                <Line type="monotone" dataKey="scenario2" stroke="#10b981" strokeWidth={1} strokeDasharray="5 5" name="Expected" />
+                                <Line type="monotone" dataKey="scenario3" stroke="#ef4444" strokeWidth={1} strokeDasharray="5 5" name="Worst Case" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                );
+            };
 
-                const handleSearch = async (query) => {
-                    if (!query) {
-                        const response = await fetch(`${API_BASE_URL}/companies`);
-                        const data = await response.json();
-                        setCompanies(data);
-                    } else {
-                        const response = await fetch(`${API_BASE_URL}/companies?search=${encodeURIComponent(query)}`);
-                        const data = await response.json();
-                        setCompanies(data);
-                    }
-                };
-
-                const industryData = [
-                    { name: 'Technology', companies: 1250, growth: 18.5, avgValuation: 2.1 },
-                    { name: 'Healthcare', companies: 890, growth: 12.3, avgValuation: 1.8 },
-                    { name: 'Financial Services', companies: 1100, growth: 8.7, avgValuation: 1.5 },
-                    { name: 'Energy', companies: 650, growth: 15.2, avgValuation: 1.2 },
-                    { name: 'Consumer Goods', companies: 980, growth: 7.9, avgValuation: 1.4 }
+            const GeopoliticalRiskMap = () => {
+                const riskData = [
+                    { region: 'AMERICAS', risk: 25, incidents: 12, stability: 'STABLE' },
+                    { region: 'EUROPE', risk: 45, incidents: 8, stability: 'MODERATE' },
+                    { region: 'ASIA-PAC', risk: 65, incidents: 23, stability: 'VOLATILE' },
+                    { region: 'MIDDLE EAST', risk: 85, incidents: 31, stability: 'HIGH RISK' },
+                    { region: 'AFRICA', risk: 70, incidents: 19, stability: 'UNSTABLE' }
                 ];
 
                 return (
-                    <div className="min-h-screen bg-gray-50">
-                        <nav className="bg-white shadow-sm border-b">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="flex justify-between items-center h-16">
-                                    <button 
-                                        onClick={() => setCurrentPage('landing')}
-                                        className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-                                    >
-                                        <div className="h-8 w-8 bg-blue-600 rounded"></div>
-                                        <span className="font-bold text-xl text-gray-900">IndustryIQ</span>
-                                    </button>
-                                    <div className="flex items-center space-x-6">
-                                        <button
-                                            onClick={() => setCurrentPage('landing')}
-                                            className="text-gray-600 hover:text-gray-900 font-medium"
-                                        >
-                                            Home
-                                        </button>
-                                        <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
-                                            {user?.plan?.toUpperCase()} PLAN
+                    <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-orange-500/30">
+                        <h3 className="text-xl font-bold text-orange-400 font-mono mb-6">GEOPOLITICAL RISK MATRIX</h3>
+                        <div className="space-y-4">
+                            {riskData.map(region => (
+                                <div key={region.region} className="flex items-center justify-between p-4 bg-black/20 rounded-lg border border-orange-500/20">
+                                    <div className="flex-1">
+                                        <div className="font-mono text-white font-bold">{region.region}</div>
+                                        <div className="font-mono text-sm text-orange-200">{region.incidents} active incidents</div>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-32 bg-black/40 rounded-full h-2">
+                                            <div 
+                                                className={`h-2 rounded-full transition-all duration-1000 ${
+                                                    region.risk > 70 ? 'bg-red-500' : 
+                                                    region.risk > 40 ? 'bg-yellow-500' : 'bg-green-500'
+                                                }`}
+                                                style={{ width: `${region.risk}%` }}
+                                            />
+                                        </div>
+                                        <span className={`font-mono text-sm font-bold ${
+                                            region.risk > 70 ? 'text-red-400' : 
+                                            region.risk > 40 ? 'text-yellow-400' : 'text-green-400'
+                                        }`}>
+                                            {region.stability}
                                         </span>
-                                        <button
-                                            onClick={() => {setUser(null); setCurrentPage('landing');}}
-                                            className="text-gray-600 hover:text-gray-900"
-                                        >
-                                            Logout
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        </nav>
+                            ))}
+                        </div>
+                    </div>
+                );
+            };
 
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                            <div className="mb-8">
-                                <div className="relative max-w-xl">
-                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5">🔍</div>
-                                    <input
-                                        type="text"
-                                        placeholder="Search companies, industries, or metrics..."
-                                        value={searchQuery}
-                                        onChange={(e) => {
-                                            setSearchQuery(e.target.value);
-                                            if (e.target.value) {
-                                                handleSearch(e.target.value);
-                                            } else {
-                                                handleSearch('');
-                                            }
-                                        }}
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
+            const CommandCenter = () => {
+                const [activePanel, setActivePanel] = useState('intelligence');
+                const [companies, setCompanies] = useState([]);
+                const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+                const [alertCount, setAlertCount] = useState(7);
+
+                useEffect(() => {
+                    const timer = setInterval(() => {
+                        setCurrentTime(new Date().toLocaleTimeString());
+                    }, 1000);
+                    return () => clearInterval(timer);
+                }, []);
+
+                useEffect(() => {
+                    const fetchData = async () => {
+                        try {
+                            const response = await fetch(`${API_BASE_URL}/api/companies`);
+                            const data = await response.json();
+                            setCompanies(Array.isArray(data) ? data : []);
+                        } catch (error) {
+                            setCompanies([
+                                { id: 1, name: 'Apple Inc.', market_cap: 2800000000000, industry_code: 'TECH' },
+                                { id: 2, name: 'Microsoft Corp.', market_cap: 2400000000000, industry_code: 'TECH' },
+                                { id: 3, name: 'Amazon.com Inc.', market_cap: 1500000000000, industry_code: 'ECOM' }
+                            ]);
+                        }
+                    };
+                    fetchData();
+                }, []);
+
+                const panels = [
+                    { id: 'intelligence', name: 'INTELLIGENCE', icon: '🎯' },
+                    { id: 'predictive', name: 'PREDICTIVE', icon: '🧠' },
+                    { id: 'surveillance', name: 'SURVEILLANCE', icon: '👁️' },
+                    { id: 'geopolitical', name: 'GEOPOLITICAL', icon: '🌍' },
+                    { id: 'operations', name: 'OPERATIONS', icon: '⚡' }
+                ];
+
+                return (
+                    <div className="min-h-screen matrix-bg">
+                        <SecurityHeader user={user} currentTime={currentTime} />
+                        
+                        <div className="flex">
+                            <div className="w-72 bg-black/60 backdrop-blur-md border-r border-blue-500/30 h-screen fixed left-0 top-16">
+                                <div className="p-6 border-b border-blue-500/30">
+                                    <div className="flex items-center space-x-3 mb-4">
+                                        <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg glow-border"></div>
+                                        <div>
+                                            <div className="font-bold text-lg text-white font-mono">COMMAND</div>
+                                            <div className="text-cyan-400 text-xs font-mono">CENTER</div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-red-600/20 border border-red-500/30 rounded-lg p-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-red-400 font-mono text-sm">ACTIVE ALERTS</span>
+                                            <span className="bg-red-500 text-white px-2 py-1 rounded font-mono text-xs">{alertCount}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="border-b border-gray-200 mb-8">
-                                <nav className="flex space-x-8">
-                                    {[
-                                        { id: 'overview', name: 'Overview' },
-                                        { id: 'companies', name: 'Companies' },
-                                        { id: 'industries', name: 'Industries' },
-                                        { id: 'analytics', name: 'Analytics' }
-                                    ].map((tab) => (
+                                <nav className="p-6">
+                                    {panels.map((panel) => (
                                         <button
-                                            key={tab.id}
-                                            onClick={() => setActiveTab(tab.id)}
-                                            className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                                                activeTab === tab.id
-                                                    ? 'border-blue-500 text-blue-600'
-                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                            key={panel.id}
+                                            onClick={() => setActivePanel(panel.id)}
+                                            className={`w-full text-left p-4 mb-2 rounded-lg hover:bg-blue-500/10 flex items-center space-x-3 transition-all font-mono ${
+                                                activePanel === panel.id ? 'bg-blue-600/20 text-blue-400 border border-blue-500/50' : 'text-blue-200'
                                             }`}
                                         >
-                                            <span>{tab.name}</span>
+                                            <span className="text-lg">{panel.icon}</span>
+                                            <span className="font-bold">{panel.name}</span>
                                         </button>
                                     ))}
                                 </nav>
+
+                                <div className="absolute bottom-6 left-6 right-6">
+                                    <div className="bg-black/40 rounded-lg p-4 border border-green-500/30">
+                                        <div className="text-green-400 font-mono text-sm mb-2">SYSTEM STATUS</div>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between">
+                                                <span className="text-green-300 font-mono text-xs">SECURITY</span>
+                                                <span className="text-green-400 font-mono text-xs">OPTIMAL</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-green-300 font-mono text-xs">DATA FEED</span>
+                                                <span className="text-green-400 font-mono text-xs">LIVE</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            {activeTab === 'overview' && (
-                                <div className="grid lg:grid-cols-3 gap-8">
-                                    <div className="lg:col-span-2 space-y-6">
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                            <div className="bg-white rounded-lg p-6 shadow-sm border">
-                                                <div className="text-2xl font-bold text-gray-900">12,450</div>
-                                                <div className="text-sm text-gray-600">Companies Tracked</div>
-                                            </div>
-                                            <div className="bg-white rounded-lg p-6 shadow-sm border">
-                                                <div className="text-2xl font-bold text-gray-900">847</div>
-                                                <div className="text-sm text-gray-600">Industries</div>
-                                            </div>
-                                            <div className="bg-white rounded-lg p-6 shadow-sm border">
-                                                <div className="text-2xl font-bold text-green-600">+15.3%</div>
-                                                <div className="text-sm text-gray-600">Avg Growth</div>
-                                            </div>
-                                            <div className="bg-white rounded-lg p-6 shadow-sm border">
-                                                <div className="text-2xl font-bold text-blue-600">98.9%</div>
-                                                <div className="text-sm text-gray-600">Data Accuracy</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-white rounded-lg shadow-sm border">
-                                            <div className="p-6 border-b">
-                                                <h3 className="text-lg font-semibold text-gray-900">Top Performing Companies</h3>
-                                            </div>
-                                            <div className="divide-y">
-                                                {loading ? (
-                                                    <div className="p-6 text-center text-gray-500">Loading companies...</div>
-                                                ) : companies.length === 0 ? (
-                                                    <div className="p-6 text-center text-gray-500">No companies found</div>
-                                                ) : (
-                                                    companies.slice(0, 5).map((company) => (
-                                                        <div key={company.id} className="p-6 hover:bg-gray-50 cursor-pointer"
-                                                             onClick={() => setSelectedCompany(company)}>
-                                                            <div className="flex justify-between items-center">
-                                                                <div>
-                                                                    <div className="font-medium text-gray-900">{company.name}</div>
-                                                                    <div className="text-sm text-gray-600">{company.ticker_symbol} • {company.industry_code}</div>
-                                                                </div>
-                                                                <div className="text-right">
-                                                                    <div className="font-medium text-gray-900">
-                                                                        ${company.market_cap ? (company.market_cap / 1000000000).toFixed(1) : 'N/A'}B
-                                                                    </div>
-                                                                    <div className="text-sm text-green-600">
-                                                                        +{company.revenue_growth || 'N/A'}%
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <div className="bg-white rounded-lg shadow-sm border">
-                                            <div className="p-6 border-b">
-                                                <h3 className="text-lg font-semibold text-gray-900">Industry Snapshot</h3>
-                                            </div>
-                                            <div className="p-6 space-y-4">
-                                                {industryData.map((industry, index) => (
-                                                    <div key={index} className="flex justify-between items-center">
-                                                        <div>
-                                                            <div className="font-medium text-gray-900">{industry.name}</div>
-                                                            <div className="text-sm text-gray-600">{industry.companies} companies</div>
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <div className="text-sm font-medium text-green-600">+{industry.growth}%</div>
-                                                            <div className="text-sm text-gray-600">${industry.avgValuation}B avg</div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                                            <h4 className="font-semibold text-blue-900 mb-2">AI Insights</h4>
-                                            <p className="text-sm text-blue-800">
-                                                Technology sector showing strong momentum with 18.5% growth. 
-                                                Consider monitoring emerging AI and cloud infrastructure companies.
-                                            </p>
-                                        </div>
-                                    </div>
+                            <div className="ml-72 flex-1 p-8">
+                                <div className="mb-8">
+                                    <h1 className="text-4xl font-bold text-white font-mono mb-2">
+                                        {panels.find(p => p.id === activePanel)?.name} OPERATIONS
+                                    </h1>
+                                    <div className="text-blue-300 font-mono">Classification: {user?.clearanceLevel} • Real-time Analysis</div>
                                 </div>
-                            )}
 
-                            {activeTab === 'companies' && (
-                                <div className="bg-white rounded-lg shadow-sm border">
-                                    <div className="p-6 border-b">
-                                        <h3 className="text-lg font-semibold text-gray-900">Company Database</h3>
-                                    </div>
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full">
-                                            <thead className="bg-gray-50">
-                                                <tr>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Industry</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Market Cap</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Growth</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-gray-200">
-                                                {loading ? (
-                                                    <tr>
-                                                        <td colSpan="5" className="px-6 py-4 text-center text-gray-500">Loading companies...</td>
-                                                    </tr>
-                                                ) : companies.length === 0 ? (
-                                                    <tr>
-                                                        <td colSpan="5" className="px-6 py-4 text-center text-gray-500">No companies found</td>
-                                                    </tr>
-                                                ) : (
-                                                    companies.map((company) => (
-                                                        <tr key={company.id} className="hover:bg-gray-50">
-                                                            <td className="px-6 py-4">
-                                                                <div>
-                                                                    <div className="font-medium text-gray-900">{company.name}</div>
-                                                                    <div className="text-sm text-gray-600">{company.ticker_symbol}</div>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-6 py-4 text-sm text-gray-900">{company.industry_code}</td>
-                                                            <td className="px-6 py-4 text-sm text-gray-900">
-                                                                ${company.market_cap ? (company.market_cap / 1000000000).toFixed(1) : 'N/A'}B
-                                                            </td>
-                                                            <td className="px-6 py-4">
-                                                                <span className="text-sm font-medium text-green-600">
-                                                                    +{company.revenue_growth || 'N/A'}%
-                                                                </span>
-                                                            </td>
-                                                            <td className="px-6 py-4">
-                                                                <button 
-                                                                    onClick={() => setSelectedCompany(company)}
-                                                                    className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-                                                                >
-                                                                    Analyze
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeTab === 'industries' && (
-                                <div className="grid lg:grid-cols-2 gap-8">
-                                    <div className="bg-white rounded-lg shadow-sm border">
-                                        <div className="p-6 border-b">
-                                            <h3 className="text-lg font-semibold text-gray-900">Industry Performance</h3>
-                                        </div>
-                                        <div className="p-6">
-                                            {industryData.map((industry, index) => (
-                                                <div key={index} className="mb-6 last:mb-0">
-                                                    <div className="flex justify-between items-center mb-2">
-                                                        <span className="font-medium text-gray-900">{industry.name}</span>
-                                                        <span className="text-sm text-green-600 font-medium">+{industry.growth}%</span>
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                    {activePanel === 'intelligence' && (
+                                        <>
+                                            <ThreatIntelligencePanel companies={companies} />
+                                            <GeopoliticalRiskMap />
+                                        </>
+                                    )}
+                                    {activePanel === 'predictive' && (
+                                        <>
+                                            <PredictiveAnalyticsPanel companies={companies} />
+                                            <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-green-500/30">
+                                                <h3 className="text-xl font-bold text-green-400 font-mono mb-6">AI MODEL PERFORMANCE</h3>
+                                                <div className="space-y-4">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-green-300 font-mono">Market Prediction Accuracy</span>
+                                                        <span className="text-green-400 font-mono font-bold">94.7%</span>
                                                     </div>
-                                                    <div className="w-full bg-gray-200 rounded-full h-3">
-                                                        <div 
-                                                            className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full"
-                                                            style={{width: `${(industry.growth / 20) * 100}%`}}
-                                                        ></div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-green-300 font-mono">Risk Assessment Model</span>
+                                                        <span className="text-green-400 font-mono font-bold">97.2%</span>
                                                     </div>
-                                                    <div className="mt-1 text-sm text-gray-600">
-                                                        {industry.companies} companies • ${industry.avgValuation}B avg valuation
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-lg shadow-sm border">
-                                        <div className="p-6 border-b">
-                                            <h3 className="text-lg font-semibold text-gray-900">Market Trends</h3>
-                                        </div>
-                                        <div className="p-6 space-y-4">
-                                            <div className="border-l-4 border-green-500 pl-4">
-                                                <h4 className="font-medium text-gray-900">AI & Machine Learning</h4>
-                                                <p className="text-sm text-gray-600">Strong growth in enterprise AI adoption driving valuations up 25%</p>
-                                            </div>
-                                            <div className="border-l-4 border-blue-500 pl-4">
-                                                <h4 className="font-medium text-gray-900">Renewable Energy</h4>
-                                                <p className="text-sm text-gray-600">Government incentives boosting clean energy investments</p>
-                                            </div>
-                                            <div className="border-l-4 border-purple-500 pl-4">
-                                                <h4 className="font-medium text-gray-900">Biotechnology</h4>
-                                                <p className="text-sm text-gray-600">Breakthrough therapies creating new market opportunities</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeTab === 'analytics' && (
-                                <div className="space-y-8">
-                                    <div className="bg-white rounded-lg shadow-sm border p-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">AI-Powered Analytics</h3>
-                                        <div className="grid md:grid-cols-2 gap-6">
-                                            <div className="space-y-4">
-                                                <h4 className="font-medium text-gray-900">Predictive Models</h4>
-                                                <div className="space-y-3">
-                                                    <div className="flex justify-between">
-                                                        <span className="text-sm text-gray-600">Market Growth Forecast</span>
-                                                        <span className="text-sm font-medium text-green-600">+12.5%</span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span className="text-sm text-gray-600">Risk Assessment Score</span>
-                                                        <span className="text-sm font-medium text-yellow-600">Medium</span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span className="text-sm text-gray-600">Sentiment Trend</span>
-                                                        <span className="text-sm font-medium text-green-600">Positive</span>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-green-300 font-mono">Sentiment Analysis</span>
+                                                        <span className="text-green-400 font-mono font-bold">91.8%</span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="space-y-4">
-                                                <h4 className="font-medium text-gray-900">Key Insights</h4>
-                                                <ul className="space-y-2 text-sm text-gray-600">
-                                                    <li>• Tech sector consolidation expected in Q2</li>
-                                                    <li>• Healthcare spending to increase 8% YoY</li>
-                                                    <li>• Energy sector facing regulatory changes</li>
-                                                    <li>• Consumer goods showing seasonal patterns</li>
-                                                </ul>
+                                        </>
+                                    )}
+                                    {activePanel === 'surveillance' && (
+                                        <div className="col-span-2">
+                                            <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-cyan-500/30">
+                                                <h3 className="text-xl font-bold text-cyan-400 font-mono mb-6">GLOBAL SURVEILLANCE NETWORK</h3>
+                                                <div className="grid grid-cols-3 gap-6">
+                                                    <div className="text-center">
+                                                        <div className="text-3xl font-bold text-cyan-400 font-mono">2,847</div>
+                                                        <div className="text-cyan-300 font-mono text-sm">DATA SOURCES</div>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <div className="text-3xl font-bold text-cyan-400 font-mono">847M</div>
+                                                        <div className="text-cyan-300 font-mono text-sm">DATA POINTS/DAY</div>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <div className="text-3xl font-bold text-cyan-400 font-mono">99.97%</div>
+                                                        <div className="text-cyan-300 font-mono text-sm">UPTIME</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    {user?.plan !== 'free' && (
-                                        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-6">
-                                            <h4 className="font-semibold text-blue-900 mb-2">Premium Analytics Available</h4>
-                                            <p className="text-sm text-blue-800 mb-4">
-                                                Access advanced ML models, custom benchmarking, and real-time competitive intelligence.
-                                            </p>
-                                            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
-                                                Explore Advanced Analytics
-                                            </button>
                                         </div>
                                     )}
                                 </div>
-                            )}
-                        </div>
-
-                        {selectedCompany && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                                <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-                                    <div className="p-6 border-b">
-                                        <div className="flex justify-between items-center">
-                                            <div>
-                                                <h3 className="text-2xl font-bold text-gray-900">{selectedCompany.name}</h3>
-                                                <p className="text-gray-600">{selectedCompany.ticker_symbol} • {selectedCompany.industry_code}</p>
-                                            </div>
-                                            <button 
-                                                onClick={() => setSelectedCompany(null)}
-                                                className="text-gray-400 hover:text-gray-600 text-2xl"
-                                            >
-                                                ×
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className="p-6 space-y-6">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="bg-gray-50 rounded-lg p-4">
-                                                <div className="text-lg font-semibold text-gray-900">
-                                                    ${selectedCompany.market_cap ? (selectedCompany.market_cap / 1000000000).toFixed(1) : 'N/A'}B
-                                                </div>
-                                                <div className="text-sm text-gray-600">Market Cap</div>
-                                            </div>
-                                            <div className="bg-gray-50 rounded-lg p-4">
-                                                <div className="text-lg font-semibold text-green-600">
-                                                    +{selectedCompany.revenue_growth || 'N/A'}%
-                                                </div>
-                                                <div className="text-sm text-gray-600">YoY Growth</div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h4 className="font-medium text-gray-900 mb-3">Company Information</h4>
-                                            <p className="text-gray-600 text-sm">
-                                                {selectedCompany.description || `${selectedCompany.name} is a company in the ${selectedCompany.industry_code} sector with strong market positioning and growth potential.`}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h4 className="font-medium text-gray-900 mb-3">Company Details</h4>
-                                            <div className="space-y-2 text-sm">
-                                                <div className="flex justify-between">
-                                                    <span className="text-gray-600">Industry Code</span>
-                                                    <span className="font-medium">{selectedCompany.industry_code || 'N/A'}</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span className="text-gray-600">NAICS Code</span>
-                                                    <span className="font-medium">{selectedCompany.naics_code || 'N/A'}</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span className="text-gray-600">Employees</span>
-                                                    <span className="font-medium">{selectedCompany.employee_count ? selectedCompany.employee_count.toLocaleString() : 'N/A'}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
-                        )}
+                        </div>
                     </div>
                 );
             };
@@ -736,12 +579,12 @@
                 <div>
                     {currentPage === 'landing' && <LandingPage />}
                     {currentPage === 'pricing' && <PricingPage />}
-                    {currentPage === 'dashboard' && <Dashboard />}
+                    {currentPage === 'command-center' && <CommandCenter />}
                 </div>
             );
         };
 
-        ReactDOM.render(<IndustryIntelligencePlatform />, document.getElementById('root'));
+        ReactDOM.render(<VaticanIntelligencePlatform />, document.getElementById('root'));
     </script>
 </body>
 </html>
