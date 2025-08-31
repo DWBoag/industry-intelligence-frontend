@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IndustryIQ - Next-Generation Enterprise Intelligence</title>
+    <title>IndustryIQ - Ultimate Enterprise Intelligence Platform</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -40,9 +40,16 @@
             --border-color: rgba(0, 212, 255, 0.2);
         }
         
+        .theme-manufacturing {
+            --accent-color: #f59e0b;
+            --glow-color: rgba(245, 158, 11, 0.4);
+            --border-color: rgba(245, 158, 11, 0.2);
+        }
+        
         body {
             background: radial-gradient(ellipse at top, var(--primary-bg), #000014);
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
         }
         
         .neural-bg {
@@ -51,12 +58,13 @@
                 radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
                 radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
                 linear-gradient(180deg, var(--primary-bg) 0%, #000014 100%);
+            background-size: 400% 400%;
             animation: neural-pulse 8s ease-in-out infinite;
         }
         
         @keyframes neural-pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+            0%, 100% { background-position: 0% 50%; opacity: 1; }
+            50% { background-position: 100% 50%; opacity: 0.8; }
         }
         
         .glass-panel {
@@ -143,6 +151,7 @@
             border-radius: 2px;
             position: relative;
             overflow: hidden;
+            transition: width 1s ease-out;
         }
         
         .metric-visualizer::after {
@@ -169,7 +178,7 @@
             height: 100%;
             pointer-events: none;
             z-index: -1;
-            opacity: 0.1;
+            opacity: 0.15;
         }
         
         .floating-particle {
@@ -262,6 +271,29 @@
             background: var(--accent-color);
             border-radius: 3px;
         }
+        
+        .accent-glow {
+            box-shadow: 0 0 20px var(--glow-color);
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            animation: pulse-glow 2s infinite;
+        }
+        
+        .enterprise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .neural-network { opacity: 0.05; }
+            .floating-particle { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -304,6 +336,17 @@
                     monitoring: 'Network Surveillance',
                     intelligence: 'Predictive Engine'
                 }
+            },
+            manufacturing: {
+                name: 'Manufacturing',
+                theme: 'theme-manufacturing',
+                accentColor: '#f59e0b',
+                terminology: {
+                    dashboard: 'Operations Command',
+                    analytics: 'Production Analytics',
+                    monitoring: 'Quality Surveillance',
+                    intelligence: 'Industrial AI'
+                }
             }
         };
 
@@ -315,12 +358,18 @@
 
             useEffect(() => {
                 const canvas = canvasRef.current;
+                if (!canvas) return;
+                
                 const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+                const resizeCanvas = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                };
+                
+                resizeCanvas();
 
                 const particles = [];
-                const particleCount = 50;
+                const particleCount = Math.min(50, Math.floor(window.innerWidth / 30));
 
                 for (let i = 0; i < particleCount; i++) {
                     particles.push({
@@ -332,9 +381,10 @@
                     });
                 }
 
+                let animationId;
                 function animate() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.strokeStyle = '#00d4ff';
+                    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color') || '#00d4ff';
                     ctx.lineWidth = 0.5;
 
                     particles.forEach((particle, i) => {
@@ -347,7 +397,7 @@
                         ctx.globalAlpha = particle.opacity;
                         ctx.beginPath();
                         ctx.arc(particle.x, particle.y, 1, 0, Math.PI * 2);
-                        ctx.fillStyle = '#00d4ff';
+                        ctx.fillStyle = ctx.strokeStyle;
                         ctx.fill();
 
                         particles.forEach((otherParticle, j) => {
@@ -367,18 +417,22 @@
                         });
                     });
 
-                    requestAnimationFrame(animate);
+                    animationId = requestAnimationFrame(animate);
                 }
 
                 animate();
 
                 const handleResize = () => {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
+                    resizeCanvas();
                 };
 
                 window.addEventListener('resize', handleResize);
-                return () => window.removeEventListener('resize', handleResize);
+                return () => {
+                    window.removeEventListener('resize', handleResize);
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                    }
+                };
             }, []);
 
             return <canvas ref={canvasRef} className="neural-network" />;
@@ -396,13 +450,13 @@
                 setMessages(prev => [...prev, { type: 'user', text }]);
                 setIsTyping(true);
 
-                // Simulate AI response
                 setTimeout(() => {
                     const responses = [
                         `Analyzing ${SECTOR_THEMES[currentSector].name.toLowerCase()} trends... Market volatility is 12% above historical average.`,
                         `Risk assessment complete. 3 high-priority alerts detected in your portfolio.`,
                         `Predictive model suggests 15% growth opportunity in emerging markets.`,
-                        `Real-time analysis shows correlation coefficient of 0.87 between selected metrics.`
+                        `Real-time analysis shows correlation coefficient of 0.87 between selected metrics.`,
+                        `Neural network has identified 5 optimization opportunities in your current strategy.`
                     ];
                     const response = responses[Math.floor(Math.random() * responses.length)];
                     
@@ -417,16 +471,16 @@
                 <div className="fixed bottom-6 right-6 w-96 glass-panel rounded-xl p-4 z-50">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 rounded-full bg-green-400 pulse-indicator"></div>
+                            <div className="status-indicator"></div>
                             <span className="text-white font-semibold">AI Assistant</span>
                         </div>
-                        <button onClick={onToggle} className="text-white/60 hover:text-white">×</button>
+                        <button onClick={onToggle} className="text-white/60 hover:text-white text-xl">×</button>
                     </div>
                     
                     <div className="h-64 overflow-y-auto scrollbar-custom mb-4 space-y-2">
                         {messages.map((msg, index) => (
                             <div key={index} className={`${msg.type === 'ai' ? 'text-left' : 'text-right'}`}>
-                                <div className={`inline-block p-3 rounded-lg ${
+                                <div className={`inline-block p-3 rounded-lg max-w-xs ${
                                     msg.type === 'ai' 
                                         ? 'bg-blue-600/20 text-blue-100 border border-blue-500/30' 
                                         : 'bg-white/10 text-white'
@@ -465,7 +519,8 @@
                                     setInput('');
                                 }
                             }}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            className="px-4 py-2 rounded-lg text-white font-medium transition-colors accent-glow"
+                            style={{background: 'var(--accent-color)'}}
                         >
                             Send
                         </button>
@@ -474,8 +529,8 @@
             );
         };
 
-        // Enhanced Data Card with Advanced Visualizations
-        const EnhancedDataCard = ({ title, value, subtitle, trend, interactive = false, data = [], children }) => {
+        // Enhanced Data Card Component
+        const EnhancedDataCard = ({ title, value, subtitle, trend, interactive = false, children }) => {
             const [isHovered, setIsHovered] = useState(false);
             
             return (
@@ -510,9 +565,10 @@
                                 {[...Array(8)].map((_, i) => (
                                     <div 
                                         key={i} 
-                                        className="w-3 bg-gradient-to-t from-blue-600 to-cyan-400 rounded-t animate-pulse"
+                                        className="w-3 rounded-t animate-pulse"
                                         style={{
                                             height: `${20 + Math.random() * 40}px`,
+                                            background: 'var(--accent-color)',
                                             animationDelay: `${i * 0.1}s`
                                         }}
                                     />
@@ -541,7 +597,7 @@
                 <div className="glass-panel rounded-lg p-4 mb-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <div className="w-2 h-2 rounded-full bg-green-400 pulse-indicator"></div>
+                            <div className="status-indicator"></div>
                             <span className="text-white/80 text-sm font-medium">LIVE MARKET DATA</span>
                         </div>
                         <div className="flex space-x-6">
@@ -559,21 +615,31 @@
             );
         };
 
-        const IncrediblePlatform = () => {
+        const UltimateEnterprisePlatform = () => {
             const [currentPage, setCurrentPage] = useState('landing');
             const [user, setUser] = useState(null);
             const [currentSector, setCurrentSector] = useState('technology');
             const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
             const [companies, setCompanies] = useState([]);
+            const [loading, setLoading] = useState(true);
             const [realtimeData, setRealtimeData] = useState([
                 { symbol: 'AAPL', price: '$185.42', change: 2.3 },
                 { symbol: 'MSFT', price: '$378.91', change: -1.2 },
                 { symbol: 'GOOGL', price: '$142.65', change: 0.8 },
                 { symbol: 'AMZN', price: '$145.33', change: 1.7 },
-                { symbol: 'TSLA', price: '$248.15', change: -3.1 }
+                { symbol: 'TSLA', price: '$248.15', change: -3.1 },
+                { symbol: 'NVDA', price: '$891.14', change: 4.2 }
             ]);
 
             const sectorConfig = SECTOR_THEMES[currentSector];
+
+            useEffect(() => {
+                // Apply theme to CSS custom properties
+                const root = document.documentElement;
+                root.style.setProperty('--accent-color', sectorConfig.accentColor);
+                root.style.setProperty('--glow-color', sectorConfig.accentColor + '66');
+                root.style.setProperty('--border-color', sectorConfig.accentColor + '33');
+            }, [currentSector]);
 
             useEffect(() => {
                 // Simulate real-time data updates
@@ -595,13 +661,17 @@
                         const data = await response.json();
                         setCompanies(Array.isArray(data) ? data : []);
                     } catch (error) {
+                        console.error('API Error:', error);
                         setCompanies([
                             { id: 1, name: 'Apple Inc.', market_cap: 2800000000000, industry_code: 'TECH' },
                             { id: 2, name: 'Microsoft Corp.', market_cap: 2400000000000, industry_code: 'TECH' },
                             { id: 3, name: 'Amazon.com Inc.', market_cap: 1500000000000, industry_code: 'ECOM' },
                             { id: 4, name: 'Tesla Inc.', market_cap: 800000000000, industry_code: 'AUTO' },
-                            { id: 5, name: 'Alphabet Inc.', market_cap: 1800000000000, industry_code: 'TECH' }
+                            { id: 5, name: 'Alphabet Inc.', market_cap: 1800000000000, industry_code: 'TECH' },
+                            { id: 6, name: 'Meta Platforms', market_cap: 750000000000, industry_code: 'TECH' }
                         ]);
+                    } finally {
+                        setLoading(false);
                     }
                 };
                 fetchData();
@@ -610,8 +680,8 @@
             const handleSubscription = (planId) => {
                 setUser({ 
                     plan: planId, 
-                    email: 'executive@enterprise.com', 
-                    accessLevel: 'Executive',
+                    email: planId === 'starter' ? 'analyst@enterprise.com' : 'executive@enterprise.com', 
+                    accessLevel: planId === 'starter' ? 'Standard' : 'Executive',
                     sector: currentSector 
                 });
                 setCurrentPage('dashboard');
@@ -644,8 +714,8 @@
                                         </div>
                                     </div>
                                     <span className="font-bold text-2xl text-white">IndustryIQ</span>
-                                    <span className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                                        NEXT-GEN
+                                    <span className="text-xs px-3 py-1 rounded-full text-white accent-glow" style={{background: 'var(--accent-color)'}}>
+                                        ULTIMATE
                                     </span>
                                 </div>
                                 <div className="flex items-center space-x-6">
@@ -668,7 +738,8 @@
                                     </button>
                                     <button 
                                         onClick={() => handleSubscription('starter')}
-                                        className="px-8 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 text-white rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-2xl"
+                                        className="px-8 py-3 text-white rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-2xl accent-glow"
+                                        style={{background: 'var(--accent-color)'}}
                                     >
                                         Launch Platform
                                     </button>
@@ -680,25 +751,27 @@
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
                         <div className="text-center">
                             <h1 className="text-7xl md:text-9xl font-bold text-white mb-8 tracking-tight leading-tight">
-                                THE FUTURE OF
-                                <span className="block bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
+                                ULTIMATE
+                                <span className="block" style={{color: 'var(--accent-color)'}}>
                                     INTELLIGENCE
                                 </span>
                             </h1>
                             <p className="text-2xl text-white/80 mb-16 max-w-5xl mx-auto leading-relaxed">
                                 Next-generation AI-powered platform that transforms how {sectorConfig.name.toLowerCase()} 
-                                organizations understand, analyze, and predict market dynamics.
+                                organizations understand, analyze, and predict market dynamics with neural network precision.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-8 justify-center">
                                 <button 
                                     onClick={() => setCurrentPage('pricing')}
-                                    className="px-12 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 text-white rounded-2xl font-bold text-xl transition-all transform hover:scale-110 hover:shadow-2xl"
+                                    className="px-12 py-5 text-white rounded-2xl font-bold text-xl transition-all transform hover:scale-110 hover:shadow-2xl accent-glow"
+                                    style={{background: 'var(--accent-color)'}}
                                 >
                                     Experience The Future
                                 </button>
                                 <button 
                                     onClick={() => handleSubscription('starter')}
-                                    className="px-12 py-5 border-2 border-white/30 text-white hover:bg-white/10 rounded-2xl font-bold text-xl transition-all transform hover:scale-105"
+                                    className="px-12 py-5 border-2 text-white hover:bg-white/10 rounded-2xl font-bold text-xl transition-all transform hover:scale-105"
+                                    style={{borderColor: 'var(--accent-color)'}}
                                 >
                                     Live Demonstration
                                 </button>
@@ -707,25 +780,31 @@
                     </div>
 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-                        <div className="grid md:grid-cols-3 gap-8">
+                        <div className="enterprise-grid">
                             {[
                                 { 
-                                    title: 'AI-Powered Insights', 
-                                    desc: 'Advanced machine learning algorithms provide real-time analysis and predictive modeling',
+                                    title: 'Neural Intelligence', 
+                                    desc: 'Advanced machine learning algorithms with real-time neural network processing',
                                     icon: '🧠',
                                     color: 'from-purple-500 to-pink-600'
                                 },
                                 { 
-                                    title: 'Real-Time Processing', 
+                                    title: 'Quantum Analytics', 
                                     desc: 'Sub-millisecond data processing with live streaming visualizations',
                                     icon: '⚡',
                                     color: 'from-blue-500 to-cyan-600'
                                 },
                                 { 
-                                    title: 'Neural Networks', 
+                                    title: 'Predictive AI', 
                                     desc: 'Deep learning models trained on global market patterns and behaviors',
                                     icon: '🔮',
                                     color: 'from-green-500 to-emerald-600'
+                                },
+                                { 
+                                    title: 'Enterprise Security', 
+                                    desc: 'Military-grade security with real-time threat monitoring and compliance',
+                                    icon: '🛡️',
+                                    color: 'from-red-500 to-orange-600'
                                 }
                             ].map((feature, index) => (
                                 <div key={index} className="hologram-card rounded-3xl p-10 text-center">
@@ -734,6 +813,132 @@
                                     </div>
                                     <h3 className="text-2xl font-bold text-white mb-6">{feature.title}</h3>
                                     <p className="text-white/70 leading-relaxed text-lg">{feature.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const PricingPage = () => (
+                <div className={`min-h-screen neural-bg ${sectorConfig.theme}`}>
+                    <NeuralNetwork />
+                    
+                    <nav className="glass-panel border-b">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between items-center h-16">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 rounded-lg accent-glow" style={{background: 'var(--accent-color)'}}></div>
+                                    <span className="font-bold text-xl text-white">IndustryIQ</span>
+                                </div>
+                                <button 
+                                    onClick={() => setCurrentPage('landing')}
+                                    className="text-white/80 hover:text-white transition-colors"
+                                >
+                                    ← Back
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                        <div className="text-center mb-16">
+                            <h1 className="text-5xl font-bold text-white mb-6">Ultimate Enterprise Plans</h1>
+                            <p className="text-xl text-white/70">Next-generation pricing for {sectorConfig.name.toLowerCase()} organizations</p>
+                        </div>
+
+                        <div className="grid lg:grid-cols-3 gap-8">
+                            {[
+                                {
+                                    name: 'Starter',
+                                    price: '$0',
+                                    badge: 'Free Forever',
+                                    features: [
+                                        'AI-powered analytics dashboard',
+                                        'Up to 5 data sources',
+                                        'Neural network visualizations', 
+                                        'Email support',
+                                        '1 user account',
+                                        'Basic predictive models'
+                                    ],
+                                    action: () => handleSubscription('starter'),
+                                    buttonText: 'Get Started Free',
+                                    popular: false
+                                },
+                                {
+                                    name: 'Professional',
+                                    price: '$299',
+                                    badge: 'Most Popular',
+                                    features: [
+                                        'Advanced neural intelligence',
+                                        'Unlimited data sources',
+                                        'AI Assistant integration',
+                                        'Real-time data streaming',
+                                        'Up to 25 users',
+                                        'API access & webhooks',
+                                        'Custom AI models',
+                                        'Priority support'
+                                    ],
+                                    action: () => handleSubscription('professional'),
+                                    buttonText: 'Start Free Trial',
+                                    popular: true
+                                },
+                                {
+                                    name: 'Enterprise',
+                                    price: '$999',
+                                    badge: 'Ultimate Power',
+                                    features: [
+                                        'Complete intelligence platform',
+                                        'Neural network customization',
+                                        'Dedicated AI assistant team',
+                                        'Unlimited users',
+                                        'White-label deployment',
+                                        'Military-grade security',
+                                        'Custom neural architectures',
+                                        '24/7 dedicated support'
+                                    ],
+                                    action: () => handleSubscription('enterprise'),
+                                    buttonText: 'Contact Sales',
+                                    popular: false
+                                }
+                            ].map((plan, index) => (
+                                <div key={index} className={`hologram-card rounded-2xl p-8 ${plan.popular ? 'scale-105 accent-glow' : ''} relative`}>
+                                    {plan.popular && (
+                                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                            <span className="px-4 py-2 rounded-full text-white text-sm font-semibold accent-glow" style={{background: 'var(--accent-color)'}}>
+                                                {plan.badge}
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div className="text-center mb-8">
+                                        <h3 className="text-2xl font-bold text-white mb-4">{plan.name}</h3>
+                                        <div className="flex items-center justify-center mb-4">
+                                            <span className="text-5xl font-bold text-white">{plan.price}</span>
+                                            <span className="text-white/60 ml-2">/month</span>
+                                        </div>
+                                    </div>
+                                    <ul className="space-y-4 mb-8 text-white/80">
+                                        {plan.features.map((feature, fIndex) => (
+                                            <li key={fIndex} className="flex items-center space-x-3">
+                                                <div className="w-2 h-2 rounded-full accent-glow" style={{background: 'var(--accent-color)'}}></div>
+                                                <span>{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <button
+                                        onClick={plan.action}
+                                        className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
+                                            plan.popular 
+                                                ? 'text-white accent-glow' 
+                                                : 'border text-white hover:bg-white/5'
+                                        }`}
+                                        style={plan.popular 
+                                            ? {background: 'var(--accent-color)'} 
+                                            : {borderColor: 'var(--accent-color)', color: 'var(--accent-color)'}
+                                        }
+                                    >
+                                        {plan.buttonText}
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -751,9 +956,18 @@
                         entities: companies.length,
                         avgGrowth: 15.7,
                         efficiency: 94.3,
-                        alerts: 5
+                        alerts: 5,
+                        uptime: '99.97%'
                     };
                 }, [companies]);
+
+                const modules = [
+                    { id: 'overview', name: 'Mission Control', icon: '🎯' },
+                    { id: 'analytics', name: sectorConfig.terminology.analytics, icon: '📊' },
+                    { id: 'monitoring', name: sectorConfig.terminology.monitoring, icon: '👁️' },
+                    { id: 'intelligence', name: sectorConfig.terminology.intelligence, icon: '🧠' },
+                    { id: 'neural', name: 'Neural Engine', icon: '🔮' }
+                ];
 
                 return (
                     <div className={`min-h-screen neural-bg ${sectorConfig.theme}`}>
@@ -764,7 +978,7 @@
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center space-x-8">
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-3 h-3 rounded-full bg-green-400 pulse-indicator"></div>
+                                        <div className="status-indicator"></div>
                                         <span className="text-white/80 text-sm font-medium">SYSTEM OPERATIONAL</span>
                                     </div>
                                     <div className="text-white/60 text-sm">
@@ -776,7 +990,8 @@
                                 <div className="flex items-center space-x-4">
                                     <button
                                         onClick={() => setAiAssistantOpen(true)}
-                                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
+                                        className="px-4 py-2 text-white rounded-lg hover:shadow-lg transition-all accent-glow"
+                                        style={{background: 'var(--accent-color)'}}
                                     >
                                         AI Assistant
                                     </button>
@@ -793,9 +1008,9 @@
                         <div className="flex">
                             {/* Enhanced Sidebar */}
                             <div className="w-80 glass-panel border-r h-screen flex flex-col">
-                                <div className="p-8 border-b border-white/10">
+                                <div className="p-8 border-b border-white/10 flex-shrink-0">
                                     <div className="flex items-center space-x-4 mb-6">
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 via-purple-500 to-cyan-400 p-0.5">
+                                        <div className="w-12 h-12 rounded-xl accent-glow p-0.5" style={{background: 'var(--accent-color)'}}>
                                             <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
                                                 <div className="text-white font-bold text-sm">IQ</div>
                                             </div>
@@ -807,22 +1022,20 @@
                                     </div>
                                 </div>
 
-                                <nav className="p-6 flex-1">
-                                    {[
-                                        { id: 'overview', name: 'Mission Control', icon: '🎯' },
-                                        { id: 'analytics', name: sectorConfig.terminology.analytics, icon: '📊' },
-                                        { id: 'monitoring', name: sectorConfig.terminology.monitoring, icon: '👁️' },
-                                        { id: 'intelligence', name: sectorConfig.terminology.intelligence, icon: '🧠' },
-                                        { id: 'neural', name: 'Neural Engine', icon: '🔮' }
-                                    ].map((module) => (
+                                <nav className="p-6 flex-1 scrollbar-custom overflow-y-auto">
+                                    {modules.map((module) => (
                                         <button
                                             key={module.id}
                                             onClick={() => setActiveModule(module.id)}
                                             className={`w-full text-left p-4 mb-3 rounded-xl hover:bg-white/5 flex items-center space-x-4 transition-all group ${
                                                 activeModule === module.id 
-                                                    ? 'bg-white/10 text-white shadow-lg' 
+                                                    ? 'text-white shadow-lg accent-glow' 
                                                     : 'text-white/70 hover:text-white'
                                             }`}
+                                            style={activeModule === module.id ? {
+                                                background: `${sectorConfig.accentColor}20`,
+                                                borderLeft: `4px solid ${sectorConfig.accentColor}`
+                                            } : {}}
                                         >
                                             <span className="text-2xl group-hover:scale-110 transition-transform">{module.icon}</span>
                                             <span className="font-semibold">{module.name}</span>
@@ -830,8 +1043,8 @@
                                     ))}
                                 </nav>
 
-                                <div className="p-6 border-t border-white/10">
-                                    <div className="hologram-card rounded-xl p-4">
+                                <div className="p-6 border-t border-white/10 flex-shrink-0">
+                                    <div className="hologram-card rounded-xl p-4 mb-4">
                                         <div className="text-white/80 text-sm mb-3 font-semibold">SYSTEM METRICS</div>
                                         <div className="space-y-2">
                                             <div className="flex justify-between">
@@ -843,8 +1056,8 @@
                                                 <span className="text-white text-sm font-semibold">{companies.length}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-white/60 text-sm">Predictions</span>
-                                                <span className="text-blue-400 text-sm font-semibold">Live</span>
+                                                <span className="text-white/60 text-sm">AI Status</span>
+                                                <span className="text-sm font-semibold" style={{color: 'var(--accent-color)'}}>Active</span>
                                             </div>
                                         </div>
                                     </div>
@@ -857,14 +1070,14 @@
                                     <h1 className="text-5xl font-bold text-white mb-4">
                                         {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Engine
                                     </h1>
-                                    <p className="text-white/60 text-lg">Advanced analytics for {sectorConfig.name.toLowerCase()} intelligence</p>
+                                    <p className="text-white/60 text-lg">Advanced {activeModule} analytics for {sectorConfig.name.toLowerCase()}</p>
                                 </div>
 
                                 <RealTimeTicker data={realtimeData} />
 
                                 {activeModule === 'overview' && (
                                     <div className="space-y-8">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        <div className="enterprise-grid">
                                             <EnhancedDataCard 
                                                 title="Total Portfolio Value" 
                                                 value={metrics.totalValue} 
@@ -884,9 +1097,9 @@
                                                 interactive={true}
                                             />
                                             <EnhancedDataCard 
-                                                title="Neural Alerts" 
-                                                value={metrics.alerts} 
-                                                subtitle="Requires attention"
+                                                title="System Health" 
+                                                value={metrics.uptime} 
+                                                subtitle="Uptime"
                                                 interactive={true}
                                             />
                                         </div>
@@ -899,7 +1112,7 @@
                                                         <div key={index} className="group">
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <div className="flex items-center space-x-3">
-                                                                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-purple-500"></div>
+                                                                    <div className="w-3 h-3 rounded-full accent-glow" style={{background: 'var(--accent-color)'}}></div>
                                                                     <span className="text-white font-semibold">{company.name}</span>
                                                                     <span className="text-white/60 text-sm">{company.industry_code}</span>
                                                                 </div>
@@ -934,7 +1147,7 @@
                                                             <div className="text-2xl font-bold text-white mb-2">{metric.value}</div>
                                                             <div className={`text-xs px-2 py-1 rounded-full w-fit ${
                                                                 metric.status === 'optimal' ? 'bg-green-500/20 text-green-300' :
-                                                                metric.status === 'high' ? 'bg-blue-500/20 text-blue-300' :
+                                                                metric status === 'high' ? 'bg-blue-500/20 text-blue-300' :
                                                                 'bg-purple-500/20 text-purple-300'
                                                             }`}>
                                                                 {metric.status.toUpperCase()}
@@ -953,11 +1166,11 @@
                                             {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Engine
                                         </h3>
                                         <p className="text-white/70 text-xl mb-8">
-                                            Advanced {activeModule} capabilities powered by next-generation AI algorithms
+                                            Advanced {activeModule} capabilities powered by next-generation neural networks and AI algorithms
                                         </p>
-                                        <div className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full">
-                                            <div className="w-3 h-3 rounded-full bg-white animate-pulse"></div>
-                                            <span className="text-white font-semibold">Neural Network Active</span>
+                                        <div className="inline-flex items-center space-x-3 px-8 py-4 rounded-full accent-glow" style={{background: 'var(--accent-color)'}}>
+                                            <div className="status-indicator"></div>
+                                            <span className="text-white font-semibold text-lg">Neural Network Active</span>
                                         </div>
                                     </div>
                                 )}
@@ -974,14 +1187,18 @@
             };
 
             return (
-                <div>
+                <div className={sectorConfig.theme}>
                     {currentPage === 'landing' && <LandingPage />}
+                    {currentPage === 'pricing' && <PricingPage />}
                     {currentPage === 'dashboard' && <Dashboard />}
                 </div>
             );
         };
 
-        ReactDOM.render(<IncrediblePlatform />, document.getElementById('root'));
+        ReactDOM.render(<UltimateEnterprisePlatform />, document.getElementById('root'));
     </script>
 </body>
 </html>
+                               
+                                          
+
