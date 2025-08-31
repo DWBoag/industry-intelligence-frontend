@@ -9,25 +9,83 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .matrix-bg {
-            background: linear-gradient(45deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+        :root {
+            --primary-bg: #0f172a;
+            --secondary-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .theme-financial {
+            --accent-color: #059669;
+            --border-color: rgba(5, 150, 105, 0.2);
+        }
+        
+        .theme-healthcare {
+            --accent-color: #7c3aed;
+            --border-color: rgba(124, 58, 237, 0.2);
+        }
+        
+        .theme-technology {
+            --accent-color: #06b6d4;
+            --border-color: rgba(6, 182, 212, 0.2);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 50%, var(--primary-bg) 100%);
             background-size: 400% 400%;
-            animation: matrix-gradient 15s ease infinite;
+            animation: gradient-shift 20s ease infinite;
         }
-        @keyframes matrix-gradient {
-            0% { background-position: 0% 50%; }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
-        .glow-border {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        
+        .glass-effect {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
         }
-        .pulse-ring {
-            animation: pulse-ring 2s infinite;
+        
+        .accent-glow {
+            box-shadow: 0 0 20px rgba(var(--accent-color), 0.3);
         }
-        @keyframes pulse-ring {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; }
+        
+        .data-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .data-card:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
+            transform: translateY(-2px);
+        }
+        
+        .metric-bar {
+            background: linear-gradient(90deg, transparent 0%, var(--accent-color) 100%);
+            height: 4px;
+            border-radius: 2px;
+            transition: width 1s ease-out;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
     </style>
 </head>
@@ -35,83 +93,158 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect, useMemo } = React;
+
+        // Configuration for different sectors
+        const SECTOR_THEMES = {
+            financial: {
+                name: 'Financial Services',
+                theme: 'theme-financial',
+                accentColor: '#059669',
+                terminology: {
+                    dashboard: 'Portfolio Dashboard',
+                    analytics: 'Market Analytics',
+                    monitoring: 'Risk Monitoring',
+                    intelligence: 'Market Intelligence'
+                }
+            },
+            healthcare: {
+                name: 'Healthcare',
+                theme: 'theme-healthcare', 
+                accentColor: '#7c3aed',
+                terminology: {
+                    dashboard: 'Clinical Dashboard',
+                    analytics: 'Health Analytics',
+                    monitoring: 'Patient Monitoring',
+                    intelligence: 'Clinical Intelligence'
+                }
+            },
+            technology: {
+                name: 'Technology',
+                theme: 'theme-technology',
+                accentColor: '#06b6d4',
+                terminology: {
+                    dashboard: 'Tech Dashboard',
+                    analytics: 'Performance Analytics',
+                    monitoring: 'System Monitoring',
+                    intelligence: 'Business Intelligence'
+                }
+            },
+            manufacturing: {
+                name: 'Manufacturing',
+                theme: 'theme-financial',
+                accentColor: '#f59e0b',
+                terminology: {
+                    dashboard: 'Operations Dashboard',
+                    analytics: 'Production Analytics',
+                    monitoring: 'Quality Monitoring',
+                    intelligence: 'Operational Intelligence'
+                }
+            }
+        };
 
         const API_BASE_URL = 'https://industry-intelligence-backend-production.up.railway.app';
 
-        const VaticanIntelligencePlatform = () => {
+        const EnterprisePlatform = () => {
             const [currentPage, setCurrentPage] = useState('landing');
             const [user, setUser] = useState(null);
-            const [securityLevel, setSecurityLevel] = useState('CLASSIFIED');
+            const [currentSector, setCurrentSector] = useState('technology');
+            const [customization, setCustomization] = useState({
+                companyName: 'IndustryIQ',
+                theme: 'default',
+                modules: ['analytics', 'monitoring', 'intelligence', 'reporting']
+            });
+
+            const sectorConfig = SECTOR_THEMES[currentSector];
 
             const handleSubscription = async (planId, priceId) => {
-                if (planId === 'free') {
-                    setUser({ plan: 'free', email: 'analyst@enterprise.com', clearanceLevel: 'RESTRICTED' });
-                    setCurrentPage('command-center');
+                if (planId === 'starter') {
+                    setUser({ 
+                        plan: 'starter', 
+                        email: 'analyst@enterprise.com', 
+                        accessLevel: 'Standard',
+                        sector: currentSector 
+                    });
+                    setCurrentPage('dashboard');
                     return;
                 }
-                setUser({ plan: planId, email: 'director@enterprise.com', clearanceLevel: 'TOP SECRET' });
-                setCurrentPage('command-center');
+                setUser({ 
+                    plan: planId, 
+                    email: 'executive@enterprise.com', 
+                    accessLevel: 'Executive',
+                    sector: currentSector 
+                });
+                setCurrentPage('dashboard');
             };
 
             const LandingPage = () => (
-                <div className="min-h-screen matrix-bg">
-                    <nav className="bg-black/40 backdrop-blur-md border-b border-blue-500/30">
+                <div className={`min-h-screen gradient-bg ${sectorConfig.theme}`}>
+                    <nav className="glass-effect border-b">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between items-center h-16">
                                 <div className="flex items-center space-x-3">
-                                    <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg shadow-lg glow-border"></div>
-                                    <span className="font-bold text-2xl bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">IndustryIQ</span>
-                                    <span className="text-xs bg-red-600 text-white px-2 py-1 rounded font-mono">CLASSIFIED</span>
+                                    <div className="w-10 h-10 rounded-lg accent-glow" style={{background: sectorConfig.accentColor}}></div>
+                                    <span className="font-bold text-xl text-white">{customization.companyName}</span>
+                                    <span className="text-xs px-2 py-1 rounded" style={{background: sectorConfig.accentColor, color: 'white'}}>
+                                        ENTERPRISE
+                                    </span>
                                 </div>
-                                <div className="flex items-center space-x-4">
+                                <div className="flex items-center space-x-6">
+                                    <select 
+                                        value={currentSector} 
+                                        onChange={(e) => setCurrentSector(e.target.value)}
+                                        className="bg-black/20 text-white border border-white/20 rounded px-3 py-1 text-sm"
+                                    >
+                                        {Object.entries(SECTOR_THEMES).map(([key, config]) => (
+                                            <option key={key} value={key} className="bg-gray-900">
+                                                {config.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                     <button 
                                         onClick={() => setCurrentPage('pricing')}
-                                        className="text-blue-300 hover:text-white transition-colors font-mono"
+                                        className="text-white/80 hover:text-white transition-colors"
                                     >
-                                        ACCESS LEVELS
+                                        Pricing
                                     </button>
                                     <button 
-                                        onClick={() => handleSubscription('free', null)}
-                                        className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-2 rounded-lg font-mono transition-all glow-border"
+                                        onClick={() => handleSubscription('starter', null)}
+                                        className="px-6 py-2 rounded-lg text-white font-medium transition-all hover:scale-105 accent-glow"
+                                        style={{background: sectorConfig.accentColor}}
                                     >
-                                        REQUEST ACCESS
+                                        Get Started
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </nav>
 
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
                         <div className="text-center">
-                            <div className="mb-8">
-                                <span className="text-red-500 font-mono text-sm bg-red-500/10 px-3 py-1 rounded-full border border-red-500/30">
-                                    VATICAN-LEVEL INTELLIGENCE
-                                </span>
-                            </div>
-                            <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 font-mono tracking-tight">
-                                ENTERPRISE
-                                <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                    COMMAND CENTER
+                            <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 tracking-tight">
+                                Enterprise-Grade
+                                <span className="block" style={{color: sectorConfig.accentColor}}>
+                                    {sectorConfig.terminology.intelligence}
                                 </span>
                             </h1>
-                            <p className="text-xl text-blue-200 mb-12 max-w-4xl mx-auto font-mono leading-relaxed">
-                                Institutional-grade intelligence platform. Real-time global market surveillance. 
-                                Predictive analytics. Threat assessment. Multi-dimensional risk analysis.
-                                <span className="block mt-2 text-cyan-300">AUTHORIZED PERSONNEL ONLY</span>
+                            <p className="text-xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed">
+                                Comprehensive analytics platform designed for {sectorConfig.name.toLowerCase()} professionals. 
+                                Real-time insights, predictive modeling, and enterprise-scale data processing.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6 justify-center">
                                 <button 
                                     onClick={() => setCurrentPage('pricing')}
-                                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-10 py-4 rounded-xl font-mono font-bold text-lg transition-all transform hover:scale-105 glow-border"
+                                    className="px-10 py-4 rounded-xl font-semibold text-lg text-white transition-all transform hover:scale-105 accent-glow"
+                                    style={{background: sectorConfig.accentColor}}
                                 >
-                                    REQUEST CLEARANCE
+                                    View Plans
                                 </button>
                                 <button 
-                                    onClick={() => handleSubscription('free', null)}
-                                    className="border-2 border-cyan-400 text-cyan-300 hover:bg-cyan-400 hover:text-black px-10 py-4 rounded-xl font-mono font-bold text-lg transition-all"
+                                    onClick={() => handleSubscription('starter', null)}
+                                    className="border-2 text-white hover:bg-white/10 px-10 py-4 rounded-xl font-semibold text-lg transition-all"
+                                    style={{borderColor: sectorConfig.accentColor, color: sectorConfig.accentColor}}
                                 >
-                                    DEMO ACCESS
+                                    Live Demo
                                 </button>
                             </div>
                         </div>
@@ -119,53 +252,37 @@
 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                         <div className="grid md:grid-cols-4 gap-8">
-                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-blue-500/30 glow-border">
-                                <div className="h-16 w-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg mb-6 flex items-center justify-center">
-                                    <span className="text-2xl">🎯</span>
+                            {[
+                                { title: 'Universal Analytics', desc: 'Adaptable metrics and KPIs across all business sectors', icon: '📊' },
+                                { title: 'Real-time Processing', desc: 'Live data streams with sub-second latency for critical decisions', icon: '⚡' },
+                                { title: 'Predictive Models', desc: 'Advanced machine learning for forecasting and trend analysis', icon: '🎯' },
+                                { title: 'Enterprise Security', desc: 'SOC2 compliant with role-based access and audit trails', icon: '🔒' }
+                            ].map((feature, index) => (
+                                <div key={index} className="data-card rounded-2xl p-8">
+                                    <div className="text-4xl mb-6">{feature.icon}</div>
+                                    <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
+                                    <p className="text-white/70 leading-relaxed">{feature.desc}</p>
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-4 font-mono">THREAT ANALYSIS</h3>
-                                <p className="text-blue-200 font-mono text-sm leading-relaxed">Real-time competitive intelligence, market disruption detection, geopolitical risk assessment.</p>
-                            </div>
-                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-purple-500/30 glow-border">
-                                <div className="h-16 w-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg mb-6 flex items-center justify-center">
-                                    <span className="text-2xl">🧠</span>
-                                </div>
-                                <h3 className="text-xl font-bold text-white mb-4 font-mono">PREDICTIVE AI</h3>
-                                <p className="text-blue-200 font-mono text-sm leading-relaxed">Advanced machine learning models, market forecasting, behavioral pattern analysis.</p>
-                            </div>
-                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-green-500/30 glow-border">
-                                <div className="h-16 w-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg mb-6 flex items-center justify-center">
-                                    <span className="text-2xl">🛡️</span>
-                                </div>
-                                <h3 className="text-xl font-bold text-white mb-4 font-mono">SECURE INTEL</h3>
-                                <p className="text-blue-200 font-mono text-sm leading-relaxed">End-to-end encryption, classified data handling, compartmentalized access control.</p>
-                            </div>
-                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-cyan-500/30 glow-border">
-                                <div className="h-16 w-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg mb-6 flex items-center justify-center">
-                                    <span className="text-2xl">⚡</span>
-                                </div>
-                                <h3 className="text-xl font-bold text-white mb-4 font-mono">REAL-TIME OPS</h3>
-                                <p className="text-blue-200 font-mono text-sm leading-relaxed">Live data streams, instant alerts, global market surveillance, crisis response protocols.</p>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             );
 
             const PricingPage = () => (
-                <div className="min-h-screen matrix-bg">
-                    <nav className="bg-black/40 backdrop-blur-md border-b border-blue-500/30">
+                <div className={`min-h-screen gradient-bg ${sectorConfig.theme}`}>
+                    <nav className="glass-effect border-b">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between items-center h-16">
                                 <div className="flex items-center space-x-3">
-                                    <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg glow-border"></div>
-                                    <span className="font-bold text-2xl bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">IndustryIQ</span>
+                                    <div className="w-10 h-10 rounded-lg accent-glow" style={{background: sectorConfig.accentColor}}></div>
+                                    <span className="font-bold text-xl text-white">{customization.companyName}</span>
                                 </div>
                                 <button 
                                     onClick={() => setCurrentPage('landing')}
-                                    className="text-blue-300 hover:text-white transition-colors font-mono"
+                                    className="text-white/80 hover:text-white transition-colors"
                                 >
-                                    ← RETURN
+                                    ← Back
                                 </button>
                             </div>
                         </div>
@@ -173,266 +290,206 @@
 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                         <div className="text-center mb-16">
-                            <h1 className="text-5xl font-bold text-white mb-6 font-mono">CLEARANCE LEVELS</h1>
-                            <p className="text-xl text-blue-200 font-mono">Choose your security clearance and access tier</p>
+                            <h1 className="text-5xl font-bold text-white mb-6">Choose Your Plan</h1>
+                            <p className="text-xl text-white/70">Flexible pricing for {sectorConfig.name.toLowerCase()} organizations</p>
                         </div>
 
                         <div className="grid lg:grid-cols-3 gap-8">
-                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-yellow-500/50">
-                                <div className="text-center mb-8">
-                                    <div className="bg-yellow-600 text-black px-4 py-2 rounded-lg font-mono font-bold mb-4">RESTRICTED</div>
-                                    <h3 className="text-2xl font-bold text-white mb-4 font-mono">ANALYST ACCESS</h3>
-                                    <div className="flex items-center justify-center mb-4">
-                                        <span className="text-5xl font-bold text-white font-mono">$0</span>
-                                        <span className="text-blue-300 ml-2 font-mono">/month</span>
-                                    </div>
-                                </div>
-                                <ul className="space-y-4 mb-8 text-blue-200 font-mono text-sm">
-                                    <li>• Basic threat monitoring</li>
-                                    <li>• 2 industry sectors</li>
-                                    <li>• Standard visualizations</li>
-                                    <li>• 50 queries/day</li>
-                                    <li>• Email intelligence reports</li>
-                                </ul>
-                                <button
-                                    onClick={() => handleSubscription('free', null)}
-                                    className="w-full py-4 rounded-xl font-mono font-bold text-lg bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-300 border border-yellow-500/50 transition-all"
-                                >
-                                    REQUEST ACCESS
-                                </button>
-                            </div>
-
-                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border-2 border-red-500/70 scale-105 relative">
-                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                    <span className="bg-red-600 text-white px-6 py-2 rounded-full font-mono font-bold text-sm">CLASSIFIED</span>
-                                </div>
-                                <div className="text-center mb-8">
-                                    <div className="bg-red-600 text-white px-4 py-2 rounded-lg font-mono font-bold mb-4">SECRET</div>
-                                    <h3 className="text-2xl font-bold text-white mb-4 font-mono">DIRECTOR ACCESS</h3>
-                                    <div className="flex items-center justify-center mb-4">
-                                        <span className="text-5xl font-bold text-white font-mono">$899</span>
-                                        <span className="text-blue-300 ml-2 font-mono">/month</span>
-                                    </div>
-                                </div>
-                                <ul className="space-y-4 mb-8 text-blue-200 font-mono text-sm">
-                                    <li>• Full threat intelligence suite</li>
-                                    <li>• All 12 industry sectors</li>
-                                    <li>• Predictive analytics AI</li>
-                                    <li>• Unlimited queries</li>
-                                    <li>• Real-time threat alerts</li>
-                                    <li>• Executive dashboards</li>
-                                    <li>• API access</li>
-                                </ul>
-                                <button
-                                    onClick={() => handleSubscription('professional', 'price_professional')}
-                                    className="w-full py-4 rounded-xl font-mono font-bold text-lg bg-red-600 hover:bg-red-700 text-white transition-all glow-border"
-                                >
-                                    REQUEST CLEARANCE
-                                </button>
-                            </div>
-
-                            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-purple-500/50">
-                                <div className="text-center mb-8">
-                                    <div className="bg-purple-600 text-white px-4 py-2 rounded-lg font-mono font-bold mb-4">TOP SECRET</div>
-                                    <h3 className="text-2xl font-bold text-white mb-4 font-mono">COMMAND ACCESS</h3>
-                                    <div className="flex items-center justify-center mb-4">
-                                        <span className="text-5xl font-bold text-white font-mono">$2,999</span>
-                                        <span className="text-blue-300 ml-2 font-mono">/month</span>
-                                    </div>
-                                </div>
-                                <ul className="space-y-4 mb-8 text-blue-200 font-mono text-sm">
-                                    <li>• Vatican-level intelligence</li>
-                                    <li>• Global surveillance network</li>
-                                    <li>• Custom AI models</li>
-                                    <li>• Dedicated analysts</li>
-                                    <li>• Crisis response team</li>
-                                    <li>• White-label deployment</li>
-                                    <li>• 24/7 secured operations</li>
-                                </ul>
-                                <button
-                                    onClick={() => handleSubscription('enterprise', 'price_enterprise')}
-                                    className="w-full py-4 rounded-xl font-mono font-bold text-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/50 transition-all"
-                                >
-                                    CONTACT COMMAND
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const SecurityHeader = ({ user, currentTime }) => (
-                <div className="bg-black/80 backdrop-blur-md border-b border-red-500/30 px-6 py-3">
-                    <div className="flex justify-between items-center text-sm font-mono">
-                        <div className="flex items-center space-x-6">
-                            <span className="text-red-400">CLASSIFICATION: {user?.clearanceLevel || 'UNCLASSIFIED'}</span>
-                            <span className="text-blue-400">USER ID: {user?.email?.split('@')[0]?.toUpperCase()}</span>
-                            <span className="text-green-400">STATUS: ACTIVE</span>
-                        </div>
-                        <div className="flex items-center space-x-6">
-                            <span className="text-cyan-400">SESSION: {currentTime}</span>
-                            <div className="flex items-center space-x-2">
-                                <div className="h-2 w-2 bg-green-400 rounded-full pulse-ring"></div>
-                                <span className="text-green-400">SECURE</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const ThreatIntelligencePanel = ({ companies }) => {
-                const threatData = companies.slice(0, 8).map((company, index) => ({
-                    company: company.name?.slice(0, 10) || `ENTITY-${index + 1}`,
-                    riskLevel: Math.floor(Math.random() * 100),
-                    threatScore: Math.floor(Math.random() * 10),
-                    volatility: Math.random() * 50,
-                    marketCap: (company.market_cap || 1000000000) / 1000000000
-                }));
-
-                return (
-                    <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-red-500/30">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-red-400 font-mono">THREAT ASSESSMENT</h3>
-                            <div className="flex items-center space-x-2">
-                                <div className="h-2 w-2 bg-red-400 rounded-full animate-pulse"></div>
-                                <span className="text-red-400 font-mono text-sm">LIVE MONITORING</span>
-                            </div>
-                        </div>
-                        
-                        <div className="space-y-4">
-                            {threatData.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between p-4 bg-black/20 rounded-lg border border-red-500/20">
-                                    <div className="flex-1">
-                                        <div className="font-mono text-white font-bold">{item.company}</div>
-                                        <div className="font-mono text-sm text-red-200">Risk Score: {item.threatScore}/10</div>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-32 bg-black/40 rounded-full h-2">
-                                            <div 
-                                                className={`h-2 rounded-full transition-all duration-1000 ${
-                                                    item.riskLevel > 70 ? 'bg-red-500' : 
-                                                    item.riskLevel > 40 ? 'bg-yellow-500' : 'bg-green-500'
-                                                }`}
-                                                style={{ width: `${item.riskLevel}%` }}
-                                            />
+                            {[
+                                {
+                                    name: 'Starter',
+                                    price: '$0',
+                                    badge: 'Free Forever',
+                                    features: [
+                                        'Basic analytics dashboard',
+                                        'Up to 5 data sources',
+                                        'Standard visualizations', 
+                                        'Email support',
+                                        '1 user account'
+                                    ],
+                                    action: () => handleSubscription('starter', null),
+                                    buttonText: 'Get Started Free',
+                                    popular: false
+                                },
+                                {
+                                    name: 'Professional',
+                                    price: '$299',
+                                    badge: 'Most Popular',
+                                    features: [
+                                        'Advanced analytics suite',
+                                        'Unlimited data sources',
+                                        'Custom visualizations',
+                                        'Priority support',
+                                        'Up to 25 users',
+                                        'API access',
+                                        'Custom reports'
+                                    ],
+                                    action: () => handleSubscription('professional', 'price_pro'),
+                                    buttonText: 'Start Free Trial',
+                                    popular: true
+                                },
+                                {
+                                    name: 'Enterprise',
+                                    price: '$999',
+                                    badge: 'Full Scale',
+                                    features: [
+                                        'Complete intelligence platform',
+                                        'Custom integrations',
+                                        'Dedicated support team',
+                                        'Unlimited users',
+                                        'White-label options',
+                                        'Advanced security',
+                                        'Custom AI models'
+                                    ],
+                                    action: () => handleSubscription('enterprise', 'price_enterprise'),
+                                    buttonText: 'Contact Sales',
+                                    popular: false
+                                }
+                            ].map((plan, index) => (
+                                <div key={index} className={`data-card rounded-2xl p-8 ${plan.popular ? 'scale-105 accent-glow' : ''} relative`}>
+                                    {plan.popular && (
+                                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                            <span className="px-4 py-2 rounded-full text-white text-sm font-semibold" style={{background: sectorConfig.accentColor}}>
+                                                {plan.badge}
+                                            </span>
                                         </div>
-                                        <span className={`font-mono text-sm font-bold ${
-                                            item.riskLevel > 70 ? 'text-red-400' : 
-                                            item.riskLevel > 40 ? 'text-yellow-400' : 'text-green-400'
-                                        }`}>
-                                            {item.riskLevel > 70 ? 'HIGH' : item.riskLevel > 40 ? 'MED' : 'LOW'}
-                                        </span>
+                                    )}
+                                    <div className="text-center mb-8">
+                                        <h3 className="text-2xl font-bold text-white mb-4">{plan.name}</h3>
+                                        <div className="flex items-center justify-center mb-4">
+                                            <span className="text-5xl font-bold text-white">{plan.price}</span>
+                                            <span className="text-white/60 ml-2">/month</span>
+                                        </div>
                                     </div>
+                                    <ul className="space-y-4 mb-8 text-white/80">
+                                        {plan.features.map((feature, fIndex) => (
+                                            <li key={fIndex} className="flex items-center space-x-3">
+                                                <div className="w-2 h-2 rounded-full" style={{background: sectorConfig.accentColor}}></div>
+                                                <span>{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <button
+                                        onClick={plan.action}
+                                        className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
+                                            plan.popular 
+                                                ? 'text-white accent-glow' 
+                                                : 'border text-white hover:bg-white/5'
+                                        }`}
+                                        style={plan.popular 
+                                            ? {background: sectorConfig.accentColor} 
+                                            : {borderColor: sectorConfig.accentColor, color: sectorConfig.accentColor}
+                                        }
+                                    >
+                                        {plan.buttonText}
+                                    </button>
                                 </div>
                             ))}
                         </div>
                     </div>
-                );
-            };
+                </div>
+            );
 
-            const GeopoliticalRiskMap = () => {
-                const riskData = [
-                    { region: 'AMERICAS', risk: 25, incidents: 12, stability: 'STABLE' },
-                    { region: 'EUROPE', risk: 45, incidents: 8, stability: 'MODERATE' },
-                    { region: 'ASIA-PAC', risk: 65, incidents: 23, stability: 'VOLATILE' },
-                    { region: 'MIDDLE EAST', risk: 85, incidents: 31, stability: 'HIGH RISK' },
-                    { region: 'AFRICA', risk: 70, incidents: 19, stability: 'UNSTABLE' }
+            const Sidebar = ({ activeModule, setActiveModule, companies }) => {
+                const modules = [
+                    { id: 'overview', name: 'Overview', icon: '📈' },
+                    { id: 'analytics', name: sectorConfig.terminology.analytics, icon: '📊' },
+                    { id: 'monitoring', name: sectorConfig.terminology.monitoring, icon: '🔍' },
+                    { id: 'intelligence', name: sectorConfig.terminology.intelligence, icon: '🧠' },
+                    { id: 'reporting', name: 'Reports', icon: '📋' }
                 ];
 
                 return (
-                    <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-orange-500/30">
-                        <h3 className="text-xl font-bold text-orange-400 font-mono mb-6">GEOPOLITICAL RISK MATRIX</h3>
-                        <div className="space-y-4">
-                            {riskData.map(region => (
-                                <div key={region.region} className="flex items-center justify-between p-4 bg-black/20 rounded-lg border border-orange-500/20">
-                                    <div className="flex-1">
-                                        <div className="font-mono text-white font-bold">{region.region}</div>
-                                        <div className="font-mono text-sm text-orange-200">{region.incidents} active incidents</div>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-32 bg-black/40 rounded-full h-2">
-                                            <div 
-                                                className={`h-2 rounded-full transition-all duration-1000 ${
-                                                    region.risk > 70 ? 'bg-red-500' : 
-                                                    region.risk > 40 ? 'bg-yellow-500' : 'bg-green-500'
-                                                }`}
-                                                style={{ width: `${region.risk}%` }}
-                                            />
-                                        </div>
-                                        <span className={`font-mono text-sm font-bold ${
-                                            region.risk > 70 ? 'text-red-400' : 
-                                            region.risk > 40 ? 'text-yellow-400' : 'text-green-400'
-                                        }`}>
-                                            {region.stability}
-                                        </span>
+                    <div className={`w-72 glass-effect border-r h-screen fixed left-0 top-16 flex flex-col ${sectorConfig.theme}`}>
+                        <div className="p-6 border-b border-white/10 flex-shrink-0">
+                            <div className="flex items-center space-x-3 mb-4">
+                                <div className="w-10 h-10 rounded-lg accent-glow" style={{background: sectorConfig.accentColor}}></div>
+                                <div>
+                                    <div className="font-bold text-lg text-white">{customization.companyName}</div>
+                                    <div className="text-xs text-white/60">{sectorConfig.name}</div>
+                                </div>
+                            </div>
+                            <div className="data-card rounded-lg p-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-white/80 text-sm">System Status</span>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="status-indicator" style={{background: sectorConfig.accentColor}}></div>
+                                        <span className="text-xs text-white/80">Active</span>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <nav className="p-6 flex-1 overflow-y-auto">
+                            {modules.map((module) => (
+                                <button
+                                    key={module.id}
+                                    onClick={() => setActiveModule(module.id)}
+                                    className={`w-full text-left p-3 mb-2 rounded-lg hover:bg-white/5 flex items-center space-x-3 transition-all ${
+                                        activeModule === module.id 
+                                            ? 'text-white border' 
+                                            : 'text-white/70'
+                                    }`}
+                                    style={activeModule === module.id ? {
+                                        borderColor: sectorConfig.accentColor,
+                                        background: `${sectorConfig.accentColor}20`
+                                    } : {}}
+                                >
+                                    <span className="text-lg">{module.icon}</span>
+                                    <span className="font-medium text-sm">{module.name}</span>
+                                </button>
                             ))}
+                        </nav>
+
+                        <div className="p-6 border-t border-white/10 flex-shrink-0">
+                            <div className="data-card rounded-lg p-3 mb-3">
+                                <div className="text-white/80 text-xs mb-2">Data Sources</div>
+                                <div className="space-y-1">
+                                    <div className="flex justify-between">
+                                        <span className="text-white/60 text-xs">Connected</span>
+                                        <span className="text-white/80 text-xs">{companies.length}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-white/60 text-xs">Real-time</span>
+                                        <span className="text-xs" style={{color: sectorConfig.accentColor}}>Live</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => {setUser(null); setCurrentPage('landing');}}
+                                className="w-full text-center text-xs text-white/60 hover:text-white/80"
+                            >
+                                Sign Out
+                            </button>
                         </div>
                     </div>
                 );
             };
 
-            const PredictiveAnalyticsPanel = ({ companies }) => {
-                const predictions = companies.slice(0, 6).map((company, index) => ({
-                    name: company.name?.slice(0, 15) || `ENTITY-${index + 1}`,
-                    currentValue: Math.floor(Math.random() * 100) + 50,
-                    predictedValue: Math.floor(Math.random() * 120) + 60,
-                    confidence: Math.floor(Math.random() * 30) + 70,
-                    trend: Math.random() > 0.5 ? 'UP' : 'DOWN'
-                }));
-
-                return (
-                    <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-purple-400 font-mono">PREDICTIVE MODELS</h3>
-                            <div className="text-purple-400 font-mono text-sm">CONFIDENCE: 94.7%</div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {predictions.map((pred, index) => (
-                                <div key={index} className="bg-black/20 rounded-lg p-4 border border-purple-500/20">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <span className="font-mono text-white font-bold text-sm">{pred.name}</span>
-                                        <span className={`font-mono text-xs px-2 py-1 rounded ${
-                                            pred.trend === 'UP' ? 'bg-green-600 text-green-100' : 'bg-red-600 text-red-100'
-                                        }`}>
-                                            {pred.trend}
-                                        </span>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between">
-                                            <span className="text-purple-200 font-mono text-xs">Current</span>
-                                            <span className="text-white font-mono text-xs">{pred.currentValue}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-purple-200 font-mono text-xs">Predicted</span>
-                                            <span className="text-purple-300 font-mono text-xs">{pred.predictedValue}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-purple-200 font-mono text-xs">Confidence</span>
-                                            <span className="text-green-400 font-mono text-xs">{pred.confidence}%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+            const DataCard = ({ title, value, subtitle, trend, children }) => (
+                <div className="data-card rounded-xl p-6">
+                    <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-white/80 text-sm font-medium">{title}</h3>
+                        {trend && (
+                            <span className={`text-xs px-2 py-1 rounded ${
+                                trend > 0 ? 'text-green-100' : 'text-red-100'
+                            }`} style={{
+                                background: trend > 0 ? '#10b981' : '#ef4444'
+                            }}>
+                                {trend > 0 ? '+' : ''}{trend}%
+                            </span>
+                        )}
                     </div>
-                );
-            };
+                    <div className="text-3xl font-bold text-white mb-2">{value}</div>
+                    {subtitle && <div className="text-white/60 text-sm">{subtitle}</div>}
+                    {children}
+                </div>
+            );
 
-            const CommandCenter = () => {
-                const [activePanel, setActivePanel] = useState('intelligence');
+            const Dashboard = () => {
+                const [activeModule, setActiveModule] = useState('overview');
                 const [companies, setCompanies] = useState([]);
-                const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
-                const [alertCount, setAlertCount] = useState(7);
-
-                useEffect(() => {
-                    const timer = setInterval(() => {
-                        setCurrentTime(new Date().toLocaleTimeString());
-                    }, 1000);
-                    return () => clearInterval(timer);
-                }, []);
+                const [loading, setLoading] = useState(true);
 
                 useEffect(() => {
                     const fetchData = async () => {
@@ -441,188 +498,145 @@
                             const data = await response.json();
                             setCompanies(Array.isArray(data) ? data : []);
                         } catch (error) {
-                            console.error('API Error:', error);
                             setCompanies([
                                 { id: 1, name: 'Apple Inc.', market_cap: 2800000000000, industry_code: 'TECH' },
                                 { id: 2, name: 'Microsoft Corp.', market_cap: 2400000000000, industry_code: 'TECH' },
                                 { id: 3, name: 'Amazon.com Inc.', market_cap: 1500000000000, industry_code: 'ECOM' },
                                 { id: 4, name: 'Tesla Inc.', market_cap: 800000000000, industry_code: 'AUTO' },
-                                { id: 5, name: 'Alphabet Inc.', market_cap: 1800000000000, industry_code: 'TECH' },
-                                { id: 6, name: 'Meta Platforms', market_cap: 750000000000, industry_code: 'TECH' }
+                                { id: 5, name: 'Alphabet Inc.', market_cap: 1800000000000, industry_code: 'TECH' }
                             ]);
+                        } finally {
+                            setLoading(false);
                         }
                     };
                     fetchData();
                 }, []);
 
-                const panels = [
-                    { id: 'intelligence', name: 'INTELLIGENCE', icon: '🎯' },
-                    { id: 'predictive', name: 'PREDICTIVE', icon: '🧠' },
-                    { id: 'surveillance', name: 'SURVEILLANCE', icon: '👁️' },
-                    { id: 'geopolitical', name: 'GEOPOLITICAL', icon: '🌍' },
-                    { id: 'operations', name: 'OPERATIONS', icon: '⚡' }
-                ];
+                const metrics = useMemo(() => {
+                    if (!companies.length) return {};
+                    
+                    const totalValue = companies.reduce((sum, c) => sum + (c.market_cap || 0), 0);
+                    const avgGrowth = 12.4;
+                    const activeAlerts = 3;
+                    
+                    return {
+                        totalValue: `$${(totalValue / 1000000000000).toFixed(1)}T`,
+                        entities: companies.length,
+                        avgGrowth,
+                        activeAlerts,
+                        uptime: '99.97%'
+                    };
+                }, [companies]);
 
                 return (
-                    <div className="min-h-screen matrix-bg">
-                        <SecurityHeader user={user} currentTime={currentTime} />
-                        
-                        <div className="flex">
-                            <div className="w-72 bg-black/60 backdrop-blur-md border-r border-blue-500/30 h-screen fixed left-0 top-16">
-                                <div className="p-6 border-b border-blue-500/30">
-                                    <div className="flex items-center space-x-3 mb-4">
-                                        <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg glow-border"></div>
-                                        <div>
-                                            <div className="font-bold text-lg text-white font-mono">COMMAND</div>
-                                            <div className="text-cyan-400 text-xs font-mono">CENTER</div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-red-600/20 border border-red-500/30 rounded-lg p-3">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-red-400 font-mono text-sm">ACTIVE ALERTS</span>
-                                            <span className="bg-red-500 text-white px-2 py-1 rounded font-mono text-xs">{alertCount}</span>
-                                        </div>
-                                    </div>
+                    <div className={`min-h-screen gradient-bg ${sectorConfig.theme}`}>
+                        <div className="glass-effect border-b px-6 py-3">
+                            <div className="flex justify-between items-center text-sm">
+                                <div className="flex items-center space-x-6">
+                                    <span className="text-white/60">User: {user?.email?.split('@')[0]?.toUpperCase()}</span>
+                                    <span className="text-white/60">Access: {user?.accessLevel}</span>
+                                    <span style={{color: sectorConfig.accentColor}}>Status: Online</span>
                                 </div>
-
-                                <nav className="p-6">
-                                    {panels.map((panel) => (
-                                        <button
-                                            key={panel.id}
-                                            onClick={() => setActivePanel(panel.id)}
-                                            className={`w-full text-left p-4 mb-2 rounded-lg hover:bg-blue-500/10 flex items-center space-x-3 transition-all font-mono ${
-                                                activePanel === panel.id ? 'bg-blue-600/20 text-blue-400 border border-blue-500/50' : 'text-blue-200'
-                                            }`}
-                                        >
-                                            <span className="text-lg">{panel.icon}</span>
-                                            <span className="font-bold">{panel.name}</span>
-                                        </button>
-                                    ))}
-                                </nav>
-
-                                <div className="absolute bottom-6 left-6 right-6">
-                                    <div className="bg-black/40 rounded-lg p-4 border border-green-500/30">
-                                        <div className="text-green-400 font-mono text-sm mb-2">SYSTEM STATUS</div>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between">
-                                                <span className="text-green-300 font-mono text-xs">SECURITY</span>
-                                                <span className="text-green-400 font-mono text-xs">OPTIMAL</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-green-300 font-mono text-xs">DATA FEED</span>
-                                                <span className="text-green-400 font-mono text-xs">LIVE</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-green-300 font-mono text-xs">COMPANIES</span>
-                                                <span className="text-green-400 font-mono text-xs">{companies.length}</span>
-                                            </div>
-                                        </div>
+                                <div className="flex items-center space-x-6">
+                                    <span className="text-white/60">Session: {new Date().toLocaleTimeString()}</span>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="status-indicator" style={{background: sectorConfig.accentColor}}></div>
+                                        <span style={{color: sectorConfig.accentColor}}>Secure</span>
                                     </div>
-                                    <button
-                                        onClick={() => {setUser(null); setCurrentPage('landing');}}
-                                        className="w-full mt-4 text-center text-sm text-red-400 hover:text-red-300 font-mono"
-                                    >
-                                        TERMINATE SESSION
-                                    </button>
                                 </div>
                             </div>
+                        </div>
 
+                        <div className="flex">
+                            <Sidebar activeModule={activeModule} setActiveModule={setActiveModule} companies={companies} />
+                            
                             <div className="ml-72 flex-1 p-8">
                                 <div className="mb-8">
-                                    <h1 className="text-4xl font-bold text-white font-mono mb-2">
-                                        {panels.find(p => p.id === activePanel)?.name} OPERATIONS
+                                    <h1 className="text-4xl font-bold text-white mb-2">
+                                        {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} 
+                                        {activeModule === 'overview' ? ' Dashboard' : ''}
                                     </h1>
-                                    <div className="text-blue-300 font-mono">Classification: {user?.clearanceLevel} • Real-time Analysis</div>
+                                    <div className="text-white/60">{sectorConfig.name} • Real-time Analytics</div>
                                 </div>
 
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                                    {activePanel === 'intelligence' && (
-                                        <>
-                                            <ThreatIntelligencePanel companies={companies} />
-                                            <GeopoliticalRiskMap />
-                                        </>
-                                    )}
-                                    {activePanel === 'predictive' && (
-                                        <>
-                                            <PredictiveAnalyticsPanel companies={companies} />
-                                            <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-green-500/30">
-                                                <h3 className="text-xl font-bold text-green-400 font-mono mb-6">AI MODEL PERFORMANCE</h3>
+                                {activeModule === 'overview' && (
+                                    <div className="space-y-8">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                            <DataCard title="Total Value" value={metrics.totalValue} trend={12.4} />
+                                            <DataCard title="Entities" value={metrics.entities} subtitle="Data sources" />
+                                            <DataCard title="Performance" value={`+${metrics.avgGrowth}%`} subtitle="Average growth" trend={metrics.avgGrowth} />
+                                            <DataCard title="System Health" value={metrics.uptime} subtitle="Uptime" />
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                            <div className="data-card rounded-xl p-6">
+                                                <h3 className="text-xl font-bold text-white mb-6">Performance Metrics</h3>
                                                 <div className="space-y-4">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-green-300 font-mono">Market Prediction Accuracy</span>
-                                                        <span className="text-green-400 font-mono font-bold">94.7%</span>
-                                                    </div>
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-green-300 font-mono">Risk Assessment Model</span>
-                                                        <span className="text-green-400 font-mono font-bold">97.2%</span>
-                                                    </div>
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-green-300 font-mono">Sentiment Analysis</span>
-                                                        <span className="text-green-400 font-mono font-bold">91.8%</span>
-                                                    </div>
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-green-300 font-mono">Data Sources Active</span>
-                                                        <span className="text-green-400 font-mono font-bold">2,847</span>
-                                                    </div>
+                                                    {companies.slice(0, 5).map((company, index) => (
+                                                        <div key={index} className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
+                                                            <div>
+                                                                <div className="text-white font-medium">{company.name}</div>
+                                                                <div className="text-white/60 text-sm">{company.industry_code}</div>
+                                                            </div>
+                                                            <div className="flex items-center space-x-4">
+                                                                <div className="w-24 h-1 bg-black/40 rounded">
+                                                                    <div 
+                                                                        className="metric-bar rounded"
+                                                                        style={{
+                                                                            width: `${Math.min(((company.market_cap || 0) / 3000000000000) * 100, 100)}%`,
+                                                                            background: sectorConfig.accentColor
+                                                                        }}
+                                                                    ></div>
+                                                                </div>
+                                                                <span className="text-white/80 text-sm font-medium">
+                                                                    ${((company.market_cap || 0) / 1000000000).toFixed(0)}B
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
-                                        </>
-                                    )}
-                                    {activePanel === 'surveillance' && (
-                                        <div className="col-span-2">
-                                            <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-cyan-500/30">
-                                                <h3 className="text-xl font-bold text-cyan-400 font-mono mb-6">GLOBAL SURVEILLANCE NETWORK</h3>
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                    <div className="text-center bg-black/20 rounded-lg p-6">
-                                                        <div className="text-4xl font-bold text-cyan-400 font-mono">2,847</div>
-                                                        <div className="text-cyan-300 font-mono text-sm">DATA SOURCES</div>
-                                                        <div className="text-xs text-cyan-200 font-mono mt-1">Real-time feeds</div>
+                                            
+                                            <div className="data-card rounded-xl p-6">
+                                                <h3 className="text-xl font-bold text-white mb-6">System Overview</h3>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="text-center bg-black/20 rounded-lg p-4">
+                                                        <div className="text-2xl font-bold text-white">{companies.length}</div>
+                                                        <div className="text-white/60 text-sm">Active Sources</div>
                                                     </div>
-                                                    <div className="text-center bg-black/20 rounded-lg p-6">
-                                                        <div className="text-4xl font-bold text-cyan-400 font-mono">847M</div>
-                                                        <div className="text-cyan-300 font-mono text-sm">DATA POINTS/DAY</div>
-                                                        <div className="text-xs text-cyan-200 font-mono mt-1">Processing pipeline</div>
+                                                    <div className="text-center bg-black/20 rounded-lg p-4">
+                                                        <div className="text-2xl font-bold" style={{color: sectorConfig.accentColor}}>Live</div>
+                                                        <div className="text-white/60 text-sm">Data Feed</div>
                                                     </div>
-                                                    <div className="text-center bg-black/20 rounded-lg p-6">
-                                                        <div className="text-4xl font-bold text-green-400 font-mono">99.97%</div>
-                                                        <div className="text-cyan-300 font-mono text-sm">UPTIME</div>
-                                                        <div className="text-xs text-cyan-200 font-mono mt-1">System reliability</div>
+                                                    <div className="text-center bg-black/20 rounded-lg p-4">
+                                                        <div className="text-2xl font-bold text-white">99.9%</div>
+                                                        <div className="text-white/60 text-sm">Accuracy</div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {activePanel === 'geopolitical' && (
-                                        <div className="col-span-2">
-                                            <GeopoliticalRiskMap />
-                                        </div>
-                                    )}
-                                    {activePanel === 'operations' && (
-                                        <div className="col-span-2">
-                                            <div className="bg-black/40 backdrop-blur-md rounded-xl p-6 border border-blue-500/30">
-                                                <h3 className="text-xl font-bold text-blue-400 font-mono mb-6">OPERATIONAL STATUS</h3>
-                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                                    <div className="bg-black/20 rounded-lg p-4 text-center">
-                                                        <div className="text-2xl font-bold text-green-400 font-mono">ONLINE</div>
-                                                        <div className="text-green-300 font-mono text-sm">System Status</div>
-                                                    </div>
-                                                    <div className="bg-black/20 rounded-lg p-4 text-center">
-                                                        <div className="text-2xl font-bold text-blue-400 font-mono">{companies.length}</div>
-                                                        <div className="text-blue-300 font-mono text-sm">Entities Tracked</div>
-                                                    </div>
-                                                    <div className="bg-black/20 rounded-lg p-4 text-center">
-                                                        <div className="text-2xl font-bold text-yellow-400 font-mono">{alertCount}</div>
-                                                        <div className="text-yellow-300 font-mono text-sm">Active Alerts</div>
-                                                    </div>
-                                                    <div className="bg-black/20 rounded-lg p-4 text-center">
-                                                        <div className="text-2xl font-bold text-purple-400 font-mono">94.7%</div>
-                                                        <div className="text-purple-300 font-mono text-sm">AI Accuracy</div>
+                                                    <div className="text-center bg-black/20 rounded-lg p-4">
+                                                        <div className="text-2xl font-bold text-white">{metrics.activeAlerts}</div>
+                                                        <div className="text-white/60 text-sm">Alerts</div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
+
+                                {activeModule !== 'overview' && (
+                                    <div className="data-card rounded-xl p-8">
+                                        <h3 className="text-2xl font-bold text-white mb-4">
+                                            {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Module
+                                        </h3>
+                                        <p className="text-white/70">
+                                            Advanced {activeModule} capabilities for {sectorConfig.name.toLowerCase()} organizations. 
+                                            This module provides comprehensive tools and insights tailored for your industry requirements.
+                                        </p>
+                                        <div className="mt-6 p-4 bg-black/20 rounded-lg border" style={{borderColor: sectorConfig.accentColor}}>
+                                            <div className="text-white/80 text-sm">Module Status: Active</div>
+                                            <div className="text-white/60 text-xs mt-1">Ready for configuration and data input</div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -633,12 +647,12 @@
                 <div>
                     {currentPage === 'landing' && <LandingPage />}
                     {currentPage === 'pricing' && <PricingPage />}
-                    {currentPage === 'command-center' && <CommandCenter />}
+                    {currentPage === 'dashboard' && <Dashboard />}
                 </div>
             );
         };
 
-        ReactDOM.render(<VaticanIntelligencePlatform />, document.getElementById('root'));
+        ReactDOM.render(<EnterprisePlatform />, document.getElementById('root'));
     </script>
 </body>
 </html>
