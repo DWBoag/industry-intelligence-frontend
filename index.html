@@ -10,84 +10,87 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary-bg: #0a0e27;
-            --secondary-bg: #1a1f3a;
-            --accent-color: #00d4ff;
-            --success-color: #00ff88;
-            --warning-color: #ffaa00;
-            --danger-color: #ff3366;
-            --text-primary: #ffffff;
-            --text-secondary: #8892b0;
-            --border-color: rgba(0, 212, 255, 0.2);
-            --glow-color: rgba(0, 212, 255, 0.4);
+            /* Psychology-optimized color palette */
+            --primary-bg: #0f172a; /* Deep slate for focus */
+            --secondary-bg: #1e293b; /* Softer slate */
+            --accent-color: #3b82f6; /* Trust blue */
+            --success-color: #10b981; /* Growth green */
+            --warning-color: #f59e0b; /* Energy orange */
+            --danger-color: #ef4444; /* Alert red (used sparingly) */
+            --wisdom-color: #8b5cf6; /* Creative purple */
+            --calm-color: #06b6d4; /* Calming cyan */
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: rgba(59, 130, 246, 0.2);
+            --glow-color: rgba(59, 130, 246, 0.4);
         }
         
         .theme-financial {
-            --accent-color: #00ff88;
-            --glow-color: rgba(0, 255, 136, 0.4);
-            --border-color: rgba(0, 255, 136, 0.2);
+            --accent-color: #10b981; /* Trust green for growth */
+            --glow-color: rgba(16, 185, 129, 0.4);
+            --border-color: rgba(16, 185, 129, 0.2);
         }
         
         .theme-healthcare {
-            --accent-color: #8b5cf6;
-            --glow-color: rgba(139, 92, 246, 0.4);
-            --border-color: rgba(139, 92, 246, 0.2);
+            --accent-color: #06b6d4; /* Calming cyan for care */
+            --glow-color: rgba(6, 182, 212, 0.4);
+            --border-color: rgba(6, 182, 212, 0.2);
         }
         
         .theme-technology {
-            --accent-color: #00d4ff;
-            --glow-color: rgba(0, 212, 255, 0.4);
-            --border-color: rgba(0, 212, 255, 0.2);
+            --accent-color: #3b82f6; /* Professional blue */
+            --glow-color: rgba(59, 130, 246, 0.4);
+            --border-color: rgba(59, 130, 246, 0.2);
         }
         
         .theme-manufacturing {
-            --accent-color: #f59e0b;
+            --accent-color: #f59e0b; /* Energetic orange */
             --glow-color: rgba(245, 158, 11, 0.4);
             --border-color: rgba(245, 158, 11, 0.2);
         }
         
         body {
-            background: radial-gradient(ellipse at top, var(--primary-bg), #000014);
+            background: linear-gradient(135deg, var(--primary-bg) 0%, #0a0f1f 100%);
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
             overflow-x: hidden;
         }
         
         .neural-bg {
             background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
-                linear-gradient(180deg, var(--primary-bg) 0%, #000014 100%);
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
+                linear-gradient(180deg, var(--primary-bg) 0%, #0a0f1f 100%);
             background-size: 400% 400%;
-            animation: neural-pulse 8s ease-in-out infinite;
+            animation: neural-pulse 12s ease-in-out infinite;
         }
         
         @keyframes neural-pulse {
-            0%, 100% { background-position: 0% 50%; opacity: 1; }
-            50% { background-position: 100% 50%; opacity: 0.8; }
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         
         .glass-panel {
             background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.04) 0%, 
+                rgba(255, 255, 255, 0.03) 0%, 
                 rgba(255, 255, 255, 0.01) 100%);
-            backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(20px) saturate(150%);
             border: 1px solid var(--border-color);
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
         
         .hologram-card {
             background: linear-gradient(135deg, 
-                rgba(0, 212, 255, 0.03) 0%, 
-                rgba(0, 255, 136, 0.02) 50%,
-                rgba(139, 92, 246, 0.03) 100%);
-            backdrop-filter: blur(15px);
+                rgba(59, 130, 246, 0.02) 0%, 
+                rgba(16, 185, 129, 0.01) 50%,
+                rgba(139, 92, 246, 0.02) 100%);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .hologram-card::before {
@@ -105,14 +108,14 @@
         }
         
         .hologram-card:hover::before {
-            opacity: 1;
-            animation: border-glow 2s linear infinite;
+            opacity: 0.7;
+            animation: border-glow 3s linear infinite;
         }
         
         .hologram-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4),
-                        0 0 30px var(--glow-color);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+                        0 0 20px var(--glow-color);
         }
         
         @keyframes border-glow {
@@ -137,7 +140,7 @@
                 transparent, 
                 var(--glow-color), 
                 transparent);
-            animation: data-flow 3s linear infinite;
+            animation: data-flow 4s linear infinite;
         }
         
         @keyframes data-flow {
@@ -146,12 +149,12 @@
         }
         
         .metric-visualizer {
-            background: linear-gradient(90deg, transparent 0%, var(--accent-color) 100%);
+            background: linear-gradient(90deg, var(--success-color) 0%, var(--accent-color) 100%);
             height: 4px;
             border-radius: 2px;
             position: relative;
             overflow: hidden;
-            transition: width 1s ease-out;
+            transition: width 1.2s ease-out;
         }
         
         .metric-visualizer::after {
@@ -161,13 +164,13 @@
             left: 0;
             width: 30px;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-            animation: shimmer 2s linear infinite;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            animation: shimmer 2.5s linear infinite;
         }
         
         @keyframes shimmer {
             0% { transform: translateX(-30px); }
-            100% { transform: translateX(200px); }
+            100% { transform: translateX(300px); }
         }
         
         .neural-network {
@@ -178,7 +181,7 @@
             height: 100%;
             pointer-events: none;
             z-index: -1;
-            opacity: 0.15;
+            opacity: 0.12;
         }
         
         .floating-particle {
@@ -187,60 +190,46 @@
             height: 2px;
             background: var(--accent-color);
             border-radius: 50%;
-            animation: float 10s linear infinite;
+            animation: float 15s linear infinite;
         }
         
         @keyframes float {
             0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
         
-        .ai-chat-bubble {
-            background: linear-gradient(135deg, var(--accent-color), var(--success-color));
-            border-radius: 20px;
-            padding: 12px 20px;
-            margin: 8px 0;
-            max-width: 300px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            animation: bubble-appear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        
-        @keyframes bubble-appear {
-            0% { transform: scale(0) translateY(20px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-        
         .command-input {
-            background: rgba(0, 0, 0, 0.4);
-            border: 2px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 16px 20px;
+            padding: 14px 18px;
             color: var(--text-primary);
-            font-size: 16px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            font-size: 15px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
         }
         
         .command-input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 20px var(--glow-color);
+            box-shadow: 0 0 15px var(--glow-color);
+            background: rgba(15, 23, 42, 0.8);
         }
         
         .pulse-indicator {
-            animation: pulse-glow 2s infinite;
+            animation: pulse-glow 2.5s infinite;
         }
         
         @keyframes pulse-glow {
             0%, 100% { 
-                box-shadow: 0 0 5px var(--accent-color);
+                box-shadow: 0 0 4px var(--accent-color);
                 opacity: 1;
             }
             50% { 
-                box-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--accent-color);
-                opacity: 0.8;
+                box-shadow: 0 0 15px var(--accent-color), 0 0 25px var(--accent-color);
+                opacity: 0.9;
             }
         }
         
@@ -273,15 +262,15 @@
         }
         
         .accent-glow {
-            box-shadow: 0 0 20px var(--glow-color);
+            box-shadow: 0 0 15px var(--glow-color);
         }
         
         .status-indicator {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--accent-color);
-            animation: pulse-glow 2s infinite;
+            background: var(--success-color);
+            animation: pulse-glow 2.5s infinite;
         }
         
         .enterprise-grid {
@@ -307,7 +296,7 @@
             financial: {
                 name: 'Financial Services',
                 theme: 'theme-financial',
-                accentColor: '#00ff88',
+                accentColor: '#10b981',
                 terminology: {
                     dashboard: 'Portfolio Command Center',
                     analytics: 'Market Intelligence',
@@ -318,7 +307,7 @@
             healthcare: {
                 name: 'Healthcare',
                 theme: 'theme-healthcare', 
-                accentColor: '#8b5cf6',
+                accentColor: '#06b6d4',
                 terminology: {
                     dashboard: 'Clinical Operations',
                     analytics: 'Patient Analytics',
@@ -329,7 +318,7 @@
             technology: {
                 name: 'Technology',
                 theme: 'theme-technology',
-                accentColor: '#00d4ff',
+                accentColor: '#3b82f6',
                 terminology: {
                     dashboard: 'System Command',
                     analytics: 'Performance Matrix',
@@ -369,22 +358,22 @@
                 resizeCanvas();
 
                 const particles = [];
-                const particleCount = Math.min(50, Math.floor(window.innerWidth / 30));
+                const particleCount = Math.min(40, Math.floor(window.innerWidth / 40));
 
                 for (let i = 0; i < particleCount; i++) {
                     particles.push({
                         x: Math.random() * canvas.width,
                         y: Math.random() * canvas.height,
-                        vx: (Math.random() - 0.5) * 0.5,
-                        vy: (Math.random() - 0.5) * 0.5,
-                        opacity: Math.random() * 0.5 + 0.2
+                        vx: (Math.random() - 0.5) * 0.3,
+                        vy: (Math.random() - 0.5) * 0.3,
+                        opacity: Math.random() * 0.4 + 0.1
                     });
                 }
 
                 let animationId;
                 function animate() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color') || '#00d4ff';
+                    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color') || '#3b82f6';
                     ctx.lineWidth = 0.5;
 
                     particles.forEach((particle, i) => {
@@ -406,8 +395,8 @@
                                 const dy = particle.y - otherParticle.y;
                                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                                if (distance < 100) {
-                                    ctx.globalAlpha = (100 - distance) / 100 * 0.1;
+                                if (distance < 120) {
+                                    ctx.globalAlpha = (120 - distance) / 120 * 0.08;
                                     ctx.beginPath();
                                     ctx.moveTo(particle.x, particle.y);
                                     ctx.lineTo(otherParticle.x, otherParticle.y);
@@ -482,8 +471,8 @@
                             <div key={index} className={`${msg.type === 'ai' ? 'text-left' : 'text-right'}`}>
                                 <div className={`inline-block p-3 rounded-lg max-w-xs ${
                                     msg.type === 'ai' 
-                                        ? 'bg-blue-600/20 text-blue-100 border border-blue-500/30' 
-                                        : 'bg-white/10 text-white'
+                                        ? 'bg-blue-600/10 text-blue-100 border border-blue-500/20' 
+                                        : 'bg-white/5 text-white'
                                 }`}>
                                     {msg.text}
                                 </div>
@@ -491,7 +480,7 @@
                         ))}
                         {isTyping && (
                             <div className="text-left">
-                                <div className="inline-block p-3 rounded-lg bg-blue-600/20 text-blue-100 border border-blue-500/30 typing-animation">
+                                <div className="inline-block p-3 rounded-lg bg-blue-600/10 text-blue-100 border border-blue-500/20 typing-animation">
                                     AI is analyzing...
                                 </div>
                             </div>
@@ -519,7 +508,7 @@
                                     setInput('');
                                 }
                             }}
-                            className="px-4 py-2 rounded-lg text-white font-medium transition-colors accent-glow"
+                            className="px-4 py-2 rounded-lg text-white font-medium transition-all hover:brightness-110 accent-glow"
                             style={{background: 'var(--accent-color)'}}
                         >
                             Send
@@ -540,10 +529,10 @@
                     onMouseLeave={() => setIsHovered(false)}
                 >
                     <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-white/80 text-sm font-medium uppercase tracking-wide">{title}</h3>
+                        <h3 className="text-white/70 text-sm font-medium uppercase tracking-wide">{title}</h3>
                         {trend && (
                             <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
-                                trend > 0 ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
+                                trend > 0 ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
                             }`}>
                                 <span>{trend > 0 ? '↗' : '↘'}</span>
                                 <span>{Math.abs(trend)}%</span>
@@ -556,19 +545,19 @@
                     </div>
                     
                     {subtitle && (
-                        <div className="text-white/60 text-sm mb-4">{subtitle}</div>
+                        <div className="text-white/50 text-sm mb-4">{subtitle}</div>
                     )}
                     
                     {interactive && isHovered && (
                         <div className="mt-4 space-y-2">
-                            <div className="h-20 bg-black/20 rounded-lg flex items-end justify-around p-2">
+                            <div className="h-20 bg-black/15 rounded-lg flex items-end justify-around p-2">
                                 {[...Array(8)].map((_, i) => (
                                     <div 
                                         key={i} 
                                         className="w-3 rounded-t animate-pulse"
                                         style={{
                                             height: `${20 + Math.random() * 40}px`,
-                                            background: 'var(--accent-color)',
+                                            background: 'linear-gradient(to top, var(--accent-color), var(--success-color))',
                                             animationDelay: `${i * 0.1}s`
                                         }}
                                     />
@@ -598,7 +587,7 @@
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                             <div className="status-indicator"></div>
-                            <span className="text-white/80 text-sm font-medium">LIVE MARKET DATA</span>
+                            <span className="text-white/70 text-sm font-medium">LIVE MARKET DATA</span>
                         </div>
                         <div className="flex space-x-6">
                             {data.slice(currentIndex, currentIndex + 3).map((item, index) => (
@@ -639,7 +628,7 @@
                 root.style.setProperty('--accent-color', sectorConfig.accentColor);
                 root.style.setProperty('--glow-color', sectorConfig.accentColor + '66');
                 root.style.setProperty('--border-color', sectorConfig.accentColor + '33');
-            }, [currentSector]);
+            }, [currentSector, sectorConfig.accentColor]);
 
             useEffect(() => {
                 // Simulate real-time data updates
@@ -692,7 +681,7 @@
                     <NeuralNetwork />
                     
                     {/* Floating Particles */}
-                    {[...Array(20)].map((_, i) => (
+                    {[...Array(15)].map((_, i) => (
                         <div 
                             key={i}
                             className="floating-particle"
@@ -708,8 +697,8 @@
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between items-center h-16">
                                 <div className="flex items-center space-x-3">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 via-purple-500 to-cyan-400 p-0.5">
-                                        <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-500 p-0.5">
+                                        <div className="w-full h-full rounded-xl bg-slate-900 flex items-center justify-center">
                                             <div className="text-white font-bold">IQ</div>
                                         </div>
                                     </div>
@@ -722,23 +711,23 @@
                                     <select 
                                         value={currentSector} 
                                         onChange={(e) => setCurrentSector(e.target.value)}
-                                        className="glass-panel border-0 text-white rounded px-4 py-2 text-sm"
+                                        className="glass-panel border-0 text-white rounded px-4 py-2 text-sm bg-slate-800/50"
                                     >
                                         {Object.entries(SECTOR_THEMES).map(([key, config]) => (
-                                            <option key={key} value={key} className="bg-gray-900">
+                                            <option key={key} value={key} className="bg-slate-900">
                                                 {config.name}
                                             </option>
                                         ))}
                                     </select>
                                     <button 
                                         onClick={() => setCurrentPage('pricing')}
-                                        className="text-white/80 hover:text-white transition-all hover:scale-105"
+                                        className="text-white/70 hover:text-white transition-all hover:scale-105"
                                     >
                                         Pricing
                                     </button>
                                     <button 
                                         onClick={() => handleSubscription('starter')}
-                                        className="px-8 py-3 text-white rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-2xl accent-glow"
+                                        className="px-8 py-3 text-white rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-xl accent-glow"
                                         style={{background: 'var(--accent-color)'}}
                                     >
                                         Launch Platform
@@ -752,26 +741,26 @@
                         <div className="text-center">
                             <h1 className="text-7xl md:text-9xl font-bold text-white mb-8 tracking-tight leading-tight">
                                 ULTIMATE
-                                <span className="block" style={{color: 'var(--accent-color)'}}>
+                                <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
                                     INTELLIGENCE
                                 </span>
                             </h1>
-                            <p className="text-2xl text-white/80 mb-16 max-w-5xl mx-auto leading-relaxed">
+                            <p className="text-2xl text-white/70 mb-16 max-w-5xl mx-auto leading-relaxed">
                                 Next-generation AI-powered platform that transforms how {sectorConfig.name.toLowerCase()} 
                                 organizations understand, analyze, and predict market dynamics with neural network precision.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-8 justify-center">
                                 <button 
                                     onClick={() => setCurrentPage('pricing')}
-                                    className="px-12 py-5 text-white rounded-2xl font-bold text-xl transition-all transform hover:scale-110 hover:shadow-2xl accent-glow"
-                                    style={{background: 'var(--accent-color)'}}
+                                    className="px-12 py-5 text-white rounded-2xl font-bold text-xl transition-all transform hover:scale-110 hover:shadow-xl accent-glow"
+                                    style={{background: 'linear-gradient(135deg, var(--accent-color), var(--wisdom-color))'}}
                                 >
                                     Experience The Future
                                 </button>
                                 <button 
                                     onClick={() => handleSubscription('starter')}
-                                    className="px-12 py-5 border-2 text-white hover:bg-white/10 rounded-2xl font-bold text-xl transition-all transform hover:scale-105"
-                                    style={{borderColor: 'var(--accent-color)'}}
+                                    className="px-12 py-5 border text-white hover:bg-white/5 rounded-2xl font-bold text-xl transition-all transform hover:scale-105"
+                                    style={{borderColor: 'var(--accent-color)', borderWidth: '2px'}}
                                 >
                                     Live Demonstration
                                 </button>
@@ -786,25 +775,25 @@
                                     title: 'Neural Intelligence', 
                                     desc: 'Advanced machine learning algorithms with real-time neural network processing',
                                     icon: '🧠',
-                                    color: 'from-purple-500 to-pink-600'
+                                    color: 'from-purple-500 to-pink-500'
                                 },
                                 { 
                                     title: 'Quantum Analytics', 
                                     desc: 'Sub-millisecond data processing with live streaming visualizations',
                                     icon: '⚡',
-                                    color: 'from-blue-500 to-cyan-600'
+                                    color: 'from-blue-500 to-cyan-500'
                                 },
                                 { 
                                     title: 'Predictive AI', 
                                     desc: 'Deep learning models trained on global market patterns and behaviors',
                                     icon: '🔮',
-                                    color: 'from-green-500 to-emerald-600'
+                                    color: 'from-green-500 to-emerald-500'
                                 },
                                 { 
                                     title: 'Enterprise Security', 
                                     desc: 'Military-grade security with real-time threat monitoring and compliance',
                                     icon: '🛡️',
-                                    color: 'from-red-500 to-orange-600'
+                                    color: 'from-orange-500 to-yellow-500'
                                 }
                             ].map((feature, index) => (
                                 <div key={index} className="hologram-card rounded-3xl p-10 text-center">
@@ -812,7 +801,7 @@
                                         {feature.icon}
                                     </div>
                                     <h3 className="text-2xl font-bold text-white mb-6">{feature.title}</h3>
-                                    <p className="text-white/70 leading-relaxed text-lg">{feature.desc}</p>
+                                    <p className="text-white/60 leading-relaxed text-lg">{feature.desc}</p>
                                 </div>
                             ))}
                         </div>
@@ -833,7 +822,7 @@
                                 </div>
                                 <button 
                                     onClick={() => setCurrentPage('landing')}
-                                    className="text-white/80 hover:text-white transition-colors"
+                                    className="text-white/70 hover:text-white transition-colors"
                                 >
                                     ← Back
                                 </button>
@@ -844,7 +833,7 @@
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                         <div className="text-center mb-16">
                             <h1 className="text-5xl font-bold text-white mb-6">Ultimate Enterprise Plans</h1>
-                            <p className="text-xl text-white/70">Next-generation pricing for {sectorConfig.name.toLowerCase()} organizations</p>
+                            <p className="text-xl text-white/60">Next-generation pricing for {sectorConfig.name.toLowerCase()} organizations</p>
                         </div>
 
                         <div className="grid lg:grid-cols-3 gap-8">
@@ -905,7 +894,8 @@
                                 <div key={index} className={`hologram-card rounded-2xl p-8 ${plan.popular ? 'scale-105 accent-glow' : ''} relative`}>
                                     {plan.popular && (
                                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                            <span className="px-4 py-2 rounded-full text-white text-sm font-semibold accent-glow" style={{background: 'var(--accent-color)'}}>
+                                            <span className="px-4 py-2 rounded-full text-white text-sm font-semibold accent-glow" 
+                                                  style={{background: 'linear-gradient(135deg, var(--accent-color), var(--wisdom-color))'}}>
                                                 {plan.badge}
                                             </span>
                                         </div>
@@ -914,27 +904,27 @@
                                         <h3 className="text-2xl font-bold text-white mb-4">{plan.name}</h3>
                                         <div className="flex items-center justify-center mb-4">
                                             <span className="text-5xl font-bold text-white">{plan.price}</span>
-                                            <span className="text-white/60 ml-2">/month</span>
+                                            <span className="text-white/50 ml-2">/month</span>
                                         </div>
                                     </div>
-                                    <ul className="space-y-4 mb-8 text-white/80">
+                                    <ul className="space-y-4 mb-8 text-white/70">
                                         {plan.features.map((feature, fIndex) => (
                                             <li key={fIndex} className="flex items-center space-x-3">
-                                                <div className="w-2 h-2 rounded-full accent-glow" style={{background: 'var(--accent-color)'}}></div>
+                                                <div className="w-2 h-2 rounded-full" style={{background: 'var(--success-color)'}}></div>
                                                 <span>{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
                                     <button
                                         onClick={plan.action}
-                                        className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
+                                        className={`w-full py-4 rounded-xl font-semibold text-lg transition-all hover:brightness-110 ${
                                             plan.popular 
                                                 ? 'text-white accent-glow' 
                                                 : 'border text-white hover:bg-white/5'
                                         }`}
                                         style={plan.popular 
-                                            ? {background: 'var(--accent-color)'} 
-                                            : {borderColor: 'var(--accent-color)', color: 'var(--accent-color)'}
+                                            ? {background: 'linear-gradient(135deg, var(--accent-color), var(--wisdom-color))'} 
+                                            : {borderColor: 'var(--accent-color)', borderWidth: '1px'}
                                         }
                                     >
                                         {plan.buttonText}
@@ -948,6 +938,11 @@
 
             const Dashboard = () => {
                 const [activeModule, setActiveModule] = useState('overview');
+                
+                // Memoize the module change handler
+                const handleModuleChange = useCallback((moduleId) => {
+                    setActiveModule(moduleId);
+                }, []);
                 
                 const metrics = useMemo(() => {
                     const totalValue = companies.reduce((sum, c) => sum + (c.market_cap || 0), 0);
@@ -979,9 +974,9 @@
                                 <div className="flex items-center space-x-8">
                                     <div className="flex items-center space-x-3">
                                         <div className="status-indicator"></div>
-                                        <span className="text-white/80 text-sm font-medium">SYSTEM OPERATIONAL</span>
+                                        <span className="text-white/70 text-sm font-medium">SYSTEM OPERATIONAL</span>
                                     </div>
-                                    <div className="text-white/60 text-sm">
+                                    <div className="text-white/50 text-sm">
                                         User: {user?.email?.split('@')[0]?.toUpperCase()} | 
                                         Sector: {sectorConfig.name} | 
                                         Time: {new Date().toLocaleTimeString()}
@@ -997,7 +992,7 @@
                                     </button>
                                     <button
                                         onClick={() => {setUser(null); setCurrentPage('landing');}}
-                                        className="text-white/60 hover:text-white transition-colors"
+                                        className="text-white/50 hover:text-white transition-colors"
                                     >
                                         Sign Out
                                     </button>
@@ -1008,16 +1003,16 @@
                         <div className="flex">
                             {/* Enhanced Sidebar */}
                             <div className="w-80 glass-panel border-r h-screen flex flex-col">
-                                <div className="p-8 border-b border-white/10 flex-shrink-0">
+                                <div className="p-8 border-b border-white/5 flex-shrink-0">
                                     <div className="flex items-center space-x-4 mb-6">
                                         <div className="w-12 h-12 rounded-xl accent-glow p-0.5" style={{background: 'var(--accent-color)'}}>
-                                            <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
+                                            <div className="w-full h-full rounded-xl bg-slate-900 flex items-center justify-center">
                                                 <div className="text-white font-bold text-sm">IQ</div>
                                             </div>
                                         </div>
                                         <div>
                                             <div className="font-bold text-xl text-white">Command Center</div>
-                                            <div className="text-sm text-white/60">{sectorConfig.name}</div>
+                                            <div className="text-sm text-white/50">{sectorConfig.name}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -1026,15 +1021,19 @@
                                     {modules.map((module) => (
                                         <button
                                             key={module.id}
-                                            onClick={() => setActiveModule(module.id)}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                handleModuleChange(module.id);
+                                            }}
                                             className={`w-full text-left p-4 mb-3 rounded-xl hover:bg-white/5 flex items-center space-x-4 transition-all group ${
                                                 activeModule === module.id 
-                                                    ? 'text-white shadow-lg accent-glow' 
-                                                    : 'text-white/70 hover:text-white'
+                                                    ? 'text-white shadow-lg' 
+                                                    : 'text-white/60 hover:text-white'
                                             }`}
                                             style={activeModule === module.id ? {
-                                                background: `${sectorConfig.accentColor}20`,
-                                                borderLeft: `4px solid ${sectorConfig.accentColor}`
+                                                background: `${sectorConfig.accentColor}15`,
+                                                borderLeft: `3px solid ${sectorConfig.accentColor}`
                                             } : {}}
                                         >
                                             <span className="text-2xl group-hover:scale-110 transition-transform">{module.icon}</span>
@@ -1043,21 +1042,21 @@
                                     ))}
                                 </nav>
 
-                                <div className="p-6 border-t border-white/10 flex-shrink-0">
+                                <div className="p-6 border-t border-white/5 flex-shrink-0">
                                     <div className="hologram-card rounded-xl p-4 mb-4">
-                                        <div className="text-white/80 text-sm mb-3 font-semibold">SYSTEM METRICS</div>
+                                        <div className="text-white/70 text-sm mb-3 font-semibold">SYSTEM METRICS</div>
                                         <div className="space-y-2">
                                             <div className="flex justify-between">
-                                                <span className="text-white/60 text-sm">Neural Load</span>
+                                                <span className="text-white/50 text-sm">Neural Load</span>
                                                 <span className="text-green-400 text-sm font-semibold">23%</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-white/60 text-sm">Data Sources</span>
+                                                <span className="text-white/50 text-sm">Data Sources</span>
                                                 <span className="text-white text-sm font-semibold">{companies.length}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-white/60 text-sm">AI Status</span>
-                                                <span className="text-sm font-semibold" style={{color: 'var(--accent-color)'}}>Active</span>
+                                                <span className="text-white/50 text-sm">AI Status</span>
+                                                <span className="text-sm font-semibold" style={{color: 'var(--success-color)'}}>Active</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1070,7 +1069,7 @@
                                     <h1 className="text-5xl font-bold text-white mb-4">
                                         {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Engine
                                     </h1>
-                                    <p className="text-white/60 text-lg">Advanced {activeModule} analytics for {sectorConfig.name.toLowerCase()}</p>
+                                    <p className="text-white/50 text-lg">Advanced {activeModule} analytics for {sectorConfig.name.toLowerCase()}</p>
                                 </div>
 
                                 <RealTimeTicker data={realtimeData} />
@@ -1112,15 +1111,15 @@
                                                         <div key={index} className="group">
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <div className="flex items-center space-x-3">
-                                                                    <div className="w-3 h-3 rounded-full accent-glow" style={{background: 'var(--accent-color)'}}></div>
+                                                                    <div className="w-3 h-3 rounded-full" style={{background: 'var(--success-color)'}}></div>
                                                                     <span className="text-white font-semibold">{company.name}</span>
-                                                                    <span className="text-white/60 text-sm">{company.industry_code}</span>
+                                                                    <span className="text-white/50 text-sm">{company.industry_code}</span>
                                                                 </div>
                                                                 <span className="text-white font-bold">
                                                                     ${((company.market_cap || 0) / 1000000000).toFixed(0)}B
                                                                 </span>
                                                             </div>
-                                                            <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+                                                            <div className="w-full h-2 bg-black/30 rounded-full overflow-hidden">
                                                                 <div 
                                                                     className="metric-visualizer"
                                                                     style={{
@@ -1142,13 +1141,13 @@
                                                         { label: 'Prediction Accuracy', value: '94.7%', status: 'excellent' },
                                                         { label: 'Response Time', value: '< 50ms', status: 'optimal' }
                                                     ].map((metric, index) => (
-                                                        <div key={index} className="bg-black/20 rounded-xl p-4 border border-white/10">
-                                                            <div className="text-white/60 text-sm mb-1">{metric.label}</div>
+                                                        <div key={index} className="bg-black/15 rounded-xl p-4 border border-white/5">
+                                                            <div className="text-white/50 text-sm mb-1">{metric.label}</div>
                                                             <div className="text-2xl font-bold text-white mb-2">{metric.value}</div>
                                                             <div className={`text-xs px-2 py-1 rounded-full w-fit ${
-                                                                metric.status === 'optimal' ? 'bg-green-500/20 text-green-300' :
-                                                                metric.status === 'high' ? 'bg-blue-500/20 text-blue-300' :
-                                                                'bg-purple-500/20 text-purple-300'
+                                                                metric.status === 'optimal' ? 'bg-green-500/15 text-green-400' :
+                                                                metric.status === 'high' ? 'bg-blue-500/15 text-blue-400' :
+                                                                'bg-purple-500/15 text-purple-400'
                                                             }`}>
                                                                 {metric.status.toUpperCase()}
                                                             </div>
@@ -1165,10 +1164,11 @@
                                         <h3 className="text-4xl font-bold text-white mb-6">
                                             {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Engine
                                         </h3>
-                                        <p className="text-white/70 text-xl mb-8">
+                                        <p className="text-white/60 text-xl mb-8">
                                             Advanced {activeModule} capabilities powered by next-generation neural networks and AI algorithms
                                         </p>
-                                        <div className="inline-flex items-center space-x-3 px-8 py-4 rounded-full accent-glow" style={{background: 'var(--accent-color)'}}>
+                                        <div className="inline-flex items-center space-x-3 px-8 py-4 rounded-full accent-glow" 
+                                             style={{background: 'linear-gradient(135deg, var(--accent-color), var(--wisdom-color))'}}>
                                             <div className="status-indicator"></div>
                                             <span className="text-white font-semibold text-lg">Neural Network Active</span>
                                         </div>
