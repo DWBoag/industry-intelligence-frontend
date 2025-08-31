@@ -3,171 +3,611 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IndustryIQ - Enterprise Intelligence Platform</title>
+    <title>IndustryIQ - Next-Generation Enterprise Intelligence</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary-bg: #0f172a;
-            --secondary-bg: #1e293b;
-            --accent-color: #3b82f6;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
+            --primary-bg: #0a0e27;
+            --secondary-bg: #1a1f3a;
+            --accent-color: #00d4ff;
+            --success-color: #00ff88;
+            --warning-color: #ffaa00;
+            --danger-color: #ff3366;
             --text-primary: #ffffff;
-            --text-secondary: #94a3b8;
-            --border-color: rgba(59, 130, 246, 0.2);
+            --text-secondary: #8892b0;
+            --border-color: rgba(0, 212, 255, 0.2);
+            --glow-color: rgba(0, 212, 255, 0.4);
         }
         
         .theme-financial {
-            --accent-color: #059669;
-            --border-color: rgba(5, 150, 105, 0.2);
+            --accent-color: #00ff88;
+            --glow-color: rgba(0, 255, 136, 0.4);
+            --border-color: rgba(0, 255, 136, 0.2);
         }
         
         .theme-healthcare {
-            --accent-color: #7c3aed;
-            --border-color: rgba(124, 58, 237, 0.2);
+            --accent-color: #8b5cf6;
+            --glow-color: rgba(139, 92, 246, 0.4);
+            --border-color: rgba(139, 92, 246, 0.2);
         }
         
         .theme-technology {
-            --accent-color: #06b6d4;
-            --border-color: rgba(6, 182, 212, 0.2);
+            --accent-color: #00d4ff;
+            --glow-color: rgba(0, 212, 255, 0.4);
+            --border-color: rgba(0, 212, 255, 0.2);
         }
         
-        .gradient-bg {
-            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 50%, var(--primary-bg) 100%);
-            background-size: 400% 400%;
-            animation: gradient-shift 20s ease infinite;
+        body {
+            background: radial-gradient(ellipse at top, var(--primary-bg), #000014);
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
+        .neural-bg {
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                linear-gradient(180deg, var(--primary-bg) 0%, #000014 100%);
+            animation: neural-pulse 8s ease-in-out infinite;
+        }
+        
+        @keyframes neural-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .glass-panel {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.04) 0%, 
+                rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border-color);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .hologram-card {
+            background: linear-gradient(135deg, 
+                rgba(0, 212, 255, 0.03) 0%, 
+                rgba(0, 255, 136, 0.02) 50%,
+                rgba(139, 92, 246, 0.03) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .hologram-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-color), transparent, var(--accent-color));
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .hologram-card:hover::before {
+            opacity: 1;
+            animation: border-glow 2s linear infinite;
+        }
+        
+        .hologram-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4),
+                        0 0 30px var(--glow-color);
+        }
+        
+        @keyframes border-glow {
+            0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
-        .glass-effect {
-            backdrop-filter: blur(12px);
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
+        .data-stream {
+            position: relative;
+            overflow: hidden;
         }
         
-        .accent-glow {
-            box-shadow: 0 0 20px rgba(var(--accent-color), 0.3);
+        .data-stream::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--glow-color), 
+                transparent);
+            animation: data-flow 3s linear infinite;
         }
         
-        .data-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+        @keyframes data-flow {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
         
-        .data-card:hover {
-            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
-            transform: translateY(-2px);
-        }
-        
-        .metric-bar {
+        .metric-visualizer {
             background: linear-gradient(90deg, transparent 0%, var(--accent-color) 100%);
             height: 4px;
             border-radius: 2px;
-            transition: width 1s ease-out;
+            position: relative;
+            overflow: hidden;
         }
         
-        .status-indicator {
-            width: 8px;
-            height: 8px;
+        .metric-visualizer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            animation: shimmer 2s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-30px); }
+            100% { transform: translateX(200px); }
+        }
+        
+        .neural-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .floating-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-color);
             border-radius: 50%;
-            animation: pulse 2s infinite;
+            animation: float 10s linear infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+        
+        .ai-chat-bubble {
+            background: linear-gradient(135deg, var(--accent-color), var(--success-color));
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            max-width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: bubble-appear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes bubble-appear {
+            0% { transform: scale(0) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        
+        .command-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .command-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px var(--glow-color);
+        }
+        
+        .pulse-indicator {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 0 0 5px var(--accent-color);
+                opacity: 1;
+            }
+            50% { 
+                box-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--accent-color);
+                opacity: 0.8;
+            }
+        }
+        
+        .typing-animation::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .scrollbar-custom {
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) transparent;
+        }
+        
+        .scrollbar-custom::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
+    <div class="neural-network" id="neural-bg"></div>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
+        const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
-        // Configuration for different sectors
         const SECTOR_THEMES = {
             financial: {
                 name: 'Financial Services',
                 theme: 'theme-financial',
-                accentColor: '#059669',
+                accentColor: '#00ff88',
                 terminology: {
-                    dashboard: 'Portfolio Dashboard',
-                    analytics: 'Market Analytics',
-                    monitoring: 'Risk Monitoring',
-                    intelligence: 'Market Intelligence'
+                    dashboard: 'Portfolio Command Center',
+                    analytics: 'Market Intelligence',
+                    monitoring: 'Risk Surveillance',
+                    intelligence: 'Algorithmic Insights'
                 }
             },
             healthcare: {
                 name: 'Healthcare',
                 theme: 'theme-healthcare', 
-                accentColor: '#7c3aed',
+                accentColor: '#8b5cf6',
                 terminology: {
-                    dashboard: 'Clinical Dashboard',
-                    analytics: 'Health Analytics',
-                    monitoring: 'Patient Monitoring',
-                    intelligence: 'Clinical Intelligence'
+                    dashboard: 'Clinical Operations',
+                    analytics: 'Patient Analytics',
+                    monitoring: 'Health Monitoring',
+                    intelligence: 'Diagnostic AI'
                 }
             },
             technology: {
                 name: 'Technology',
                 theme: 'theme-technology',
-                accentColor: '#06b6d4',
+                accentColor: '#00d4ff',
                 terminology: {
-                    dashboard: 'Tech Dashboard',
-                    analytics: 'Performance Analytics',
-                    monitoring: 'System Monitoring',
-                    intelligence: 'Business Intelligence'
-                }
-            },
-            manufacturing: {
-                name: 'Manufacturing',
-                theme: 'theme-financial',
-                accentColor: '#f59e0b',
-                terminology: {
-                    dashboard: 'Operations Dashboard',
-                    analytics: 'Production Analytics',
-                    monitoring: 'Quality Monitoring',
-                    intelligence: 'Operational Intelligence'
+                    dashboard: 'System Command',
+                    analytics: 'Performance Matrix',
+                    monitoring: 'Network Surveillance',
+                    intelligence: 'Predictive Engine'
                 }
             }
         };
 
         const API_BASE_URL = 'https://industry-intelligence-backend-production.up.railway.app';
 
-        const EnterprisePlatform = () => {
+        // Neural Network Background Component
+        const NeuralNetwork = () => {
+            const canvasRef = useRef(null);
+
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                const particles = [];
+                const particleCount = 50;
+
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        opacity: Math.random() * 0.5 + 0.2
+                    });
+                }
+
+                function animate() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.strokeStyle = '#00d4ff';
+                    ctx.lineWidth = 0.5;
+
+                    particles.forEach((particle, i) => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+
+                        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+
+                        ctx.globalAlpha = particle.opacity;
+                        ctx.beginPath();
+                        ctx.arc(particle.x, particle.y, 1, 0, Math.PI * 2);
+                        ctx.fillStyle = '#00d4ff';
+                        ctx.fill();
+
+                        particles.forEach((otherParticle, j) => {
+                            if (i !== j) {
+                                const dx = particle.x - otherParticle.x;
+                                const dy = particle.y - otherParticle.y;
+                                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                                if (distance < 100) {
+                                    ctx.globalAlpha = (100 - distance) / 100 * 0.1;
+                                    ctx.beginPath();
+                                    ctx.moveTo(particle.x, particle.y);
+                                    ctx.lineTo(otherParticle.x, otherParticle.y);
+                                    ctx.stroke();
+                                }
+                            }
+                        });
+                    });
+
+                    requestAnimationFrame(animate);
+                }
+
+                animate();
+
+                const handleResize = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                };
+
+                window.addEventListener('resize', handleResize);
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
+
+            return <canvas ref={canvasRef} className="neural-network" />;
+        };
+
+        // AI Assistant Component
+        const AIAssistant = ({ isOpen, onToggle, currentSector }) => {
+            const [messages, setMessages] = useState([
+                { type: 'ai', text: `AI Assistant active. Ready to analyze ${SECTOR_THEMES[currentSector].name.toLowerCase()} data.` }
+            ]);
+            const [input, setInput] = useState('');
+            const [isTyping, setIsTyping] = useState(false);
+
+            const sendMessage = useCallback(async (text) => {
+                setMessages(prev => [...prev, { type: 'user', text }]);
+                setIsTyping(true);
+
+                // Simulate AI response
+                setTimeout(() => {
+                    const responses = [
+                        `Analyzing ${SECTOR_THEMES[currentSector].name.toLowerCase()} trends... Market volatility is 12% above historical average.`,
+                        `Risk assessment complete. 3 high-priority alerts detected in your portfolio.`,
+                        `Predictive model suggests 15% growth opportunity in emerging markets.`,
+                        `Real-time analysis shows correlation coefficient of 0.87 between selected metrics.`
+                    ];
+                    const response = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    setMessages(prev => [...prev, { type: 'ai', text: response }]);
+                    setIsTyping(false);
+                }, 1500);
+            }, [currentSector]);
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed bottom-6 right-6 w-96 glass-panel rounded-xl p-4 z-50">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 rounded-full bg-green-400 pulse-indicator"></div>
+                            <span className="text-white font-semibold">AI Assistant</span>
+                        </div>
+                        <button onClick={onToggle} className="text-white/60 hover:text-white">×</button>
+                    </div>
+                    
+                    <div className="h-64 overflow-y-auto scrollbar-custom mb-4 space-y-2">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={`${msg.type === 'ai' ? 'text-left' : 'text-right'}`}>
+                                <div className={`inline-block p-3 rounded-lg ${
+                                    msg.type === 'ai' 
+                                        ? 'bg-blue-600/20 text-blue-100 border border-blue-500/30' 
+                                        : 'bg-white/10 text-white'
+                                }`}>
+                                    {msg.text}
+                                </div>
+                            </div>
+                        ))}
+                        {isTyping && (
+                            <div className="text-left">
+                                <div className="inline-block p-3 rounded-lg bg-blue-600/20 text-blue-100 border border-blue-500/30 typing-animation">
+                                    AI is analyzing...
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter' && input.trim()) {
+                                    sendMessage(input);
+                                    setInput('');
+                                }
+                            }}
+                            placeholder="Ask me anything about your data..."
+                            className="flex-1 command-input text-sm"
+                        />
+                        <button
+                            onClick={() => {
+                                if (input.trim()) {
+                                    sendMessage(input);
+                                    setInput('');
+                                }
+                            }}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Enhanced Data Card with Advanced Visualizations
+        const EnhancedDataCard = ({ title, value, subtitle, trend, interactive = false, data = [], children }) => {
+            const [isHovered, setIsHovered] = useState(false);
+            
+            return (
+                <div 
+                    className="hologram-card rounded-xl p-6 cursor-pointer"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-white/80 text-sm font-medium uppercase tracking-wide">{title}</h3>
+                        {trend && (
+                            <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+                                trend > 0 ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
+                            }`}>
+                                <span>{trend > 0 ? '↗' : '↘'}</span>
+                                <span>{Math.abs(trend)}%</span>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="text-4xl font-bold text-white mb-2 data-stream">
+                        {value}
+                    </div>
+                    
+                    {subtitle && (
+                        <div className="text-white/60 text-sm mb-4">{subtitle}</div>
+                    )}
+                    
+                    {interactive && isHovered && (
+                        <div className="mt-4 space-y-2">
+                            <div className="h-20 bg-black/20 rounded-lg flex items-end justify-around p-2">
+                                {[...Array(8)].map((_, i) => (
+                                    <div 
+                                        key={i} 
+                                        className="w-3 bg-gradient-to-t from-blue-600 to-cyan-400 rounded-t animate-pulse"
+                                        style={{
+                                            height: `${20 + Math.random() * 40}px`,
+                                            animationDelay: `${i * 0.1}s`
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    {children}
+                </div>
+            );
+        };
+
+        // Real-time Ticker Component
+        const RealTimeTicker = ({ data }) => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setCurrentIndex(prev => (prev + 1) % data.length);
+                }, 3000);
+                return () => clearInterval(interval);
+            }, [data.length]);
+            
+            return (
+                <div className="glass-panel rounded-lg p-4 mb-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                            <div className="w-2 h-2 rounded-full bg-green-400 pulse-indicator"></div>
+                            <span className="text-white/80 text-sm font-medium">LIVE MARKET DATA</span>
+                        </div>
+                        <div className="flex space-x-6">
+                            {data.slice(currentIndex, currentIndex + 3).map((item, index) => (
+                                <div key={index} className="text-right">
+                                    <div className="text-white font-semibold">{item.symbol}</div>
+                                    <div className={`text-sm ${item.change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                        {item.price} ({item.change > 0 ? '+' : ''}{item.change}%)
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const IncrediblePlatform = () => {
             const [currentPage, setCurrentPage] = useState('landing');
             const [user, setUser] = useState(null);
             const [currentSector, setCurrentSector] = useState('technology');
-            const [customization, setCustomization] = useState({
-                companyName: 'IndustryIQ',
-                theme: 'default',
-                modules: ['analytics', 'monitoring', 'intelligence', 'reporting']
-            });
+            const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
+            const [companies, setCompanies] = useState([]);
+            const [realtimeData, setRealtimeData] = useState([
+                { symbol: 'AAPL', price: '$185.42', change: 2.3 },
+                { symbol: 'MSFT', price: '$378.91', change: -1.2 },
+                { symbol: 'GOOGL', price: '$142.65', change: 0.8 },
+                { symbol: 'AMZN', price: '$145.33', change: 1.7 },
+                { symbol: 'TSLA', price: '$248.15', change: -3.1 }
+            ]);
 
             const sectorConfig = SECTOR_THEMES[currentSector];
 
-            const handleSubscription = async (planId, priceId) => {
-                if (planId === 'starter') {
-                    setUser({ 
-                        plan: 'starter', 
-                        email: 'analyst@enterprise.com', 
-                        accessLevel: 'Standard',
-                        sector: currentSector 
-                    });
-                    setCurrentPage('dashboard');
-                    return;
-                }
+            useEffect(() => {
+                // Simulate real-time data updates
+                const interval = setInterval(() => {
+                    setRealtimeData(prev => prev.map(item => ({
+                        ...item,
+                        price: `$${(parseFloat(item.price.slice(1)) + (Math.random() - 0.5) * 5).toFixed(2)}`,
+                        change: parseFloat((Math.random() * 6 - 3).toFixed(1))
+                    })));
+                }, 5000);
+                
+                return () => clearInterval(interval);
+            }, []);
+
+            useEffect(() => {
+                const fetchData = async () => {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/api/companies`);
+                        const data = await response.json();
+                        setCompanies(Array.isArray(data) ? data : []);
+                    } catch (error) {
+                        setCompanies([
+                            { id: 1, name: 'Apple Inc.', market_cap: 2800000000000, industry_code: 'TECH' },
+                            { id: 2, name: 'Microsoft Corp.', market_cap: 2400000000000, industry_code: 'TECH' },
+                            { id: 3, name: 'Amazon.com Inc.', market_cap: 1500000000000, industry_code: 'ECOM' },
+                            { id: 4, name: 'Tesla Inc.', market_cap: 800000000000, industry_code: 'AUTO' },
+                            { id: 5, name: 'Alphabet Inc.', market_cap: 1800000000000, industry_code: 'TECH' }
+                        ]);
+                    }
+                };
+                fetchData();
+            }, []);
+
+            const handleSubscription = (planId) => {
                 setUser({ 
                     plan: planId, 
                     email: 'executive@enterprise.com', 
@@ -178,22 +618,41 @@
             };
 
             const LandingPage = () => (
-                <div className={`min-h-screen gradient-bg ${sectorConfig.theme}`}>
-                    <nav className="glass-effect border-b">
+                <div className={`min-h-screen neural-bg ${sectorConfig.theme}`}>
+                    <NeuralNetwork />
+                    
+                    {/* Floating Particles */}
+                    {[...Array(20)].map((_, i) => (
+                        <div 
+                            key={i}
+                            className="floating-particle"
+                            style={{
+                                left: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * 10}s`,
+                                animationDuration: `${10 + Math.random() * 10}s`
+                            }}
+                        />
+                    ))}
+
+                    <nav className="glass-panel border-b backdrop-blur-md">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between items-center h-16">
                                 <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 rounded-lg accent-glow" style={{background: sectorConfig.accentColor}}></div>
-                                    <span className="font-bold text-xl text-white">{customization.companyName}</span>
-                                    <span className="text-xs px-2 py-1 rounded" style={{background: sectorConfig.accentColor, color: 'white'}}>
-                                        ENTERPRISE
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 via-purple-500 to-cyan-400 p-0.5">
+                                        <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
+                                            <div className="text-white font-bold">IQ</div>
+                                        </div>
+                                    </div>
+                                    <span className="font-bold text-2xl text-white">IndustryIQ</span>
+                                    <span className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                                        NEXT-GEN
                                     </span>
                                 </div>
                                 <div className="flex items-center space-x-6">
                                     <select 
                                         value={currentSector} 
                                         onChange={(e) => setCurrentSector(e.target.value)}
-                                        className="bg-black/20 text-white border border-white/20 rounded px-3 py-1 text-sm"
+                                        className="glass-panel border-0 text-white rounded px-4 py-2 text-sm"
                                     >
                                         {Object.entries(SECTOR_THEMES).map(([key, config]) => (
                                             <option key={key} value={key} className="bg-gray-900">
@@ -203,419 +662,285 @@
                                     </select>
                                     <button 
                                         onClick={() => setCurrentPage('pricing')}
-                                        className="text-white/80 hover:text-white transition-colors"
+                                        className="text-white/80 hover:text-white transition-all hover:scale-105"
                                     >
                                         Pricing
                                     </button>
                                     <button 
-                                        onClick={() => handleSubscription('starter', null)}
-                                        className="px-6 py-2 rounded-lg text-white font-medium transition-all hover:scale-105 accent-glow"
-                                        style={{background: sectorConfig.accentColor}}
+                                        onClick={() => handleSubscription('starter')}
+                                        className="px-8 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 text-white rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-2xl"
                                     >
-                                        Get Started
+                                        Launch Platform
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </nav>
 
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
                         <div className="text-center">
-                            <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 tracking-tight">
-                                Enterprise-Grade
-                                <span className="block" style={{color: sectorConfig.accentColor}}>
-                                    {sectorConfig.terminology.intelligence}
+                            <h1 className="text-7xl md:text-9xl font-bold text-white mb-8 tracking-tight leading-tight">
+                                THE FUTURE OF
+                                <span className="block bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
+                                    INTELLIGENCE
                                 </span>
                             </h1>
-                            <p className="text-xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed">
-                                Comprehensive analytics platform designed for {sectorConfig.name.toLowerCase()} professionals. 
-                                Real-time insights, predictive modeling, and enterprise-scale data processing.
+                            <p className="text-2xl text-white/80 mb-16 max-w-5xl mx-auto leading-relaxed">
+                                Next-generation AI-powered platform that transforms how {sectorConfig.name.toLowerCase()} 
+                                organizations understand, analyze, and predict market dynamics.
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                            <div className="flex flex-col sm:flex-row gap-8 justify-center">
                                 <button 
                                     onClick={() => setCurrentPage('pricing')}
-                                    className="px-10 py-4 rounded-xl font-semibold text-lg text-white transition-all transform hover:scale-105 accent-glow"
-                                    style={{background: sectorConfig.accentColor}}
+                                    className="px-12 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 text-white rounded-2xl font-bold text-xl transition-all transform hover:scale-110 hover:shadow-2xl"
                                 >
-                                    View Plans
+                                    Experience The Future
                                 </button>
                                 <button 
-                                    onClick={() => handleSubscription('starter', null)}
-                                    className="border-2 text-white hover:bg-white/10 px-10 py-4 rounded-xl font-semibold text-lg transition-all"
-                                    style={{borderColor: sectorConfig.accentColor, color: sectorConfig.accentColor}}
+                                    onClick={() => handleSubscription('starter')}
+                                    className="px-12 py-5 border-2 border-white/30 text-white hover:bg-white/10 rounded-2xl font-bold text-xl transition-all transform hover:scale-105"
                                 >
-                                    Live Demo
+                                    Live Demonstration
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                        <div className="grid md:grid-cols-4 gap-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+                        <div className="grid md:grid-cols-3 gap-8">
                             {[
-                                { title: 'Universal Analytics', desc: 'Adaptable metrics and KPIs across all business sectors', icon: '📊' },
-                                { title: 'Real-time Processing', desc: 'Live data streams with sub-second latency for critical decisions', icon: '⚡' },
-                                { title: 'Predictive Models', desc: 'Advanced machine learning for forecasting and trend analysis', icon: '🎯' },
-                                { title: 'Enterprise Security', desc: 'SOC2 compliant with role-based access and audit trails', icon: '🔒' }
-                            ].map((feature, index) => (
-                                <div key={index} className="data-card rounded-2xl p-8">
-                                    <div className="text-4xl mb-6">{feature.icon}</div>
-                                    <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
-                                    <p className="text-white/70 leading-relaxed">{feature.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const PricingPage = () => (
-                <div className={`min-h-screen gradient-bg ${sectorConfig.theme}`}>
-                    <nav className="glass-effect border-b">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex justify-between items-center h-16">
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 rounded-lg accent-glow" style={{background: sectorConfig.accentColor}}></div>
-                                    <span className="font-bold text-xl text-white">{customization.companyName}</span>
-                                </div>
-                                <button 
-                                    onClick={() => setCurrentPage('landing')}
-                                    className="text-white/80 hover:text-white transition-colors"
-                                >
-                                    ← Back
-                                </button>
-                            </div>
-                        </div>
-                    </nav>
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                        <div className="text-center mb-16">
-                            <h1 className="text-5xl font-bold text-white mb-6">Choose Your Plan</h1>
-                            <p className="text-xl text-white/70">Flexible pricing for {sectorConfig.name.toLowerCase()} organizations</p>
-                        </div>
-
-                        <div className="grid lg:grid-cols-3 gap-8">
-                            {[
-                                {
-                                    name: 'Starter',
-                                    price: '$0',
-                                    badge: 'Free Forever',
-                                    features: [
-                                        'Basic analytics dashboard',
-                                        'Up to 5 data sources',
-                                        'Standard visualizations', 
-                                        'Email support',
-                                        '1 user account'
-                                    ],
-                                    action: () => handleSubscription('starter', null),
-                                    buttonText: 'Get Started Free',
-                                    popular: false
+                                { 
+                                    title: 'AI-Powered Insights', 
+                                    desc: 'Advanced machine learning algorithms provide real-time analysis and predictive modeling',
+                                    icon: '🧠',
+                                    color: 'from-purple-500 to-pink-600'
                                 },
-                                {
-                                    name: 'Professional',
-                                    price: '$299',
-                                    badge: 'Most Popular',
-                                    features: [
-                                        'Advanced analytics suite',
-                                        'Unlimited data sources',
-                                        'Custom visualizations',
-                                        'Priority support',
-                                        'Up to 25 users',
-                                        'API access',
-                                        'Custom reports'
-                                    ],
-                                    action: () => handleSubscription('professional', 'price_pro'),
-                                    buttonText: 'Start Free Trial',
-                                    popular: true
+                                { 
+                                    title: 'Real-Time Processing', 
+                                    desc: 'Sub-millisecond data processing with live streaming visualizations',
+                                    icon: '⚡',
+                                    color: 'from-blue-500 to-cyan-600'
                                 },
-                                {
-                                    name: 'Enterprise',
-                                    price: '$999',
-                                    badge: 'Full Scale',
-                                    features: [
-                                        'Complete intelligence platform',
-                                        'Custom integrations',
-                                        'Dedicated support team',
-                                        'Unlimited users',
-                                        'White-label options',
-                                        'Advanced security',
-                                        'Custom AI models'
-                                    ],
-                                    action: () => handleSubscription('enterprise', 'price_enterprise'),
-                                    buttonText: 'Contact Sales',
-                                    popular: false
+                                { 
+                                    title: 'Neural Networks', 
+                                    desc: 'Deep learning models trained on global market patterns and behaviors',
+                                    icon: '🔮',
+                                    color: 'from-green-500 to-emerald-600'
                                 }
-                            ].map((plan, index) => (
-                                <div key={index} className={`data-card rounded-2xl p-8 ${plan.popular ? 'scale-105 accent-glow' : ''} relative`}>
-                                    {plan.popular && (
-                                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                            <span className="px-4 py-2 rounded-full text-white text-sm font-semibold" style={{background: sectorConfig.accentColor}}>
-                                                {plan.badge}
-                                            </span>
-                                        </div>
-                                    )}
-                                    <div className="text-center mb-8">
-                                        <h3 className="text-2xl font-bold text-white mb-4">{plan.name}</h3>
-                                        <div className="flex items-center justify-center mb-4">
-                                            <span className="text-5xl font-bold text-white">{plan.price}</span>
-                                            <span className="text-white/60 ml-2">/month</span>
-                                        </div>
+                            ].map((feature, index) => (
+                                <div key={index} className="hologram-card rounded-3xl p-10 text-center">
+                                    <div className={`text-6xl mb-8 p-6 rounded-2xl bg-gradient-to-br ${feature.color} w-fit mx-auto`}>
+                                        {feature.icon}
                                     </div>
-                                    <ul className="space-y-4 mb-8 text-white/80">
-                                        {plan.features.map((feature, fIndex) => (
-                                            <li key={fIndex} className="flex items-center space-x-3">
-                                                <div className="w-2 h-2 rounded-full" style={{background: sectorConfig.accentColor}}></div>
-                                                <span>{feature}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <button
-                                        onClick={plan.action}
-                                        className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
-                                            plan.popular 
-                                                ? 'text-white accent-glow' 
-                                                : 'border text-white hover:bg-white/5'
-                                        }`}
-                                        style={plan.popular 
-                                            ? {background: sectorConfig.accentColor} 
-                                            : {borderColor: sectorConfig.accentColor, color: sectorConfig.accentColor}
-                                        }
-                                    >
-                                        {plan.buttonText}
-                                    </button>
+                                    <h3 className="text-2xl font-bold text-white mb-6">{feature.title}</h3>
+                                    <p className="text-white/70 leading-relaxed text-lg">{feature.desc}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
-                </div>
-            );
-
-            const Sidebar = ({ activeModule, setActiveModule, companies }) => {
-                const modules = [
-                    { id: 'overview', name: 'Overview', icon: '📈' },
-                    { id: 'analytics', name: sectorConfig.terminology.analytics, icon: '📊' },
-                    { id: 'monitoring', name: sectorConfig.terminology.monitoring, icon: '🔍' },
-                    { id: 'intelligence', name: sectorConfig.terminology.intelligence, icon: '🧠' },
-                    { id: 'reporting', name: 'Reports', icon: '📋' }
-                ];
-
-                return (
-                    <div className={`w-72 glass-effect border-r h-screen fixed left-0 top-16 flex flex-col ${sectorConfig.theme}`}>
-                        <div className="p-6 border-b border-white/10 flex-shrink-0">
-                            <div className="flex items-center space-x-3 mb-4">
-                                <div className="w-10 h-10 rounded-lg accent-glow" style={{background: sectorConfig.accentColor}}></div>
-                                <div>
-                                    <div className="font-bold text-lg text-white">{customization.companyName}</div>
-                                    <div className="text-xs text-white/60">{sectorConfig.name}</div>
-                                </div>
-                            </div>
-                            <div className="data-card rounded-lg p-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-white/80 text-sm">System Status</span>
-                                    <div className="flex items-center space-x-2">
-                                        <div className="status-indicator" style={{background: sectorConfig.accentColor}}></div>
-                                        <span className="text-xs text-white/80">Active</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <nav className="p-6 flex-1 overflow-y-auto">
-                            {modules.map((module) => (
-                                <button
-                                    key={module.id}
-                                    onClick={() => setActiveModule(module.id)}
-                                    className={`w-full text-left p-3 mb-2 rounded-lg hover:bg-white/5 flex items-center space-x-3 transition-all ${
-                                        activeModule === module.id 
-                                            ? 'text-white border' 
-                                            : 'text-white/70'
-                                    }`}
-                                    style={activeModule === module.id ? {
-                                        borderColor: sectorConfig.accentColor,
-                                        background: `${sectorConfig.accentColor}20`
-                                    } : {}}
-                                >
-                                    <span className="text-lg">{module.icon}</span>
-                                    <span className="font-medium text-sm">{module.name}</span>
-                                </button>
-                            ))}
-                        </nav>
-
-                        <div className="p-6 border-t border-white/10 flex-shrink-0">
-                            <div className="data-card rounded-lg p-3 mb-3">
-                                <div className="text-white/80 text-xs mb-2">Data Sources</div>
-                                <div className="space-y-1">
-                                    <div className="flex justify-between">
-                                        <span className="text-white/60 text-xs">Connected</span>
-                                        <span className="text-white/80 text-xs">{companies.length}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-white/60 text-xs">Real-time</span>
-                                        <span className="text-xs" style={{color: sectorConfig.accentColor}}>Live</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => {setUser(null); setCurrentPage('landing');}}
-                                className="w-full text-center text-xs text-white/60 hover:text-white/80"
-                            >
-                                Sign Out
-                            </button>
-                        </div>
-                    </div>
-                );
-            };
-
-            const DataCard = ({ title, value, subtitle, trend, children }) => (
-                <div className="data-card rounded-xl p-6">
-                    <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-white/80 text-sm font-medium">{title}</h3>
-                        {trend && (
-                            <span className={`text-xs px-2 py-1 rounded ${
-                                trend > 0 ? 'text-green-100' : 'text-red-100'
-                            }`} style={{
-                                background: trend > 0 ? '#10b981' : '#ef4444'
-                            }}>
-                                {trend > 0 ? '+' : ''}{trend}%
-                            </span>
-                        )}
-                    </div>
-                    <div className="text-3xl font-bold text-white mb-2">{value}</div>
-                    {subtitle && <div className="text-white/60 text-sm">{subtitle}</div>}
-                    {children}
                 </div>
             );
 
             const Dashboard = () => {
                 const [activeModule, setActiveModule] = useState('overview');
-                const [companies, setCompanies] = useState([]);
-                const [loading, setLoading] = useState(true);
-
-                useEffect(() => {
-                    const fetchData = async () => {
-                        try {
-                            const response = await fetch(`${API_BASE_URL}/api/companies`);
-                            const data = await response.json();
-                            setCompanies(Array.isArray(data) ? data : []);
-                        } catch (error) {
-                            setCompanies([
-                                { id: 1, name: 'Apple Inc.', market_cap: 2800000000000, industry_code: 'TECH' },
-                                { id: 2, name: 'Microsoft Corp.', market_cap: 2400000000000, industry_code: 'TECH' },
-                                { id: 3, name: 'Amazon.com Inc.', market_cap: 1500000000000, industry_code: 'ECOM' },
-                                { id: 4, name: 'Tesla Inc.', market_cap: 800000000000, industry_code: 'AUTO' },
-                                { id: 5, name: 'Alphabet Inc.', market_cap: 1800000000000, industry_code: 'TECH' }
-                            ]);
-                        } finally {
-                            setLoading(false);
-                        }
-                    };
-                    fetchData();
-                }, []);
-
+                
                 const metrics = useMemo(() => {
-                    if (!companies.length) return {};
-                    
                     const totalValue = companies.reduce((sum, c) => sum + (c.market_cap || 0), 0);
-                    const avgGrowth = 12.4;
-                    const activeAlerts = 3;
-                    
                     return {
                         totalValue: `$${(totalValue / 1000000000000).toFixed(1)}T`,
                         entities: companies.length,
-                        avgGrowth,
-                        activeAlerts,
-                        uptime: '99.97%'
+                        avgGrowth: 15.7,
+                        efficiency: 94.3,
+                        alerts: 5
                     };
                 }, [companies]);
 
                 return (
-                    <div className={`min-h-screen gradient-bg ${sectorConfig.theme}`}>
-                        <div className="glass-effect border-b px-6 py-3">
-                            <div className="flex justify-between items-center text-sm">
-                                <div className="flex items-center space-x-6">
-                                    <span className="text-white/60">User: {user?.email?.split('@')[0]?.toUpperCase()}</span>
-                                    <span className="text-white/60">Access: {user?.accessLevel}</span>
-                                    <span style={{color: sectorConfig.accentColor}}>Status: Online</span>
-                                </div>
-                                <div className="flex items-center space-x-6">
-                                    <span className="text-white/60">Session: {new Date().toLocaleTimeString()}</span>
-                                    <div className="flex items-center space-x-2">
-                                        <div className="status-indicator" style={{background: sectorConfig.accentColor}}></div>
-                                        <span style={{color: sectorConfig.accentColor}}>Secure</span>
+                    <div className={`min-h-screen neural-bg ${sectorConfig.theme}`}>
+                        <NeuralNetwork />
+                        
+                        {/* Enhanced Header */}
+                        <div className="glass-panel border-b px-6 py-4">
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center space-x-8">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-3 h-3 rounded-full bg-green-400 pulse-indicator"></div>
+                                        <span className="text-white/80 text-sm font-medium">SYSTEM OPERATIONAL</span>
                                     </div>
+                                    <div className="text-white/60 text-sm">
+                                        User: {user?.email?.split('@')[0]?.toUpperCase()} | 
+                                        Sector: {sectorConfig.name} | 
+                                        Time: {new Date().toLocaleTimeString()}
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-4">
+                                    <button
+                                        onClick={() => setAiAssistantOpen(true)}
+                                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
+                                    >
+                                        AI Assistant
+                                    </button>
+                                    <button
+                                        onClick={() => {setUser(null); setCurrentPage('landing');}}
+                                        className="text-white/60 hover:text-white transition-colors"
+                                    >
+                                        Sign Out
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
                         <div className="flex">
-                            <Sidebar activeModule={activeModule} setActiveModule={setActiveModule} companies={companies} />
-                            
-                            <div className="ml-72 flex-1 p-8">
-                                <div className="mb-8">
-                                    <h1 className="text-4xl font-bold text-white mb-2">
-                                        {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} 
-                                        {activeModule === 'overview' ? ' Dashboard' : ''}
-                                    </h1>
-                                    <div className="text-white/60">{sectorConfig.name} • Real-time Analytics</div>
+                            {/* Enhanced Sidebar */}
+                            <div className="w-80 glass-panel border-r h-screen flex flex-col">
+                                <div className="p-8 border-b border-white/10">
+                                    <div className="flex items-center space-x-4 mb-6">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 via-purple-500 to-cyan-400 p-0.5">
+                                            <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
+                                                <div className="text-white font-bold text-sm">IQ</div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-xl text-white">Command Center</div>
+                                            <div className="text-sm text-white/60">{sectorConfig.name}</div>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <nav className="p-6 flex-1">
+                                    {[
+                                        { id: 'overview', name: 'Mission Control', icon: '🎯' },
+                                        { id: 'analytics', name: sectorConfig.terminology.analytics, icon: '📊' },
+                                        { id: 'monitoring', name: sectorConfig.terminology.monitoring, icon: '👁️' },
+                                        { id: 'intelligence', name: sectorConfig.terminology.intelligence, icon: '🧠' },
+                                        { id: 'neural', name: 'Neural Engine', icon: '🔮' }
+                                    ].map((module) => (
+                                        <button
+                                            key={module.id}
+                                            onClick={() => setActiveModule(module.id)}
+                                            className={`w-full text-left p-4 mb-3 rounded-xl hover:bg-white/5 flex items-center space-x-4 transition-all group ${
+                                                activeModule === module.id 
+                                                    ? 'bg-white/10 text-white shadow-lg' 
+                                                    : 'text-white/70 hover:text-white'
+                                            }`}
+                                        >
+                                            <span className="text-2xl group-hover:scale-110 transition-transform">{module.icon}</span>
+                                            <span className="font-semibold">{module.name}</span>
+                                        </button>
+                                    ))}
+                                </nav>
+
+                                <div className="p-6 border-t border-white/10">
+                                    <div className="hologram-card rounded-xl p-4">
+                                        <div className="text-white/80 text-sm mb-3 font-semibold">SYSTEM METRICS</div>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between">
+                                                <span className="text-white/60 text-sm">Neural Load</span>
+                                                <span className="text-green-400 text-sm font-semibold">23%</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-white/60 text-sm">Data Sources</span>
+                                                <span className="text-white text-sm font-semibold">{companies.length}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-white/60 text-sm">Predictions</span>
+                                                <span className="text-blue-400 text-sm font-semibold">Live</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Main Content */}
+                            <div className="flex-1 p-8">
+                                <div className="mb-8">
+                                    <h1 className="text-5xl font-bold text-white mb-4">
+                                        {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Engine
+                                    </h1>
+                                    <p className="text-white/60 text-lg">Advanced analytics for {sectorConfig.name.toLowerCase()} intelligence</p>
+                                </div>
+
+                                <RealTimeTicker data={realtimeData} />
 
                                 {activeModule === 'overview' && (
                                     <div className="space-y-8">
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                            <DataCard title="Total Value" value={metrics.totalValue} trend={12.4} />
-                                            <DataCard title="Entities" value={metrics.entities} subtitle="Data sources" />
-                                            <DataCard title="Performance" value={`+${metrics.avgGrowth}%`} subtitle="Average growth" trend={metrics.avgGrowth} />
-                                            <DataCard title="System Health" value={metrics.uptime} subtitle="Uptime" />
+                                            <EnhancedDataCard 
+                                                title="Total Portfolio Value" 
+                                                value={metrics.totalValue} 
+                                                trend={metrics.avgGrowth} 
+                                                interactive={true}
+                                            />
+                                            <EnhancedDataCard 
+                                                title="Active Entities" 
+                                                value={metrics.entities} 
+                                                subtitle="Real-time sources"
+                                                interactive={true}
+                                            />
+                                            <EnhancedDataCard 
+                                                title="AI Efficiency" 
+                                                value={`${metrics.efficiency}%`} 
+                                                trend={5.2}
+                                                interactive={true}
+                                            />
+                                            <EnhancedDataCard 
+                                                title="Neural Alerts" 
+                                                value={metrics.alerts} 
+                                                subtitle="Requires attention"
+                                                interactive={true}
+                                            />
                                         </div>
                                         
                                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                                            <div className="data-card rounded-xl p-6">
-                                                <h3 className="text-xl font-bold text-white mb-6">Performance Metrics</h3>
-                                                <div className="space-y-4">
-                                                    {companies.slice(0, 5).map((company, index) => (
-                                                        <div key={index} className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
-                                                            <div>
-                                                                <div className="text-white font-medium">{company.name}</div>
-                                                                <div className="text-white/60 text-sm">{company.industry_code}</div>
-                                                            </div>
-                                                            <div className="flex items-center space-x-4">
-                                                                <div className="w-24 h-1 bg-black/40 rounded">
-                                                                    <div 
-                                                                        className="metric-bar rounded"
-                                                                        style={{
-                                                                            width: `${Math.min(((company.market_cap || 0) / 3000000000000) * 100, 100)}%`,
-                                                                            background: sectorConfig.accentColor
-                                                                        }}
-                                                                    ></div>
+                                            <div className="hologram-card rounded-xl p-8">
+                                                <h3 className="text-2xl font-bold text-white mb-8">Performance Matrix</h3>
+                                                <div className="space-y-6">
+                                                    {companies.slice(0, 6).map((company, index) => (
+                                                        <div key={index} className="group">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <div className="flex items-center space-x-3">
+                                                                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-purple-500"></div>
+                                                                    <span className="text-white font-semibold">{company.name}</span>
+                                                                    <span className="text-white/60 text-sm">{company.industry_code}</span>
                                                                 </div>
-                                                                <span className="text-white/80 text-sm font-medium">
+                                                                <span className="text-white font-bold">
                                                                     ${((company.market_cap || 0) / 1000000000).toFixed(0)}B
                                                                 </span>
+                                                            </div>
+                                                            <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+                                                                <div 
+                                                                    className="metric-visualizer"
+                                                                    style={{
+                                                                        width: `${Math.min(((company.market_cap || 0) / 3000000000000) * 100, 100)}%`
+                                                                    }}
+                                                                ></div>
                                                             </div>
                                                         </div>
                                                     ))}
                                                 </div>
                                             </div>
                                             
-                                            <div className="data-card rounded-xl p-6">
-                                                <h3 className="text-xl font-bold text-white mb-6">System Overview</h3>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div className="text-center bg-black/20 rounded-lg p-4">
-                                                        <div className="text-2xl font-bold text-white">{companies.length}</div>
-                                                        <div className="text-white/60 text-sm">Active Sources</div>
-                                                    </div>
-                                                    <div className="text-center bg-black/20 rounded-lg p-4">
-                                                        <div className="text-2xl font-bold" style={{color: sectorConfig.accentColor}}>Live</div>
-                                                        <div className="text-white/60 text-sm">Data Feed</div>
-                                                    </div>
-                                                    <div className="text-center bg-black/20 rounded-lg p-4">
-                                                        <div className="text-2xl font-bold text-white">99.9%</div>
-                                                        <div className="text-white/60 text-sm">Accuracy</div>
-                                                    </div>
-                                                    <div className="text-center bg-black/20 rounded-lg p-4">
-                                                        <div className="text-2xl font-bold text-white">{metrics.activeAlerts}</div>
-                                                        <div className="text-white/60 text-sm">Alerts</div>
-                                                    </div>
+                                            <div className="hologram-card rounded-xl p-8">
+                                                <h3 className="text-2xl font-bold text-white mb-8">Neural Network Status</h3>
+                                                <div className="grid grid-cols-2 gap-6">
+                                                    {[
+                                                        { label: 'Processing Power', value: '847 TFLOPS', status: 'optimal' },
+                                                        { label: 'Data Throughput', value: '2.3 TB/s', status: 'high' },
+                                                        { label: 'Prediction Accuracy', value: '94.7%', status: 'excellent' },
+                                                        { label: 'Response Time', value: '< 50ms', status: 'optimal' }
+                                                    ].map((metric, index) => (
+                                                        <div key={index} className="bg-black/20 rounded-xl p-4 border border-white/10">
+                                                            <div className="text-white/60 text-sm mb-1">{metric.label}</div>
+                                                            <div className="text-2xl font-bold text-white mb-2">{metric.value}</div>
+                                                            <div className={`text-xs px-2 py-1 rounded-full w-fit ${
+                                                                metric.status === 'optimal' ? 'bg-green-500/20 text-green-300' :
+                                                                metric.status === 'high' ? 'bg-blue-500/20 text-blue-300' :
+                                                                'bg-purple-500/20 text-purple-300'
+                                                            }`}>
+                                                                {metric.status.toUpperCase()}
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </div>
@@ -623,22 +948,27 @@
                                 )}
 
                                 {activeModule !== 'overview' && (
-                                    <div className="data-card rounded-xl p-8">
-                                        <h3 className="text-2xl font-bold text-white mb-4">
-                                            {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Module
+                                    <div className="hologram-card rounded-xl p-12 text-center">
+                                        <h3 className="text-4xl font-bold text-white mb-6">
+                                            {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Engine
                                         </h3>
-                                        <p className="text-white/70">
-                                            Advanced {activeModule} capabilities for {sectorConfig.name.toLowerCase()} organizations. 
-                                            This module provides comprehensive tools and insights tailored for your industry requirements.
+                                        <p className="text-white/70 text-xl mb-8">
+                                            Advanced {activeModule} capabilities powered by next-generation AI algorithms
                                         </p>
-                                        <div className="mt-6 p-4 bg-black/20 rounded-lg border" style={{borderColor: sectorConfig.accentColor}}>
-                                            <div className="text-white/80 text-sm">Module Status: Active</div>
-                                            <div className="text-white/60 text-xs mt-1">Ready for configuration and data input</div>
+                                        <div className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full">
+                                            <div className="w-3 h-3 rounded-full bg-white animate-pulse"></div>
+                                            <span className="text-white font-semibold">Neural Network Active</span>
                                         </div>
                                     </div>
                                 )}
                             </div>
                         </div>
+
+                        <AIAssistant 
+                            isOpen={aiAssistantOpen} 
+                            onToggle={() => setAiAssistantOpen(!aiAssistantOpen)}
+                            currentSector={currentSector}
+                        />
                     </div>
                 );
             };
@@ -646,13 +976,12 @@
             return (
                 <div>
                     {currentPage === 'landing' && <LandingPage />}
-                    {currentPage === 'pricing' && <PricingPage />}
                     {currentPage === 'dashboard' && <Dashboard />}
                 </div>
             );
         };
 
-        ReactDOM.render(<EnterprisePlatform />, document.getElementById('root'));
+        ReactDOM.render(<IncrediblePlatform />, document.getElementById('root'));
     </script>
 </body>
 </html>
