@@ -7,1194 +7,1929 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            /* Psychology-optimized color palette */
-            --primary-bg: #0f172a; /* Deep slate for focus */
-            --secondary-bg: #1e293b; /* Softer slate */
-            --accent-color: #3b82f6; /* Trust blue */
-            --success-color: #10b981; /* Growth green */
-            --warning-color: #f59e0b; /* Energy orange */
-            --danger-color: #ef4444; /* Alert red (used sparingly) */
-            --wisdom-color: #8b5cf6; /* Creative purple */
-            --calm-color: #06b6d4; /* Calming cyan */
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: rgba(59, 130, 246, 0.2);
-            --glow-color: rgba(59, 130, 246, 0.4);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        .theme-financial {
-            --accent-color: #10b981; /* Trust green for growth */
-            --glow-color: rgba(16, 185, 129, 0.4);
-            --border-color: rgba(16, 185, 129, 0.2);
-        }
-        
-        .theme-healthcare {
-            --accent-color: #06b6d4; /* Calming cyan for care */
-            --glow-color: rgba(6, 182, 212, 0.4);
-            --border-color: rgba(6, 182, 212, 0.2);
-        }
-        
-        .theme-technology {
-            --accent-color: #3b82f6; /* Professional blue */
-            --glow-color: rgba(59, 130, 246, 0.4);
-            --border-color: rgba(59, 130, 246, 0.2);
-        }
-        
-        .theme-manufacturing {
-            --accent-color: #f59e0b; /* Energetic orange */
-            --glow-color: rgba(245, 158, 11, 0.4);
-            --border-color: rgba(245, 158, 11, 0.2);
-        }
-        
+
         body {
-            background: linear-gradient(135deg, var(--primary-bg) 0%, #0a0f1f 100%);
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
             overflow-x: hidden;
+            min-height: 100vh;
         }
-        
-        .neural-bg {
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
-                linear-gradient(180deg, var(--primary-bg) 0%, #0a0f1f 100%);
-            background-size: 400% 400%;
-            animation: neural-pulse 12s ease-in-out infinite;
-        }
-        
-        @keyframes neural-pulse {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        
-        .glass-panel {
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.03) 0%, 
-                rgba(255, 255, 255, 0.01) 100%);
-            backdrop-filter: blur(20px) saturate(150%);
-            border: 1px solid var(--border-color);
-            box-shadow: 
-                0 10px 30px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        }
-        
-        .hologram-card {
-            background: linear-gradient(135deg, 
-                rgba(59, 130, 246, 0.02) 0%, 
-                rgba(16, 185, 129, 0.01) 50%,
-                rgba(139, 92, 246, 0.02) 100%);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .hologram-card::before {
-            content: '';
+
+        /* Skip to main content for accessibility */
+        .skip-link {
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--accent-color), transparent, var(--accent-color));
-            border-radius: inherit;
+            top: -40px;
+            left: 0;
+            background: #2563eb;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Performance monitoring badge */
+        .perf-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            z-index: 9999;
+            display: none;
+        }
+
+        .perf-badge.show {
+            display: block;
+        }
+
+        /* Mobile menu */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
+                background: #1e293b;
+                transition: right 0.3s ease;
+                z-index: 1000;
+                padding: 20px;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem !important;
+            }
+
+            .dashboard-sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                width: 250px;
+                height: 100vh;
+                transition: left 0.3s ease;
+                z-index: 999;
+            }
+
+            .dashboard-sidebar.active {
+                left: 0;
+            }
+        }
+
+        /* Achievement notification */
+        .achievement-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            animation: slideIn 0.5s ease, slideOut 0.5s ease 3s forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Gamification elements */
+        .points-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Neural network canvas */
+        #neural-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s;
+            opacity: 0.3;
         }
-        
-        .hologram-card:hover::before {
-            opacity: 0.7;
-            animation: border-glow 3s linear infinite;
-        }
-        
-        .hologram-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
-                        0 0 20px var(--glow-color);
-        }
-        
-        @keyframes border-glow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .data-stream {
+
+        /* Enhanced cards */
+        .enhanced-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
-        
-        .data-stream::after {
+
+        .enhanced-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                var(--glow-color), 
-                transparent);
-            animation: data-flow 4s linear infinite;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+            transition: left 0.6s ease;
         }
-        
-        @keyframes data-flow {
-            0% { left: -100%; }
-            100% { left: 100%; }
+
+        .enhanced-card:hover::before {
+            left: 100%;
         }
-        
-        .metric-visualizer {
-            background: linear-gradient(90deg, var(--success-color) 0%, var(--accent-color) 100%);
-            height: 4px;
-            border-radius: 2px;
+
+        .enhanced-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.6);
+        }
+
+        /* Real-time ticker */
+        .ticker-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ticker-content {
+            display: flex;
+            animation: ticker 30s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* AI Assistant */
+        .ai-assistant {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            border-radius: 12px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .ai-assistant.active {
+            display: flex;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .ai-message {
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Dashboard module transitions */
+        .module-content {
+            animation: moduleSlide 0.5s ease;
+        }
+
+        @keyframes moduleSlide {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Testimonial carousel */
+        .testimonial-carousel {
             position: relative;
             overflow: hidden;
-            transition: width 1.2s ease-out;
+            padding: 40px 0;
         }
-        
-        .metric-visualizer::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 30px;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-            animation: shimmer 2.5s linear infinite;
+
+        .testimonial-slide {
+            animation: slideInOut 10s infinite;
         }
-        
-        @keyframes shimmer {
-            0% { transform: translateX(-30px); }
-            100% { transform: translateX(300px); }
+
+        @keyframes slideInOut {
+            0%, 100% { opacity: 0; transform: translateX(-20px); }
+            10%, 90% { opacity: 1; transform: translateX(0); }
         }
-        
-        .neural-network {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.12;
+
+        /* Live user count pulse */
+        .live-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            border-radius: 20px;
+            font-size: 14px;
         }
-        
-        .floating-particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            animation: float 15s linear infinite;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-        }
-        
-        .command-input {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px 18px;
-            color: var(--text-primary);
-            font-size: 15px;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(8px);
-        }
-        
-        .command-input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 15px var(--glow-color);
-            background: rgba(15, 23, 42, 0.8);
-        }
-        
-        .pulse-indicator {
-            animation: pulse-glow 2.5s infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { 
-                box-shadow: 0 0 4px var(--accent-color);
-                opacity: 1;
-            }
-            50% { 
-                box-shadow: 0 0 15px var(--accent-color), 0 0 25px var(--accent-color);
-                opacity: 0.9;
-            }
-        }
-        
-        .typing-animation::after {
-            content: '|';
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-        
-        .scrollbar-custom {
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent-color) transparent;
-        }
-        
-        .scrollbar-custom::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .scrollbar-custom::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        
-        .scrollbar-custom::-webkit-scrollbar-thumb {
-            background: var(--accent-color);
-            border-radius: 3px;
-        }
-        
-        .accent-glow {
-            box-shadow: 0 0 15px var(--glow-color);
-        }
-        
-        .status-indicator {
+
+        .live-dot {
             width: 8px;
             height: 8px;
+            background: #10b981;
             border-radius: 50%;
-            background: var(--success-color);
-            animation: pulse-glow 2.5s infinite;
+            animation: pulse 2s infinite;
         }
-        
-        .enterprise-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
         }
-        
-        @media (max-width: 768px) {
-            .neural-network { opacity: 0.05; }
-            .floating-particle { display: none; }
+
+        /* Countdown timer */
+        .countdown-timer {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: bold;
+            animation: urgencyPulse 1s infinite alternate;
+        }
+
+        @keyframes urgencyPulse {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.02);
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            body {
+                background: #000;
+                color: #fff;
+            }
+            .enhanced-card {
+                border: 2px solid #fff;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        button:focus,
+        a:focus,
+        input:focus,
+            select:focus,
+        textarea:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Touch-friendly tap targets */
+        button,
+        a,
+        .clickable {
+            min-height: 44px;
+            min-width: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loading state for buttons */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spinner 0.6s linear infinite;
+        }
+
+        @keyframes spinner {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="neural-network" id="neural-bg"></div>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <canvas id="neural-canvas"></canvas>
     <div id="root"></div>
+    <div class="perf-badge" id="perfBadge"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef, useMemo, useCallback } = React;
+        const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
+        // API Configuration
+        const API_BASE_URL = 'https://industry-intelligence-backend-production.up.railway.app';
+        
+        // Sector Themes (from original code)
         const SECTOR_THEMES = {
             financial: {
+                primary: '#10b981',
+                secondary: '#059669',
+                accent: '#34d399',
+                gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                icon: '💰',
                 name: 'Financial Services',
-                theme: 'theme-financial',
-                accentColor: '#10b981',
                 terminology: {
-                    dashboard: 'Portfolio Command Center',
-                    analytics: 'Market Intelligence',
-                    monitoring: 'Risk Surveillance',
-                    intelligence: 'Algorithmic Insights'
+                    performance: 'Portfolio Performance',
+                    efficiency: 'Risk-Adjusted Returns',
+                    growth: 'AUM Growth',
+                    optimization: 'Alpha Generation'
                 }
             },
             healthcare: {
-                name: 'Healthcare',
-                theme: 'theme-healthcare', 
-                accentColor: '#06b6d4',
+                primary: '#06b6d4',
+                secondary: '#0891b2',
+                accent: '#22d3ee',
+                gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+                icon: '🏥',
+                name: 'Healthcare & Life Sciences',
                 terminology: {
-                    dashboard: 'Clinical Operations',
-                    analytics: 'Patient Analytics',
-                    monitoring: 'Health Monitoring',
-                    intelligence: 'Diagnostic AI'
+                    performance: 'Patient Outcomes',
+                    efficiency: 'Clinical Efficiency',
+                    growth: 'Treatment Efficacy',
+                    optimization: 'Care Optimization'
                 }
             },
             technology: {
-                name: 'Technology',
-                theme: 'theme-technology',
-                accentColor: '#3b82f6',
+                primary: '#8b5cf6',
+                secondary: '#7c3aed',
+                accent: '#a78bfa',
+                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                icon: '💻',
+                name: 'Technology & Software',
                 terminology: {
-                    dashboard: 'System Command',
-                    analytics: 'Performance Matrix',
-                    monitoring: 'Network Surveillance',
-                    intelligence: 'Predictive Engine'
+                    performance: 'System Performance',
+                    efficiency: 'Computational Efficiency',
+                    growth: 'User Growth',
+                    optimization: 'Algorithm Optimization'
                 }
             },
             manufacturing: {
-                name: 'Manufacturing',
-                theme: 'theme-manufacturing',
-                accentColor: '#f59e0b',
+                primary: '#f59e0b',
+                secondary: '#d97706',
+                accent: '#fbbf24',
+                gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                icon: '🏭',
+                name: 'Manufacturing & Industry',
                 terminology: {
-                    dashboard: 'Operations Command',
-                    analytics: 'Production Analytics',
-                    monitoring: 'Quality Surveillance',
-                    intelligence: 'Industrial AI'
+                    performance: 'Production Output',
+                    efficiency: 'Operational Efficiency',
+                    growth: 'Capacity Growth',
+                    optimization: 'Process Optimization'
                 }
             }
         };
 
-        const API_BASE_URL = 'https://industry-intelligence-backend-production.up.railway.app';
-
-        // Neural Network Background Component
+        // Neural Network Canvas Component (from original code)
         const NeuralNetwork = () => {
             const canvasRef = useRef(null);
+            const animationRef = useRef(null);
+            const particlesRef = useRef([]);
 
             useEffect(() => {
                 const canvas = canvasRef.current;
                 if (!canvas) return;
                 
                 const ctx = canvas.getContext('2d');
-                const resizeCanvas = () => {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                };
-                
-                resizeCanvas();
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
 
-                const particles = [];
-                const particleCount = Math.min(40, Math.floor(window.innerWidth / 40));
+                // Initialize particles
+                const particleCount = 50;
+                particlesRef.current = Array.from({ length: particleCount }, () => ({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    radius: Math.random() * 2 + 1
+                }));
 
-                for (let i = 0; i < particleCount; i++) {
-                    particles.push({
-                        x: Math.random() * canvas.width,
-                        y: Math.random() * canvas.height,
-                        vx: (Math.random() - 0.5) * 0.3,
-                        vy: (Math.random() - 0.5) * 0.3,
-                        opacity: Math.random() * 0.4 + 0.1
-                    });
-                }
-
-                let animationId;
-                function animate() {
+                const animate = () => {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color') || '#3b82f6';
-                    ctx.lineWidth = 0.5;
-
-                    particles.forEach((particle, i) => {
+                    
+                    // Update and draw particles
+                    particlesRef.current.forEach((particle, i) => {
                         particle.x += particle.vx;
                         particle.y += particle.vy;
 
                         if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
                         if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
 
-                        ctx.globalAlpha = particle.opacity;
                         ctx.beginPath();
-                        ctx.arc(particle.x, particle.y, 1, 0, Math.PI * 2);
-                        ctx.fillStyle = ctx.strokeStyle;
+                        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(59, 130, 246, 0.6)';
                         ctx.fill();
 
-                        particles.forEach((otherParticle, j) => {
-                            if (i !== j) {
-                                const dx = particle.x - otherParticle.x;
-                                const dy = particle.y - otherParticle.y;
-                                const distance = Math.sqrt(dx * dx + dy * dy);
+                        // Draw connections
+                        particlesRef.current.slice(i + 1).forEach(particle2 => {
+                            const distance = Math.sqrt(
+                                Math.pow(particle.x - particle2.x, 2) +
+                                Math.pow(particle.y - particle2.y, 2)
+                            );
 
-                                if (distance < 120) {
-                                    ctx.globalAlpha = (120 - distance) / 120 * 0.08;
-                                    ctx.beginPath();
-                                    ctx.moveTo(particle.x, particle.y);
-                                    ctx.lineTo(otherParticle.x, otherParticle.y);
-                                    ctx.stroke();
-                                }
+                            if (distance < 100) {
+                                ctx.beginPath();
+                                ctx.moveTo(particle.x, particle.y);
+                                ctx.lineTo(particle2.x, particle2.y);
+                                ctx.strokeStyle = `rgba(59, 130, 246, ${0.2 * (1 - distance / 100)})`;
+                                ctx.stroke();
                             }
                         });
                     });
 
-                    animationId = requestAnimationFrame(animate);
-                }
+                    animationRef.current = requestAnimationFrame(animate);
+                };
 
                 animate();
 
                 const handleResize = () => {
-                    resizeCanvas();
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
                 };
 
                 window.addEventListener('resize', handleResize);
+
                 return () => {
                     window.removeEventListener('resize', handleResize);
-                    if (animationId) {
-                        cancelAnimationFrame(animationId);
+                    if (animationRef.current) {
+                        cancelAnimationFrame(animationRef.current);
                     }
                 };
             }, []);
 
-            return <canvas ref={canvasRef} className="neural-network" />;
+            return <canvas ref={canvasRef} id="neural-canvas" />;
         };
 
-        // AI Assistant Component
-        const AIAssistant = ({ isOpen, onToggle, currentSector }) => {
+        // AI Assistant Component (from original code)
+        const AIAssistant = ({ currentSector }) => {
+            const [isOpen, setIsOpen] = useState(false);
             const [messages, setMessages] = useState([
-                { type: 'ai', text: `AI Assistant active. Ready to analyze ${SECTOR_THEMES[currentSector].name.toLowerCase()} data.` }
+                { role: 'assistant', content: `Hello! I'm your ${SECTOR_THEMES[currentSector].name} AI assistant. How can I help you today?` }
             ]);
             const [input, setInput] = useState('');
             const [isTyping, setIsTyping] = useState(false);
 
-            const sendMessage = useCallback(async (text) => {
-                setMessages(prev => [...prev, { type: 'user', text }]);
+            const sendMessage = useCallback(() => {
+                if (!input.trim()) return;
+
+                const userMessage = { role: 'user', content: input };
+                setMessages(prev => [...prev, userMessage]);
+                setInput('');
                 setIsTyping(true);
 
+                // Simulate AI response
                 setTimeout(() => {
                     const responses = [
-                        `Analyzing ${SECTOR_THEMES[currentSector].name.toLowerCase()} trends... Market volatility is 12% above historical average.`,
-                        `Risk assessment complete. 3 high-priority alerts detected in your portfolio.`,
-                        `Predictive model suggests 15% growth opportunity in emerging markets.`,
-                        `Real-time analysis shows correlation coefficient of 0.87 between selected metrics.`,
-                        `Neural network has identified 5 optimization opportunities in your current strategy.`
+                        `Based on our ${SECTOR_THEMES[currentSector].terminology.performance} analysis, I recommend focusing on optimization strategies.`,
+                        `The current ${SECTOR_THEMES[currentSector].terminology.efficiency} metrics show promising trends.`,
+                        `Let me analyze the ${SECTOR_THEMES[currentSector].terminology.growth} patterns for you.`,
+                        `Our ${SECTOR_THEMES[currentSector].terminology.optimization} algorithms suggest several improvements.`
                     ];
-                    const response = responses[Math.floor(Math.random() * responses.length)];
                     
-                    setMessages(prev => [...prev, { type: 'ai', text: response }]);
+                    const aiMessage = {
+                        role: 'assistant',
+                        content: responses[Math.floor(Math.random() * responses.length)]
+                    };
+                    
+                    setMessages(prev => [...prev, aiMessage]);
                     setIsTyping(false);
                 }, 1500);
-            }, [currentSector]);
-
-            if (!isOpen) return null;
+            }, [input, currentSector]);
 
             return (
-                <div className="fixed bottom-6 right-6 w-96 glass-panel rounded-xl p-4 z-50">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-2">
-                            <div className="status-indicator"></div>
-                            <span className="text-white font-semibold">AI Assistant</span>
-                        </div>
-                        <button onClick={onToggle} className="text-white/60 hover:text-white text-xl">×</button>
-                    </div>
-                    
-                    <div className="h-64 overflow-y-auto scrollbar-custom mb-4 space-y-2">
-                        {messages.map((msg, index) => (
-                            <div key={index} className={`${msg.type === 'ai' ? 'text-left' : 'text-right'}`}>
-                                <div className={`inline-block p-3 rounded-lg max-w-xs ${
-                                    msg.type === 'ai' 
-                                        ? 'bg-blue-600/10 text-blue-100 border border-blue-500/20' 
-                                        : 'bg-white/5 text-white'
-                                }`}>
-                                    {msg.text}
-                                </div>
-                            </div>
-                        ))}
-                        {isTyping && (
-                            <div className="text-left">
-                                <div className="inline-block p-3 rounded-lg bg-blue-600/10 text-blue-100 border border-blue-500/20 typing-animation">
-                                    AI is analyzing...
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter' && input.trim()) {
-                                    sendMessage(input);
-                                    setInput('');
-                                }
-                            }}
-                            placeholder="Ask me anything about your data..."
-                            className="flex-1 command-input text-sm"
-                        />
-                        <button
-                            onClick={() => {
-                                if (input.trim()) {
-                                    sendMessage(input);
-                                    setInput('');
-                                }
-                            }}
-                            className="px-4 py-2 rounded-lg text-white font-medium transition-all hover:brightness-110 accent-glow"
-                            style={{background: 'var(--accent-color)'}}
-                        >
-                            Send
-                        </button>
-                    </div>
-                </div>
-            );
-        };
+                <>
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        style={{
+                            position: 'fixed',
+                            bottom: '20px',
+                            right: '20px',
+                            width: '60px',
+                            height: '60px',
+                            borderRadius: '50%',
+                            background: SECTOR_THEMES[currentSector].gradient,
+                            border: 'none',
+                            color: 'white',
+                            fontSize: '24px',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                            zIndex: 999
+                        }}
+                    >
+                        💬
+                    </button>
 
-        // Enhanced Data Card Component
-        const EnhancedDataCard = ({ title, value, subtitle, trend, interactive = false, children }) => {
-            const [isHovered, setIsHovered] = useState(false);
-            
-            return (
-                <div 
-                    className="hologram-card rounded-xl p-6 cursor-pointer"
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                >
-                    <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-white/70 text-sm font-medium uppercase tracking-wide">{title}</h3>
-                        {trend && (
-                            <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
-                                trend > 0 ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
-                            }`}>
-                                <span>{trend > 0 ? '↗' : '↘'}</span>
-                                <span>{Math.abs(trend)}%</span>
-                            </div>
-                        )}
-                    </div>
-                    
-                    <div className="text-4xl font-bold text-white mb-2 data-stream">
-                        {value}
-                    </div>
-                    
-                    {subtitle && (
-                        <div className="text-white/50 text-sm mb-4">{subtitle}</div>
-                    )}
-                    
-                    {interactive && isHovered && (
-                        <div className="mt-4 space-y-2">
-                            <div className="h-20 bg-black/15 rounded-lg flex items-end justify-around p-2">
-                                {[...Array(8)].map((_, i) => (
-                                    <div 
-                                        key={i} 
-                                        className="w-3 rounded-t animate-pulse"
-                                        style={{
-                                            height: `${20 + Math.random() * 40}px`,
-                                            background: 'linear-gradient(to top, var(--accent-color), var(--success-color))',
-                                            animationDelay: `${i * 0.1}s`
-                                        }}
-                                    />
-                                ))}
-                            </div>
+                    <div className={`ai-assistant ${isOpen ? 'active' : ''}`}>
+                        <div style={{
+                            padding: '15px',
+                            background: SECTOR_THEMES[currentSector].gradient,
+                            borderRadius: '12px 12px 0 0',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
+                            <h3 style={{ margin: 0 }}>AI Assistant</h3>
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: 'white',
+                                    fontSize: '20px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                ×
+                            </button>
                         </div>
-                    )}
-                    
-                    {children}
-                </div>
-            );
-        };
 
-        // Real-time Ticker Component
-        const RealTimeTicker = ({ data }) => {
-            const [currentIndex, setCurrentIndex] = useState(0);
-            
-            useEffect(() => {
-                const interval = setInterval(() => {
-                    setCurrentIndex(prev => (prev + 1) % data.length);
-                }, 3000);
-                return () => clearInterval(interval);
-            }, [data.length]);
-            
-            return (
-                <div className="glass-panel rounded-lg p-4 mb-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <div className="status-indicator"></div>
-                            <span className="text-white/70 text-sm font-medium">LIVE MARKET DATA</span>
-                        </div>
-                        <div className="flex space-x-6">
-                            {data.slice(currentIndex, currentIndex + 3).map((item, index) => (
-                                <div key={index} className="text-right">
-                                    <div className="text-white font-semibold">{item.symbol}</div>
-                                    <div className={`text-sm ${item.change > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                        {item.price} ({item.change > 0 ? '+' : ''}{item.change}%)
-                                    </div>
+                        <div className="ai-chat-messages">
+                            {messages.map((msg, idx) => (
+                                <div
+                                    key={idx}
+                                    className="ai-message"
+                                    style={{
+                                        background: msg.role === 'user' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                                        alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start'
+                                    }}
+                                >
+                                    {msg.content}
                                 </div>
                             ))}
+                            {isTyping && (
+                                <div className="ai-message" style={{ background: 'rgba(16, 185, 129, 0.2)' }}>
+                                    <span style={{ animation: 'pulse 1s infinite' }}>Thinking...</span>
+                                </div>
+                            )}
                         </div>
+
+                        <div style={{
+                            padding: '15px',
+                            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                            display: 'flex',
+                            gap: '10px'
+                        }}>
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                                placeholder="Ask me anything..."
+                                style={{
+                                    flex: 1,
+                                    padding: '10px',
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    borderRadius: '6px',
+                                    color: 'white'
+                                }}
+                            />
+                            <button
+                                onClick={sendMessage}
+                                style={{
+                                    padding: '10px 20px',
+                                    background: SECTOR_THEMES[currentSector].gradient,
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    color: 'white',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </>
+            );
+        };
+
+        // Enhanced Data Card Component (from original code)
+        const EnhancedDataCard = ({ title, value, trend, icon, color }) => {
+            const [isHovered, setIsHovered] = useState(false);
+
+            return (
+                <div
+                    className="enhanced-card"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    style={{
+                        transform: isHovered ? 'translateY(-5px) scale(1.02)' : 'translateY(0) scale(1)',
+                        transition: 'all 0.3s ease'
+                    }}
+                >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>{title}</p>
+                            <h3 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px' }}>{value}</h3>
+                            <span style={{
+                                color: trend > 0 ? '#10b981' : '#ef4444',
+                                fontSize: '14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                            }}>
+                                {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
+                            </span>
+                        </div>
+                        <div style={{
+                            width: '60px',
+                            height: '60px',
+                            background: `linear-gradient(135deg, ${color} 0%, ${color}99 100%)`,
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '24px'
+                        }}>
+                            {icon}
+                        </div>
+                    </div>
+                    {isHovered && (
+                        <div style={{
+                            marginTop: '15px',
+                            paddingTop: '15px',
+                            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+                        }}>
+                            <canvas width="200" height="50" style={{ width: '100%', height: '50px' }} />
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Real-time Ticker Component (from original code)
+        const RealTimeTicker = () => {
+            const tickerData = [
+                { symbol: 'AAPL', price: 182.52, change: 2.3 },
+                { symbol: 'GOOGL', price: 141.80, change: -0.8 },
+                { symbol: 'MSFT', price: 378.85, change: 1.2 },
+                { symbol: 'AMZN', price: 127.74, change: 3.1 },
+                { symbol: 'TSLA', price: 265.28, change: -1.5 }
+            ];
+
+            return (
+                <div className="ticker-container">
+                    <div className="ticker-content">
+                        {[...tickerData, ...tickerData].map((item, idx) => (
+                            <span key={idx} style={{
+                                padding: '0 30px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}>
+                                <strong>{item.symbol}</strong>
+                                <span>${item.price}</span>
+                                <span style={{ color: item.change > 0 ? '#10b981' : '#ef4444' }}>
+                                    {item.change > 0 ? '↑' : '↓'} {Math.abs(item.change)}%
+                                </span>
+                            </span>
+                        ))}
                     </div>
                 </div>
             );
         };
 
-        const UltimateEnterprisePlatform = () => {
-            const [currentPage, setCurrentPage] = useState('landing');
-            const [user, setUser] = useState(null);
-            const [currentSector, setCurrentSector] = useState('technology');
-            const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
-            const [companies, setCompanies] = useState([]);
-            const [loading, setLoading] = useState(true);
-            const [realtimeData, setRealtimeData] = useState([
-                { symbol: 'AAPL', price: '$185.42', change: 2.3 },
-                { symbol: 'MSFT', price: '$378.91', change: -1.2 },
-                { symbol: 'GOOGL', price: '$142.65', change: 0.8 },
-                { symbol: 'AMZN', price: '$145.33', change: 1.7 },
-                { symbol: 'TSLA', price: '$248.15', change: -3.1 },
-                { symbol: 'NVDA', price: '$891.14', change: 4.2 }
-            ]);
+        // Gamification System (from new code)
+        const useGamification = () => {
+            const [userScore, setUserScore] = useState(() => 
+                parseInt(localStorage.getItem('userScore') || '0')
+            );
+            const [dailyStreak, setDailyStreak] = useState(() => 
+                parseInt(localStorage.getItem('dailyStreak') || '0')
+            );
+            const [achievements, setAchievements] = useState(() => 
+                JSON.parse(localStorage.getItem('achievements') || '[]')
+            );
+            const [showAchievement, setShowAchievement] = useState(null);
 
-            const sectorConfig = SECTOR_THEMES[currentSector];
+            const addPoints = useCallback((points, action) => {
+                setUserScore(prev => {
+                    const newScore = prev + points;
+                    localStorage.setItem('userScore', newScore.toString());
+                    
+                    // Check for achievements
+                    if (newScore >= 100 && !achievements.includes('first100')) {
+                        unlockAchievement('first100', '🎯 Centurion', 'Earned 100 points!');
+                    }
+                    if (newScore >= 500 && !achievements.includes('first500')) {
+                        unlockAchievement('first500', '🏆 Champion', 'Earned 500 points!');
+                    }
+                    if (newScore >= 1000 && !achievements.includes('first1000')) {
+                        unlockAchievement('first1000', '👑 Legend', 'Earned 1000 points!');
+                    }
+                    
+                    return newScore;
+                });
+            }, [achievements]);
 
-            useEffect(() => {
-                // Apply theme to CSS custom properties
-                const root = document.documentElement;
-                root.style.setProperty('--accent-color', sectorConfig.accentColor);
-                root.style.setProperty('--glow-color', sectorConfig.accentColor + '66');
-                root.style.setProperty('--border-color', sectorConfig.accentColor + '33');
-            }, [currentSector, sectorConfig.accentColor]);
-
-            useEffect(() => {
-                // Simulate real-time data updates
-                const interval = setInterval(() => {
-                    setRealtimeData(prev => prev.map(item => ({
-                        ...item,
-                        price: `$${(parseFloat(item.price.slice(1)) + (Math.random() - 0.5) * 5).toFixed(2)}`,
-                        change: parseFloat((Math.random() * 6 - 3).toFixed(1))
-                    })));
-                }, 5000);
-                
-                return () => clearInterval(interval);
+            const unlockAchievement = useCallback((id, title, description) => {
+                setAchievements(prev => {
+                    const updated = [...prev, id];
+                    localStorage.setItem('achievements', JSON.stringify(updated));
+                    return updated;
+                });
+                setShowAchievement({ title, description });
+                setTimeout(() => setShowAchievement(null), 4000);
             }, []);
 
+            const updateStreak = useCallback(() => {
+                const lastVisit = localStorage.getItem('lastVisit');
+                const today = new Date().toDateString();
+                
+                if (lastVisit !== today) {
+                    const yesterday = new Date(Date.now() - 86400000).toDateString();
+                    
+                    if (lastVisit === yesterday) {
+                        setDailyStreak(prev => {
+                            const newStreak = prev + 1;
+                            localStorage.setItem('dailyStreak', newStreak.toString());
+                            
+                            if (newStreak === 7) {
+                                unlockAchievement('week', '🔥 Week Warrior', '7 day streak!');
+                            }
+                            if (newStreak === 30) {
+                                unlockAchievement('month', '💎 Monthly Master', '30 day streak!');
+                            }
+                            
+                            return newStreak;
+                        });
+                    } else {
+                        setDailyStreak(1);
+                        localStorage.setItem('dailyStreak', '1');
+                    }
+                    
+                    localStorage.setItem('lastVisit', today);
+                    addPoints(10, 'daily_visit');
+                }
+            }, [addPoints, unlockAchievement]);
+
             useEffect(() => {
-                const fetchData = async () => {
+                updateStreak();
+            }, []);
+
+            return {
+                userScore,
+                dailyStreak,
+                achievements,
+                showAchievement,
+                addPoints
+            };
+        };
+
+        // Main Platform Component
+        const UltimateEnterprisePlatform = () => {
+            const [currentPage, setCurrentPage] = useState('landing');
+            const [currentSector, setCurrentSector] = useState('financial');
+            const [companies, setCompanies] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            const [dashboardSidebarOpen, setDashboardSidebarOpen] = useState(false);
+            const [activeModule, setActiveModule] = useState('mission-control');
+            const [liveUserCount, setLiveUserCount] = useState(1247);
+            const [countdown, setCountdown] = useState({ hours: 23, minutes: 47, seconds: 12 });
+            const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+            // Gamification
+            const { userScore, dailyStreak, achievements, showAchievement, addPoints } = useGamification();
+
+            // Performance monitoring
+            useEffect(() => {
+                const measurePerformance = () => {
+                    if (window.performance && window.performance.timing) {
+                        const loadTime = window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;
+                        const perfBadge = document.getElementById('perfBadge');
+                        if (perfBadge) {
+                            perfBadge.innerHTML = `Load time: ${loadTime}ms ${loadTime < 2000 ? '✅' : '⚠️'}`;
+                            perfBadge.classList.add('show');
+                            setTimeout(() => perfBadge.classList.remove('show'), 5000);
+                        }
+                    }
+                };
+                
+                if (document.readyState === 'complete') {
+                    measurePerformance();
+                } else {
+                    window.addEventListener('load', measurePerformance);
+                }
+            }, []);
+
+            // Fetch companies data
+            useEffect(() => {
+                const fetchCompanies = async () => {
+                    setLoading(true);
                     try {
                         const response = await fetch(`${API_BASE_URL}/api/companies`);
                         const data = await response.json();
-                        setCompanies(Array.isArray(data) ? data : []);
+                        setCompanies(data);
+                        addPoints(5, 'data_loaded');
                     } catch (error) {
-                        console.error('API Error:', error);
-                        setCompanies([
-                            { id: 1, name: 'Apple Inc.', market_cap: 2800000000000, industry_code: 'TECH' },
-                            { id: 2, name: 'Microsoft Corp.', market_cap: 2400000000000, industry_code: 'TECH' },
-                            { id: 3, name: 'Amazon.com Inc.', market_cap: 1500000000000, industry_code: 'ECOM' },
-                            { id: 4, name: 'Tesla Inc.', market_cap: 800000000000, industry_code: 'AUTO' },
-                            { id: 5, name: 'Alphabet Inc.', market_cap: 1800000000000, industry_code: 'TECH' },
-                            { id: 6, name: 'Meta Platforms', market_cap: 750000000000, industry_code: 'TECH' }
-                        ]);
+                        console.error('Failed to fetch companies:', error);
                     } finally {
                         setLoading(false);
                     }
                 };
-                fetchData();
+                fetchCompanies();
+            }, [addPoints]);
+
+            // Update live user count
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setLiveUserCount(prev => prev + Math.floor(Math.random() * 5) - 2);
+                }, 5000);
+                return () => clearInterval(interval);
             }, []);
 
-            const handleSubscription = (planId) => {
-                setUser({ 
-                    plan: planId, 
-                    email: planId === 'starter' ? 'analyst@enterprise.com' : 'executive@enterprise.com', 
-                    accessLevel: planId === 'starter' ? 'Standard' : 'Executive',
-                    sector: currentSector 
-                });
-                setCurrentPage('dashboard');
-            };
-
-            const LandingPage = () => (
-                <div className={`min-h-screen neural-bg ${sectorConfig.theme}`}>
-                    <NeuralNetwork />
-                    
-                    {/* Floating Particles */}
-                    {[...Array(15)].map((_, i) => (
-                        <div 
-                            key={i}
-                            className="floating-particle"
-                            style={{
-                                left: `${Math.random() * 100}%`,
-                                animationDelay: `${Math.random() * 10}s`,
-                                animationDuration: `${10 + Math.random() * 10}s`
-                            }}
-                        />
-                    ))}
-
-                    <nav className="glass-panel border-b backdrop-blur-md">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex justify-between items-center h-16">
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-500 p-0.5">
-                                        <div className="w-full h-full rounded-xl bg-slate-900 flex items-center justify-center">
-                                            <div className="text-white font-bold">IQ</div>
-                                        </div>
-                                    </div>
-                                    <span className="font-bold text-2xl text-white">IndustryIQ</span>
-                                    <span className="text-xs px-3 py-1 rounded-full text-white accent-glow" style={{background: 'var(--accent-color)'}}>
-                                        ULTIMATE
-                                    </span>
-                                </div>
-                                <div className="flex items-center space-x-6">
-                                    <select 
-                                        value={currentSector} 
-                                        onChange={(e) => setCurrentSector(e.target.value)}
-                                        className="glass-panel border-0 text-white rounded px-4 py-2 text-sm bg-slate-800/50"
-                                    >
-                                        {Object.entries(SECTOR_THEMES).map(([key, config]) => (
-                                            <option key={key} value={key} className="bg-slate-900">
-                                                {config.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <button 
-                                        onClick={() => setCurrentPage('pricing')}
-                                        className="text-white/70 hover:text-white transition-all hover:scale-105"
-                                    >
-                                        Pricing
-                                    </button>
-                                    <button 
-                                        onClick={() => handleSubscription('starter')}
-                                        className="px-8 py-3 text-white rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-xl accent-glow"
-                                        style={{background: 'var(--accent-color)'}}
-                                    >
-                                        Launch Platform
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </nav>
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
-                        <div className="text-center">
-                            <h1 className="text-7xl md:text-9xl font-bold text-white mb-8 tracking-tight leading-tight">
-                                ULTIMATE
-                                <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                                    INTELLIGENCE
-                                </span>
-                            </h1>
-                            <p className="text-2xl text-white/70 mb-16 max-w-5xl mx-auto leading-relaxed">
-                                Next-generation AI-powered platform that transforms how {sectorConfig.name.toLowerCase()} 
-                                organizations understand, analyze, and predict market dynamics with neural network precision.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-8 justify-center">
-                                <button 
-                                    onClick={() => setCurrentPage('pricing')}
-                                    className="px-12 py-5 text-white rounded-2xl font-bold text-xl transition-all transform hover:scale-110 hover:shadow-xl accent-glow"
-                                    style={{background: 'linear-gradient(135deg, var(--accent-color), var(--wisdom-color))'}}
-                                >
-                                    Experience The Future
-                                </button>
-                                <button 
-                                    onClick={() => handleSubscription('starter')}
-                                    className="px-12 py-5 border text-white hover:bg-white/5 rounded-2xl font-bold text-xl transition-all transform hover:scale-105"
-                                    style={{borderColor: 'var(--accent-color)', borderWidth: '2px'}}
-                                >
-                                    Live Demonstration
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-                        <div className="enterprise-grid">
-                            {[
-                                { 
-                                    title: 'Neural Intelligence', 
-                                    desc: 'Advanced machine learning algorithms with real-time neural network processing',
-                                    icon: '🧠',
-                                    color: 'from-purple-500 to-pink-500'
-                                },
-                                { 
-                                    title: 'Quantum Analytics', 
-                                    desc: 'Sub-millisecond data processing with live streaming visualizations',
-                                    icon: '⚡',
-                                    color: 'from-blue-500 to-cyan-500'
-                                },
-                                { 
-                                    title: 'Predictive AI', 
-                                    desc: 'Deep learning models trained on global market patterns and behaviors',
-                                    icon: '🔮',
-                                    color: 'from-green-500 to-emerald-500'
-                                },
-                                { 
-                                    title: 'Enterprise Security', 
-                                    desc: 'Military-grade security with real-time threat monitoring and compliance',
-                                    icon: '🛡️',
-                                    color: 'from-orange-500 to-yellow-500'
+            // Update countdown timer
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setCountdown(prev => {
+                        let { hours, minutes, seconds } = prev;
+                        seconds--;
+                        if (seconds < 0) {
+                            seconds = 59;
+                            minutes--;
+                            if (minutes < 0) {
+                                minutes = 59;
+                                hours--;
+                                if (hours < 0) {
+                                    hours = 23;
                                 }
-                            ].map((feature, index) => (
-                                <div key={index} className="hologram-card rounded-3xl p-10 text-center">
-                                    <div className={`text-6xl mb-8 p-6 rounded-2xl bg-gradient-to-br ${feature.color} w-fit mx-auto`}>
-                                        {feature.icon}
+                            }
+                        }
+                        return { hours, minutes, seconds };
+                    });
+                }, 1000);
+                return () => clearInterval(interval);
+            }, []);
+
+            // Testimonials rotation
+            const testimonials = [
+                { name: "Sarah Chen", role: "CFO at TechCorp", text: "IndustryIQ transformed our decision-making process." },
+                { name: "Michael Rodriguez", role: "CEO at HealthPlus", text: "The AI insights are game-changing for our strategy." },
+                { name: "Emma Thompson", role: "COO at FinanceHub", text: "Best investment in business intelligence we've made." }
+            ];
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setCurrentTestimonial(prev => (prev + 1) % testimonials.length);
+                }, 10000);
+                return () => clearInterval(interval);
+            }, []);
+
+            // Dashboard modules
+            const dashboardModules = [
+                { id: 'mission-control', name: 'Mission Control', icon: '🎯' },
+                { id: 'analytics', name: 'Analytics Engine', icon: '📊' },
+                { id: 'monitoring', name: 'Real-Time Monitoring', icon: '📡' },
+                { id: 'intelligence', name: 'Market Intelligence', icon: '🧠' },
+                { id: 'neural-engine', name: 'Neural Engine', icon: '🔮' },
+                { id: 'performance', name: 'Performance Matrix', icon: '⚡' }
+            ];
+
+            const handleModuleChange = useCallback((moduleId) => {
+                setActiveModule(moduleId);
+                addPoints(2, 'module_switch');
+            }, [addPoints]);
+
+            // Render current page
+            const renderPage = () => {
+                switch (currentPage) {
+                    case 'landing':
+                        return (
+                            <div>
+                                <RealTimeTicker />
+                                
+                                {/* Hero Section */}
+                                <section className="hero" style={{
+                                    minHeight: '100vh',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    padding: '20px',
+                                    textAlign: 'center',
+                                    position: 'relative'
+                                }}>
+                                    <div className="live-count">
+                                        <span className="live-dot"></span>
+                                        <span>{liveUserCount.toLocaleString()} users online</span>
                                     </div>
-                                    <h3 className="text-2xl font-bold text-white mb-6">{feature.title}</h3>
-                                    <p className="text-white/60 leading-relaxed text-lg">{feature.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const PricingPage = () => (
-                <div className={`min-h-screen neural-bg ${sectorConfig.theme}`}>
-                    <NeuralNetwork />
-                    
-                    <nav className="glass-panel border-b">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex justify-between items-center h-16">
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 rounded-lg accent-glow" style={{background: 'var(--accent-color)'}}></div>
-                                    <span className="font-bold text-xl text-white">IndustryIQ</span>
-                                </div>
-                                <button 
-                                    onClick={() => setCurrentPage('landing')}
-                                    className="text-white/70 hover:text-white transition-colors"
-                                >
-                                    ← Back
-                                </button>
-                            </div>
-                        </div>
-                    </nav>
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                        <div className="text-center mb-16">
-                            <h1 className="text-5xl font-bold text-white mb-6">Ultimate Enterprise Plans</h1>
-                            <p className="text-xl text-white/60">Next-generation pricing for {sectorConfig.name.toLowerCase()} organizations</p>
-                        </div>
-
-                        <div className="grid lg:grid-cols-3 gap-8">
-                            {[
-                                {
-                                    name: 'Starter',
-                                    price: '$0',
-                                    badge: 'Free Forever',
-                                    features: [
-                                        'AI-powered analytics dashboard',
-                                        'Up to 5 data sources',
-                                        'Neural network visualizations', 
-                                        'Email support',
-                                        '1 user account',
-                                        'Basic predictive models'
-                                    ],
-                                    action: () => handleSubscription('starter'),
-                                    buttonText: 'Get Started Free',
-                                    popular: false
-                                },
-                                {
-                                    name: 'Professional',
-                                    price: '$299',
-                                    badge: 'Most Popular',
-                                    features: [
-                                        'Advanced neural intelligence',
-                                        'Unlimited data sources',
-                                        'AI Assistant integration',
-                                        'Real-time data streaming',
-                                        'Up to 25 users',
-                                        'API access & webhooks',
-                                        'Custom AI models',
-                                        'Priority support'
-                                    ],
-                                    action: () => handleSubscription('professional'),
-                                    buttonText: 'Start Free Trial',
-                                    popular: true
-                                },
-                                {
-                                    name: 'Enterprise',
-                                    price: '$999',
-                                    badge: 'Ultimate Power',
-                                    features: [
-                                        'Complete intelligence platform',
-                                        'Neural network customization',
-                                        'Dedicated AI assistant team',
-                                        'Unlimited users',
-                                        'White-label deployment',
-                                        'Military-grade security',
-                                        'Custom neural architectures',
-                                        '24/7 dedicated support'
-                                    ],
-                                    action: () => handleSubscription('enterprise'),
-                                    buttonText: 'Contact Sales',
-                                    popular: false
-                                }
-                            ].map((plan, index) => (
-                                <div key={index} className={`hologram-card rounded-2xl p-8 ${plan.popular ? 'scale-105 accent-glow' : ''} relative`}>
-                                    {plan.popular && (
-                                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                            <span className="px-4 py-2 rounded-full text-white text-sm font-semibold accent-glow" 
-                                                  style={{background: 'linear-gradient(135deg, var(--accent-color), var(--wisdom-color))'}}>
-                                                {plan.badge}
-                                            </span>
-                                        </div>
-                                    )}
-                                    <div className="text-center mb-8">
-                                        <h3 className="text-2xl font-bold text-white mb-4">{plan.name}</h3>
-                                        <div className="flex items-center justify-center mb-4">
-                                            <span className="text-5xl font-bold text-white">{plan.price}</span>
-                                            <span className="text-white/50 ml-2">/month</span>
-                                        </div>
-                                    </div>
-                                    <ul className="space-y-4 mb-8 text-white/70">
-                                        {plan.features.map((feature, fIndex) => (
-                                            <li key={fIndex} className="flex items-center space-x-3">
-                                                <div className="w-2 h-2 rounded-full" style={{background: 'var(--success-color)'}}></div>
-                                                <span>{feature}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <button
-                                        onClick={plan.action}
-                                        className={`w-full py-4 rounded-xl font-semibold text-lg transition-all hover:brightness-110 ${
-                                            plan.popular 
-                                                ? 'text-white accent-glow' 
-                                                : 'border text-white hover:bg-white/5'
-                                        }`}
-                                        style={plan.popular 
-                                            ? {background: 'linear-gradient(135deg, var(--accent-color), var(--wisdom-color))'} 
-                                            : {borderColor: 'var(--accent-color)', borderWidth: '1px'}
-                                        }
-                                    >
-                                        {plan.buttonText}
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const Dashboard = () => {
-                const [activeModule, setActiveModule] = useState('overview');
-                
-                // Memoize the module change handler
-                const handleModuleChange = useCallback((moduleId) => {
-                    setActiveModule(moduleId);
-                }, []);
-                
-                const metrics = useMemo(() => {
-                    const totalValue = companies.reduce((sum, c) => sum + (c.market_cap || 0), 0);
-                    return {
-                        totalValue: `$${(totalValue / 1000000000000).toFixed(1)}T`,
-                        entities: companies.length,
-                        avgGrowth: 15.7,
-                        efficiency: 94.3,
-                        alerts: 5,
-                        uptime: '99.97%'
-                    };
-                }, [companies]);
-
-                const modules = [
-                    { id: 'overview', name: 'Mission Control', icon: '🎯' },
-                    { id: 'analytics', name: sectorConfig.terminology.analytics, icon: '📊' },
-                    { id: 'monitoring', name: sectorConfig.terminology.monitoring, icon: '👁️' },
-                    { id: 'intelligence', name: sectorConfig.terminology.intelligence, icon: '🧠' },
-                    { id: 'neural', name: 'Neural Engine', icon: '🔮' }
-                ];
-
-                return (
-                    <div className={`min-h-screen neural-bg ${sectorConfig.theme}`}>
-                        <NeuralNetwork />
-                        
-                        {/* Enhanced Header */}
-                        <div className="glass-panel border-b px-6 py-4">
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center space-x-8">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="status-indicator"></div>
-                                        <span className="text-white/70 text-sm font-medium">SYSTEM OPERATIONAL</span>
-                                    </div>
-                                    <div className="text-white/50 text-sm">
-                                        User: {user?.email?.split('@')[0]?.toUpperCase()} | 
-                                        Sector: {sectorConfig.name} | 
-                                        Time: {new Date().toLocaleTimeString()}
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-4">
-                                    <button
-                                        onClick={() => setAiAssistantOpen(true)}
-                                        className="px-4 py-2 text-white rounded-lg hover:shadow-lg transition-all accent-glow"
-                                        style={{background: 'var(--accent-color)'}}
-                                    >
-                                        AI Assistant
-                                    </button>
-                                    <button
-                                        onClick={() => {setUser(null); setCurrentPage('landing');}}
-                                        className="text-white/50 hover:text-white transition-colors"
-                                    >
-                                        Sign Out
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex">
-                            {/* Enhanced Sidebar */}
-                            <div className="w-80 glass-panel border-r h-screen flex flex-col">
-                                <div className="p-8 border-b border-white/5 flex-shrink-0">
-                                    <div className="flex items-center space-x-4 mb-6">
-                                        <div className="w-12 h-12 rounded-xl accent-glow p-0.5" style={{background: 'var(--accent-color)'}}>
-                                            <div className="w-full h-full rounded-xl bg-slate-900 flex items-center justify-center">
-                                                <div className="text-white font-bold text-sm">IQ</div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-xl text-white">Command Center</div>
-                                            <div className="text-sm text-white/50">{sectorConfig.name}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <nav className="p-6 flex-1 scrollbar-custom overflow-y-auto">
-                                    {modules.map((module) => (
-                                        <button
-                                            key={module.id}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                handleModuleChange(module.id);
-                                            }}
-                                            className={`w-full text-left p-4 mb-3 rounded-xl hover:bg-white/5 flex items-center space-x-4 transition-all group ${
-                                                activeModule === module.id 
-                                                    ? 'text-white shadow-lg' 
-                                                    : 'text-white/60 hover:text-white'
-                                            }`}
-                                            style={activeModule === module.id ? {
-                                                background: `${sectorConfig.accentColor}15`,
-                                                borderLeft: `3px solid ${sectorConfig.accentColor}`
-                                            } : {}}
-                                        >
-                                            <span className="text-2xl group-hover:scale-110 transition-transform">{module.icon}</span>
-                                            <span className="font-semibold">{module.name}</span>
-                                        </button>
-                                    ))}
-                                </nav>
-
-                                <div className="p-6 border-t border-white/5 flex-shrink-0">
-                                    <div className="hologram-card rounded-xl p-4 mb-4">
-                                        <div className="text-white/70 text-sm mb-3 font-semibold">SYSTEM METRICS</div>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between">
-                                                <span className="text-white/50 text-sm">Neural Load</span>
-                                                <span className="text-green-400 text-sm font-semibold">23%</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-white/50 text-sm">Data Sources</span>
-                                                <span className="text-white text-sm font-semibold">{companies.length}</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-white/50 text-sm">AI Status</span>
-                                                <span className="text-sm font-semibold" style={{color: 'var(--success-color)'}}>Active</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Main Content */}
-                            <div className="flex-1 p-8">
-                                <div className="mb-8">
-                                    <h1 className="text-5xl font-bold text-white mb-4">
-                                        {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Engine
+                                    
+                                    <h1 style={{
+                                        fontSize: 'clamp(2rem, 5vw, 4rem)',
+                                        fontWeight: 'bold',
+                                        marginBottom: '20px',
+                                        background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent'
+                                    }}>
+                                        IndustryIQ Platform
                                     </h1>
-                                    <p className="text-white/50 text-lg">Advanced {activeModule} analytics for {sectorConfig.name.toLowerCase()}</p>
-                                </div>
+                                    
+                                    <p style={{
+                                        fontSize: '1.2rem',
+                                        color: '#94a3b8',
+                                        marginBottom: '30px',
+                                        maxWidth: '600px'
+                                    }}>
+                                        Transform your business with AI-powered intelligence, real-time analytics, and quantum-inspired optimization
+                                    </p>
 
-                                <RealTimeTicker data={realtimeData} />
+                                    <div className="countdown-timer">
+                                        ⏰ Limited Offer Ends: {String(countdown.hours).padStart(2, '0')}:
+                                        {String(countdown.minutes).padStart(2, '0')}:
+                                        {String(countdown.seconds).padStart(2, '0')}
+                                    </div>
 
-                                {activeModule === 'overview' && (
-                                    <div className="space-y-8">
-                                        <div className="enterprise-grid">
-                                            <EnhancedDataCard 
-                                                title="Total Portfolio Value" 
-                                                value={metrics.totalValue} 
-                                                trend={metrics.avgGrowth} 
-                                                interactive={true}
-                                            />
-                                            <EnhancedDataCard 
-                                                title="Active Entities" 
-                                                value={metrics.entities} 
-                                                subtitle="Real-time sources"
-                                                interactive={true}
-                                            />
-                                            <EnhancedDataCard 
-                                                title="AI Efficiency" 
-                                                value={`${metrics.efficiency}%`} 
-                                                trend={5.2}
-                                                interactive={true}
-                                            />
-                                            <EnhancedDataCard 
-                                                title="System Health" 
-                                                value={metrics.uptime} 
-                                                subtitle="Uptime"
-                                                interactive={true}
-                                            />
+                                    <div style={{ marginTop: '30px', display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                        <button
+                                            onClick={() => {
+                                                setCurrentPage('dashboard');
+                                                addPoints(10, 'start_trial');
+                                            }}
+                                            style={{
+                                                padding: '15px 40px',
+                                                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                color: 'white',
+                                                fontSize: '18px',
+                                                fontWeight: 'bold',
+                                                cursor: 'pointer',
+                                                boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
+                                                transition: 'all 0.3s ease'
+                                            }}
+                                        >
+                                            Start Free Trial
+                                        </button>
+                                        <button
+                                            onClick={() => setCurrentPage('demo')}
+                                            style={{
+                                                padding: '15px 40px',
+                                                background: 'transparent',
+                                                border: '2px solid #3b82f6',
+                                                borderRadius: '8px',
+                                                color: '#3b82f6',
+                                                fontSize: '18px',
+                                                fontWeight: 'bold',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.3s ease'
+                                            }}
+                                        >
+                                            Watch Demo
+                                        </button>
+                                    </div>
+
+                                    {/* Sector Switcher */}
+                                    <div style={{ marginTop: '50px' }}>
+                                        <h3 style={{ marginBottom: '20px' }}>Choose Your Industry</h3>
+                                        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                            {Object.entries(SECTOR_THEMES).map(([key, theme]) => (
+                                                <button
+                                                    key={key}
+                                                    onClick={() => {
+                                                        setCurrentSector(key);
+                                                        addPoints(3, 'sector_switch');
+                                                    }}
+                                                    style={{
+                                                        padding: '12px 24px',
+                                                        background: currentSector === key ? theme.gradient : 'rgba(255, 255, 255, 0.1)',
+                                                        border: `2px solid ${currentSector === key ? theme.primary : 'rgba(255, 255, 255, 0.2)'}`,
+                                                        borderRadius: '8px',
+                                                        color: 'white',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                >
+                                                    <span>{theme.icon}</span>
+                                                    <span>{theme.name}</span>
+                                                </button>
+                                            ))}
                                         </div>
-                                        
-                                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                                            <div className="hologram-card rounded-xl p-8">
-                                                <h3 className="text-2xl font-bold text-white mb-8">Performance Matrix</h3>
-                                                <div className="space-y-6">
-                                                    {companies.slice(0, 6).map((company, index) => (
-                                                        <div key={index} className="group">
-                                                            <div className="flex items-center justify-between mb-2">
-                                                                <div className="flex items-center space-x-3">
-                                                                    <div className="w-3 h-3 rounded-full" style={{background: 'var(--success-color)'}}></div>
-                                                                    <span className="text-white font-semibold">{company.name}</span>
-                                                                    <span className="text-white/50 text-sm">{company.industry_code}</span>
-                                                                </div>
-                                                                <span className="text-white font-bold">
-                                                                    ${((company.market_cap || 0) / 1000000000).toFixed(0)}B
-                                                                </span>
-                                                            </div>
-                                                            <div className="w-full h-2 bg-black/30 rounded-full overflow-hidden">
-                                                                <div 
-                                                                    className="metric-visualizer"
-                                                                    style={{
-                                                                        width: `${Math.min(((company.market_cap || 0) / 3000000000000) * 100, 100)}%`
-                                                                    }}
-                                                                ></div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="hologram-card rounded-xl p-8">
-                                                <h3 className="text-2xl font-bold text-white mb-8">Neural Network Status</h3>
-                                                <div className="grid grid-cols-2 gap-6">
-                                                    {[
-                                                        { label: 'Processing Power', value: '847 TFLOPS', status: 'optimal' },
-                                                        { label: 'Data Throughput', value: '2.3 TB/s', status: 'high' },
-                                                        { label: 'Prediction Accuracy', value: '94.7%', status: 'excellent' },
-                                                        { label: 'Response Time', value: '< 50ms', status: 'optimal' }
-                                                    ].map((metric, index) => (
-                                                        <div key={index} className="bg-black/15 rounded-xl p-4 border border-white/5">
-                                                            <div className="text-white/50 text-sm mb-1">{metric.label}</div>
-                                                            <div className="text-2xl font-bold text-white mb-2">{metric.value}</div>
-                                                            <div className={`text-xs px-2 py-1 rounded-full w-fit ${
-                                                                metric.status === 'optimal' ? 'bg-green-500/15 text-green-400' :
-                                                                metric.status === 'high' ? 'bg-blue-500/15 text-blue-400' :
-                                                                'bg-purple-500/15 text-purple-400'
-                                                            }`}>
-                                                                {metric.status.toUpperCase()}
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                    </div>
+
+                                    {/* Testimonial Carousel */}
+                                    <div className="testimonial-carousel" style={{ marginTop: '60px', maxWidth: '800px' }}>
+                                        <div className="testimonial-slide" key={currentTestimonial}>
+                                            <div className="enhanced-card" style={{ padding: '30px' }}>
+                                                <p style={{ fontSize: '18px', marginBottom: '20px', fontStyle: 'italic' }}>
+                                                    "{testimonials[currentTestimonial].text}"
+                                                </p>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                                    <div style={{
+                                                        width: '50px',
+                                                        height: '50px',
+                                                        borderRadius: '50%',
+                                                        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: '20px'
+                                                    }}>
+                                                        {testimonials[currentTestimonial].name[0]}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: 'bold' }}>{testimonials[currentTestimonial].name}</div>
+                                                        <div style={{ color: '#94a3b8', fontSize: '14px' }}>{testimonials[currentTestimonial].role}</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                )}
 
-                                {activeModule !== 'overview' && (
-                                    <div className="hologram-card rounded-xl p-12 text-center">
-                                        <h3 className="text-4xl font-bold text-white mb-6">
-                                            {activeModule.charAt(0).toUpperCase() + activeModule.slice(1)} Engine
-                                        </h3>
-                                        <p className="text-white/60 text-xl mb-8">
-                                            Advanced {activeModule} capabilities powered by next-generation neural networks and AI algorithms
-                                        </p>
-                                        <div className="inline-flex items-center space-x-3 px-8 py-4 rounded-full accent-glow" 
-                                             style={{background: 'linear-gradient(135deg, var(--accent-color), var(--wisdom-color))'}}>
-                                            <div className="status-indicator"></div>
-                                            <span className="text-white font-semibold text-lg">Neural Network Active</span>
+                                    {/* Social Proof */}
+                                    <div style={{ marginTop: '60px', display: 'flex', gap: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>500+</div>
+                                            <div style={{ color: '#94a3b8' }}>Enterprise Clients</div>
+                                        </div>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6' }}>99.9%</div>
+                                            <div style={{ color: '#94a3b8' }}>Uptime SLA</div>
+                                        </div>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>24/7</div>
+                                            <div style={{ color: '#94a3b8' }}>Support</div>
                                         </div>
                                     </div>
-                                )}
+                                </section>
+
+                                {/* Features Section */}
+                                <section style={{ padding: '80px 20px' }}>
+                                    <h2 style={{
+                                        fontSize: '2.5rem',
+                                        textAlign: 'center',
+                                        marginBottom: '60px'
+                                    }}>
+                                        Platform Features
+                                    </h2>
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                                        gap: '30px',
+                                        maxWidth: '1200px',
+                                        margin: '0 auto'
+                                    }}>
+                                        {[
+                                            { icon: '🚀', title: 'Real-Time Analytics', desc: 'Process millions of data points instantly' },
+                                            { icon: '🤖', title: 'AI-Powered Insights', desc: 'Machine learning algorithms for predictions' },
+                                            { icon: '🔐', title: 'Enterprise Security', desc: 'Bank-grade encryption and compliance' },
+                                            { icon: '📊', title: 'Custom Dashboards', desc: 'Personalized views for every role' },
+                                            { icon: '🌐', title: 'Global Scale', desc: 'Multi-region deployment and CDN' },
+                                            { icon: '⚡', title: 'Lightning Fast', desc: 'Sub-second response times' }
+                                        ].map((feature, idx) => (
+                                            <div key={idx} className="enhanced-card">
+                                                <div style={{ fontSize: '48px', marginBottom: '20px' }}>{feature.icon}</div>
+                                                <h3 style={{ marginBottom: '10px' }}>{feature.title}</h3>
+                                                <p style={{ color: '#94a3b8' }}>{feature.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
                             </div>
-                        </div>
+                        );
 
-                        <AIAssistant 
-                            isOpen={aiAssistantOpen} 
-                            onToggle={() => setAiAssistantOpen(!aiAssistantOpen)}
-                            currentSector={currentSector}
-                        />
-                    </div>
-                );
+                    case 'pricing':
+                        return (
+                            <div style={{ padding: '80px 20px' }}>
+                                <h2 style={{
+                                    fontSize: '2.5rem',
+                                    textAlign: 'center',
+                                    marginBottom: '20px'
+                                }}>
+                                    Choose Your Plan
+                                </h2>
+                                <p style={{
+                                    textAlign: 'center',
+                                    color: '#94a3b8',
+                                    marginBottom: '60px'
+                                }}>
+                                    All plans include 30-day money-back guarantee
+                                </p>
+
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                                    gap: '30px',
+                                    maxWidth: '1000px',
+                                    margin: '0 auto'
+                                }}>
+                                    {[
+                                        {
+                                            name: 'Starter',
+                                            price: '$49',
+                                            features: ['5 Users', '10GB Storage', 'Basic Analytics', 'Email Support'],
+                                            color: '#10b981'
+                                        },
+                                        {
+                                            name: 'Professional',
+                                            price: '$149',
+                                            features: ['25 Users', '100GB Storage', 'Advanced Analytics', 'Priority Support', 'API Access'],
+                                            color: '#3b82f6',
+                                            popular: true
+                                        },
+                                        {
+                                            name: 'Enterprise',
+                                            price: 'Custom',
+                                            features: ['Unlimited Users', 'Unlimited Storage', 'Custom Analytics', 'Dedicated Support', 'Full API', 'SLA'],
+                                            color: '#8b5cf6'
+                                        }
+                                    ].map((plan, idx) => (
+                                        <div key={idx} className="enhanced-card" style={{
+                                            position: 'relative',
+                                            transform: plan.popular ? 'scale(1.05)' : 'scale(1)'
+                                        }}>
+                                            {plan.popular && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: '-15px',
+                                                    right: '20px',
+                                                    background: '#f59e0b',
+                                                    padding: '5px 15px',
+                                                    borderRadius: '20px',
+                                                    fontSize: '12px',
+                                                    fontWeight: 'bold'
+                                                }}>
+                                                    MOST POPULAR
+                                                </div>
+                                            )}
+                                            <h3 style={{ marginBottom: '20px', color: plan.color }}>{plan.name}</h3>
+                                            <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px' }}>
+                                                {plan.price}
+                                                {plan.price !== 'Custom' && <span style={{ fontSize: '16px', color: '#94a3b8' }}>/month</span>}
+                                            </div>
+                                            <ul style={{ listStyle: 'none', padding: 0, marginBottom: '30px' }}>
+                                                {plan.features.map((feature, fidx) => (
+                                                    <li key={fidx} style={{
+                                                        padding: '10px 0',
+                                                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '10px'
+                                                    }}>
+                                                        <span style={{ color: plan.color }}>✓</span>
+                                                        {feature}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            <button
+                                                onClick={() => addPoints(5, 'plan_selected')}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '12px',
+                                                    background: plan.popular ? `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}99 100%)` : 'transparent',
+                                                    border: `2px solid ${plan.color}`,
+                                                    borderRadius: '8px',
+                                                    color: 'white',
+                                                    fontWeight: 'bold',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                {plan.price === 'Custom' ? 'Contact Sales' : 'Start Free Trial'}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+
+                    case 'dashboard':
+                        return (
+                            <div style={{ display: 'flex', height: '100vh' }}>
+                                {/* Mobile menu button */}
+                                <button
+                                    className="mobile-menu-btn"
+                                    onClick={() => setDashboardSidebarOpen(!dashboardSidebarOpen)}
+                                    style={{
+                                        position: 'fixed',
+                                        top: '20px',
+                                        left: '20px',
+                                        zIndex: 1001
+                                    }}
+                                >
+                                    ☰
+                                </button>
+
+                                {/* Dashboard Sidebar */}
+                                <aside className={`dashboard-sidebar ${dashboardSidebarOpen ? 'active' : ''}`} style={{
+                                    width: '250px',
+                                    background: 'rgba(15, 23, 42, 0.95)',
+                                    backdropFilter: 'blur(10px)',
+                                    padding: '20px',
+                                    borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+                                    overflowY: 'auto'
+                                }}>
+                                    <h2 style={{ marginBottom: '30px', fontSize: '24px' }}>
+                                        {SECTOR_THEMES[currentSector].icon} {SECTOR_THEMES[currentSector].name}
+                                    </h2>
+
+                                    {/* User Stats */}
+                                    <div style={{
+                                        background: 'rgba(59, 130, 246, 0.1)',
+                                        borderRadius: '8px',
+                                        padding: '15px',
+                                        marginBottom: '30px'
+                                    }}>
+                                        <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '5px' }}>Level {Math.floor(userScore / 100)}</div>
+                                        <div style={{
+                                            background: 'rgba(255, 255, 255, 0.1)',
+                                            borderRadius: '4px',
+                                            height: '8px',
+                                            marginBottom: '10px',
+                                            overflow: 'hidden'
+                                        }}>
+                                            <div style={{
+                                                width: `${userScore % 100}%`,
+                                                height: '100%',
+                                                background: 'linear-gradient(90deg, #3b82f6 0%, #10b981 100%)',
+                                                transition: 'width 0.5s ease'
+                                            }} />
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                                            <span>🏆 {userScore} pts</span>
+                                            <span className="streak-badge">🔥 {dailyStreak} days</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Navigation Modules */}
+                                    <nav>
+                                        {dashboardModules.map(module => (
+                                            <button
+                                                key={module.id}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleModuleChange(module.id);
+                                                }}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '12px',
+                                                    marginBottom: '10px',
+                                                    background: activeModule === module.id ? SECTOR_THEMES[currentSector].gradient : 'rgba(255, 255, 255, 0.05)',
+                                                    border: `1px solid ${activeModule === module.id ? SECTOR_THEMES[currentSector].primary : 'rgba(255, 255, 255, 0.1)'}`,
+                                                    borderRadius: '8px',
+                                                    color: 'white',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '10px',
+                                                    transition: 'all 0.3s ease',
+                                                    textAlign: 'left'
+                                                }}
+                                            >
+                                                <span>{module.icon}</span>
+                                                <span>{module.name}</span>
+                                            </button>
+                                        ))}
+                                    </nav>
+
+                                    {/* Achievements */}
+                                    <div style={{ marginTop: '30px' }}>
+                                        <h3 style={{ fontSize: '16px', marginBottom: '15px' }}>Achievements</h3>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                                            {['🎯', '🏆', '👑', '🔥', '💎', '⭐'].map((icon, idx) => (
+                                                <div key={idx} style={{
+                                                    width: '60px',
+                                                    height: '60px',
+                                                    background: achievements.length > idx ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'rgba(255, 255, 255, 0.05)',
+                                                    borderRadius: '8px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '24px',
+                                                    opacity: achievements.length > idx ? 1 : 0.3
+                                                }}>
+                                                    {icon}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </aside>
+
+                                {/* Main Content */}
+                                <main style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
+                                    <div className="module-content">
+                                        {/* Module Header */}
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            marginBottom: '30px'
+                                        }}>
+                                            <h1 style={{ fontSize: '32px' }}>
+                                                {dashboardModules.find(m => m.id === activeModule)?.name}
+                                            </h1>
+                                            <div style={{ display: 'flex', gap: '15px' }}>
+                                                {Object.entries(SECTOR_THEMES).map(([key, theme]) => (
+                                                    <button
+                                                        key={key}
+                                                        onClick={() => setCurrentSector(key)}
+                                                        style={{
+                                                            width: '40px',
+                                                            height: '40px',
+                                                            borderRadius: '8px',
+                                                            background: currentSector === key ? theme.gradient : 'rgba(255, 255, 255, 0.1)',
+                                                            border: 'none',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '20px'
+                                                        }}
+                                                    >
+                                                        {theme.icon}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Render module content based on activeModule */}
+                                        {activeModule === 'mission-control' && (
+                                            <div>
+                                                <div style={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                                                    gap: '20px',
+                                                    marginBottom: '30px'
+                                                }}>
+                                                    <EnhancedDataCard
+                                                        title={SECTOR_THEMES[currentSector].terminology.performance}
+                                                        value="98.2%"
+                                                        trend={5.3}
+                                                        icon="📈"
+                                                        color={SECTOR_THEMES[currentSector].primary}
+                                                    />
+                                                    <EnhancedDataCard
+                                                        title={SECTOR_THEMES[currentSector].terminology.efficiency}
+                                                        value="87.5%"
+                                                        trend={2.1}
+                                                        icon="⚡"
+                                                        color="#10b981"
+                                                    />
+                                                    <EnhancedDataCard
+                                                        title={SECTOR_THEMES[currentSector].terminology.growth}
+                                                        value="+24.3%"
+                                                        trend={8.7}
+                                                        icon="🚀"
+                                                        color="#f59e0b"
+                                                    />
+                                                    <EnhancedDataCard
+                                                        title={SECTOR_THEMES[currentSector].terminology.optimization}
+                                                        value="94.1%"
+                                                        trend={-1.2}
+                                                        icon="🎯"
+                                                        color="#8b5cf6"
+                                                    />
+                                                </div>
+
+                                                {/* Companies Grid */}
+                                                <h2 style={{ marginBottom: '20px' }}>Top Companies</h2>
+                                                <div style={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                    gap: '15px'
+                                                }}>
+                                                    {loading ? (
+                                                        [...Array(6)].map((_, idx) => (
+                                                            <div key={idx} className="skeleton" style={{
+                                                                height: '100px',
+                                                                borderRadius: '8px'
+                                                            }} />
+                                                        ))
+                                                    ) : (
+                                                        companies.slice(0, 6).map((company, idx) => (
+                                                            <div key={idx} className="enhanced-card" style={{ padding: '15px' }}>
+                                                                <h4 style={{ marginBottom: '10px' }}>{company.name}</h4>
+                                                                <p style={{ color: '#94a3b8', fontSize: '14px' }}>{company.industry}</p>
+                                                                <div style={{
+                                                                    marginTop: '10px',
+                                                                    fontSize: '20px',
+                                                                    fontWeight: 'bold',
+                                                                    color: SECTOR_THEMES[currentSector].primary
+                                                                }}>
+                                                                    ${company.market_cap ? (company.market_cap / 1000000000).toFixed(1) + 'B' : 'N/A'}
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeModule === 'performance' && (
+                                            <div>
+                                                <h2 style={{ marginBottom: '20px' }}>Performance Matrix</h2>
+                                                <div style={{ overflowX: 'auto' }}>
+                                                    <table style={{
+                                                        width: '100%',
+                                                        borderCollapse: 'collapse',
+                                                        background: 'rgba(30, 41, 59, 0.5)'
+                                                    }}>
+                                                        <thead>
+                                                            <tr style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.1)' }}>
+                                                                <th style={{ padding: '15px', textAlign: 'left' }}>Company</th>
+                                                                <th style={{ padding: '15px', textAlign: 'left' }}>Sector</th>
+                                                                <th style={{ padding: '15px', textAlign: 'left' }}>Market Cap</th>
+                                                                <th style={{ padding: '15px', textAlign: 'left' }}>Performance</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {companies.map((company, idx) => (
+                                                                <tr key={idx} style={{
+                                                                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+                                                                }}>
+                                                                    <td style={{ padding: '15px' }}>{company.name}</td>
+                                                                    <td style={{ padding: '15px' }}>{company.industry}</td>
+                                                                    <td style={{ padding: '15px' }}>
+                                                                        ${company.market_cap ? (company.market_cap / 1000000000).toFixed(1) + 'B' : 'N/A'}
+                                                                    </td>
+                                                                    <td style={{ padding: '15px' }}>
+                                                                        <div style={{
+                                                                            width: '100px',
+                                                                            height: '8px',
+                                                                            background: 'rgba(255, 255, 255, 0.1)',
+                                                                            borderRadius: '4px',
+                                                                            overflow: 'hidden'
+                                                                        }}>
+                                                                            <div style={{
+                                                                                width: `${Math.random() * 100}%`,
+                                                                                height: '100%',
+                                                                                background: SECTOR_THEMES[currentSector].gradient
+                                                                            }} />
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeModule === 'neural-engine' && (
+                                            <div>
+                                                <h2 style={{ marginBottom: '20px' }}>Neural Network Status</h2>
+                                                <div className="enhanced-card" style={{
+                                                    padding: '30px',
+                                                    marginBottom: '30px',
+                                                    textAlign: 'center'
+                                                }}>
+                                                    <div style={{
+                                                        fontSize: '48px',
+                                                        marginBottom: '20px',
+                                                        animation: 'pulse 2s infinite'
+                                                    }}>
+                                                        🧠
+                                                    </div>
+                                                    <h3 style={{ marginBottom: '10px' }}>Neural Processing Active</h3>
+                                                    <p style={{ color: '#94a3b8' }}>Processing {Math.floor(Math.random() * 1000000).toLocaleString()} data points per second</p>
+                                                    <div style={{
+                                                        display: 'grid',
+                                                        gridTemplateColumns: 'repeat(3, 1fr)',
+                                                        gap: '20px',
+                                                        marginTop: '30px'
+                                                    }}>
+                                                        <div>
+                                                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>99.8%</div>
+                                                            <div style={{ fontSize: '12px', color: '#94a3b8' }}>Accuracy</div>
+                                                        </div>
+                                                        <div>
+                                                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#3b82f6' }}>12ms</div>
+                                                            <div style={{ fontSize: '12px', color: '#94a3b8' }}>Latency</div>
+                                                        </div>
+                                                        <div>
+                                                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>847</div>
+                                                            <div style={{ fontSize: '12px', color: '#94a3b8' }}>Models Active</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Add content for other modules */}
+                                        {['analytics', 'monitoring', 'intelligence'].includes(activeModule) && (
+                                            <div className="enhanced-card" style={{ padding: '30px', textAlign: 'center' }}>
+                                                <h3>Module Content Coming Soon</h3>
+                                                <p style={{ color: '#94a3b8', marginTop: '10px' }}>
+                                                    This module is being enhanced with advanced features
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </main>
+                            </div>
+                        );
+
+                    case 'blog':
+                        return (
+                            <div style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+                                <h1 style={{ fontSize: '3rem', marginBottom: '20px', textAlign: 'center' }}>
+                                    Resources & Insights
+                                </h1>
+                                <p style={{ textAlign: 'center', color: '#94a3b8', marginBottom: '60px' }}>
+                                    Stay ahead with industry insights and best practices
+                                </p>
+
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+                                    gap: '30px'
+                                }}>
+                                    {[
+                                        {
+                                            title: 'The Future of AI in Business Intelligence',
+                                            date: 'Jan 15, 2025',
+                                            category: 'AI & Machine Learning',
+                                            excerpt: 'Discover how artificial intelligence is revolutionizing data analytics...'
+                                        },
+                                        {
+                                            title: 'Optimizing Performance with Real-Time Data',
+                                            date: 'Jan 12, 2025',
+                                            category: 'Performance',
+                                            excerpt: 'Learn strategies for processing and analyzing data in real-time...'
+                                        },
+                                        {
+                                            title: 'Enterprise Security Best Practices',
+                                            date: 'Jan 10, 2025',
+                                            category: 'Security',
+                                            excerpt: 'Essential security measures for protecting your business data...'
+                                        }
+                                    ].map((article, idx) => (
+                                        <article key={idx} className="enhanced-card" style={{ cursor: 'pointer' }}
+                                                onClick={() => addPoints(2, 'article_read')}>
+                                            <div style={{
+                                                background: `linear-gradient(135deg, ${SECTOR_THEMES[currentSector].primary} 0%, ${SECTOR_THEMES[currentSector].secondary} 100%)`,
+                                                height: '200px',
+                                                borderRadius: '8px',
+                                                marginBottom: '20px'
+                                            }} />
+                                            <span style={{
+                                                fontSize: '12px',
+                                                color: SECTOR_THEMES[currentSector].primary,
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '1px'
+                                            }}>
+                                                {article.category}
+                                            </span>
+                                            <h3 style={{ margin: '10px 0' }}>{article.title}</h3>
+                                            <p style={{ color: '#94a3b8', marginBottom: '15px' }}>{article.excerpt}</p>
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                color: '#64748b',
+                                                fontSize: '14px'
+                                            }}>
+                                                <span>{article.date}</span>
+                                                <span>Read more →</span>
+                                            </div>
+                                        </article>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+
+                    case 'features':
+                        return (
+                            <div style={{ padding: '80px 20px' }}>
+                                <h1 style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>
+                                    Platform Capabilities
+                                </h1>
+
+                                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                                    {[
+                                        {
+                                            title: 'Advanced Analytics Engine',
+                                            description: 'Process billions of data points with our quantum-inspired algorithms',
+                                            features: ['Real-time processing', 'Predictive modeling', 'Anomaly detection', 'Custom metrics'],
+                                            icon: '📊'
+                                        },
+                                        {
+                                            title: 'AI-Powered Insights',
+                                            description: 'Leverage machine learning for automated decision-making',
+                                            features: ['Natural language queries', 'Automated reporting', 'Trend prediction', 'Smart alerts'],
+                                            icon: '🤖'
+                                        },
+                                        {
+                                            title: 'Enterprise Integration',
+                                            description: 'Seamlessly connect with your existing technology stack',
+                                            features: ['REST API', 'Webhooks', 'Data connectors', 'Custom integrations'],
+                                            icon: '🔗'
+                                        }
+                                    ].map((feature, idx) => (
+                                        <div key={idx} style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr' : '1fr',
+                                            gap: '40px',
+                                            marginBottom: '80px',
+                                            alignItems: 'center'
+                                        }}>
+                                            <div style={{ order: idx % 2 === 0 ? 1 : 2 }}>
+                                                <div style={{
+                                                    fontSize: '48px',
+                                                    marginBottom: '20px'
+                                                }}>
+                                                    {feature.icon}
+                                                </div>
+                                                <h2 style={{ marginBottom: '15px' }}>{feature.title}</h2>
+                                                <p style={{ color: '#94a3b8', marginBottom: '20px' }}>{feature.description}</p>
+                                                <ul style={{ listStyle: 'none', padding: 0 }}>
+                                                    {feature.features.map((item, fidx) => (
+                                                        <li key={fidx} style={{
+                                                            padding: '8px 0',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '10px'
+                                                        }}>
+                                                            <span style={{ color: SECTOR_THEMES[currentSector].primary }}>✓</span>
+                                                            {item}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            <div style={{
+                                                order: idx % 2 === 0 ? 2 : 1,
+                                                background: `linear-gradient(135deg, ${SECTOR_THEMES[currentSector].primary}20 0%, ${SECTOR_THEMES[currentSector].secondary}20 100%)`,
+                                                height: '300px',
+                                                borderRadius: '12px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: '100px',
+                                                opacity: 0.5
+                                            }}>
+                                                {feature.icon}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+
+                    default:
+                        return null;
+                }
             };
 
             return (
-                <div className={sectorConfig.theme}>
-                    {currentPage === 'landing' && <LandingPage />}
-                    {currentPage === 'pricing' && <PricingPage />}
-                    {currentPage === 'dashboard' && <Dashboard />}
-                </div>
+                <>
+                    <NeuralNetwork />
+                    
+                    {/* Navigation Header */}
+                    <header style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        background: 'rgba(15, 23, 42, 0.95)',
+                        backdropFilter: 'blur(10px)',
+                        padding: '15px 30px',
+                        zIndex: 998,
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            maxWidth: '1400px',
+                            margin: '0 auto'
+                        }}>
+                            <div style={{
+                                fontSize: '24px',
+                                fontWeight: 'bold',
+                                cursor: 'pointer'
+                            }}
+                                 onClick={() => setCurrentPage('landing')}>
+                                IndustryIQ
+                            </div>
+
+                            <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                                ☰
+                            </button>
+
+                            <nav className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`} style={{
+                                display: window.innerWidth > 768 ? 'flex' : 'block',
+                                gap: '30px',
+                                alignItems: 'center'
+                            }}>
+                                {['landing', 'features', 'pricing', 'blog', 'dashboard'].map(page => (
+                                    <button
+                                        key={page}
+                                        onClick={() => {
+                                            setCurrentPage(page);
+                                            setMobileMenuOpen(false);
+                                        }}
+                                        style={{
+                                            background: 'transparent',
+                                            border: 'none',
+                                            color: currentPage === page ? SECTOR_THEMES[currentSector].primary : '#94a3b8',
+                                            cursor: 'pointer',
+                                            fontSize: '16px',
+                                            padding: '8px 16px',
+                                            borderRadius: '6px',
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                    >
+                                        {page.charAt(0).toUpperCase() + page.slice(1)}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+                    </header>
+
+                    {/* Main Content with padding for fixed header */}
+                    <div style={{ paddingTop: currentPage === 'dashboard' ? '0' : '70px' }}>
+                        {renderPage()}
+                    </div>
+
+                    {/* Points Counter */}
+                    {currentPage !== 'landing' && (
+                        <div className="points-counter">
+                            <span>🏆 {userScore} pts</span>
+                            <span className="streak-badge">🔥 {dailyStreak} days</span>
+                        </div>
+                    )}
+
+                    {/* Achievement Popup */}
+                    {showAchievement && (
+                        <div className="achievement-popup">
+                            <span style={{ fontSize: '24px' }}>🎉</span>
+                            <div>
+                                <div style={{ fontWeight: 'bold' }}>{showAchievement.title}</div>
+                                <div style={{ fontSize: '14px', opacity: 0.9 }}>{showAchievement.description}</div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* AI Assistant */}
+                    <AIAssistant currentSector={currentSector} />
+
+                    {/* Live Chat Widget */}
+                    <button
+                        style={{
+                            position: 'fixed',
+                            bottom: '20px',
+                            left: '20px',
+                            padding: '12px 20px',
+                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                            border: 'none',
+                            borderRadius: '25px',
+                            color: 'white',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            zIndex: 997
+                        }}
+                        onClick={() => addPoints(1, 'chat_opened')}
+                    >
+                        💬 Need Help?
+                    </button>
+                </>
             );
         };
 
+        // Render the application
         ReactDOM.render(<UltimateEnterprisePlatform />, document.getElementById('root'));
     </script>
 </body>
